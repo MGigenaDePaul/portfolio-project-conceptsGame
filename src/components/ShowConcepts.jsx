@@ -12,8 +12,15 @@ const ShowConcepts = () => {
     setResult(r)
   }
 
+   const mainColor = {
+    color: '#C8D1DB'
+  }
+
   return (
     <div>
+      <h1 className="title-game" style={mainColor}>Concepts Game</h1>
+      <h2 style={mainColor}>Pick two concepts</h2>
+
       <div className="container-individual-concepts">
         {STARTING_CONCEPT_IDS.map((id) => {
           const c = CONCEPTS[id]
