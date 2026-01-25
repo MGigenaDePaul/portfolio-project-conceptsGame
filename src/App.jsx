@@ -91,9 +91,10 @@ function App() {
       </header>
 
       <div className="concepts-area">
+        {/*for each id, draw a bubble */}
         {discoveredIds.map((id) => {
-          const concept = CONCEPTS[id]
-          const position = positions[id] || { x: 0, y: 0 }
+          const concept = CONCEPTS[id] // id is type string 
+          const position = positions[id] || { x: 0, y: 0 } // if position doesn't exist, {0, 0} to not crash it
           const isSelected = id === selectedA || id === selectedB
 
           return (
@@ -119,7 +120,7 @@ function App() {
         <p>CONCEPTS IS STILL UNDER HEAVY</p>
       </footer>
 
-      {/* Conceptos duplicados en la parte inferior como en la imagen */}
+      {/* duplicated concepts in the inferior part, similar to the game */}
       <div className="bottom-concepts">
         <ConceptBubble
           concept={CONCEPTS.earth}
