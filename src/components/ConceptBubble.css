@@ -14,7 +14,14 @@
   white-space: nowrap;
   transform: translate(-50%, -50%);
   z-index: 10;
+  touch-action: none; /* CLAVE */
+  user-select: none;
+  cursor: grab;
 }
+
+.concept-bubble:active {
+  cursor: grabbing;
+} 
 
 .concept-bubble:hover {
   background: rgba(40, 45, 50, 0.95);

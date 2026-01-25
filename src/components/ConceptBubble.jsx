@@ -1,18 +1,20 @@
+// ConceptBubble.jsx
 import './ConceptBubble.css'
 
-const ConceptBubble = ({ concept, position, onClick, isSelected, isDragging }) => {
+const ConceptBubble = ({ concept, position, onClick, isSelected, onPointerDown }) => {
   return (
-    <button
-      className={`concept-bubble ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''}`}
+    <div
+      className={`concept-bubble ${isSelected ? 'selected' : ''}`}
       style={{
         left: position.x,
         top: position.y,
       }}
+      onPointerDown={onPointerDown}
       onClick={onClick}
     >
       <span className="concept-emoji">{concept.emoji}</span>
       <span className="concept-name">{concept.name}</span>
-    </button>
+    </div>
   )
 }
 

@@ -123,3 +123,14 @@ body {
   padding: 12px 18px;
   border-radius: 26px;
 }
+
+.concept-bubble {
+  touch-action: none; /* important for mobile dragging */
+  user-select: none;
+  cursor: grab;
+}
+
+.concept-bubble:active {
+  cursor: grabbing;
+}
+
