@@ -2,15 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { CONCEPTS, STARTING_CONCEPT_IDS } from './game/concepts'
 import { combine } from './game/combine'
 import ConceptBubble from './components/ConceptBubble'
-import MyBoards from './components/MyBoards'
 import './App.css'
 
-const HIT_RADIUS = 46 // tweak: how close to count as a "drop on top"
+const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
 
 function App() {
   const [discoveredIds, setDiscoveredIds] = useState(STARTING_CONCEPT_IDS)
-  const [selectedA, setSelectedA] = useState(null)
-  const [selectedB, setSelectedB] = useState(null)
   const [positions, setPositions] = useState({})
 
   // dragging state
@@ -18,68 +15,29 @@ function App() {
     id: null,
     offsetX: 0,
     offsetY: 0,
-    wasDrag: false,
   })
 
-  // initial positions
+  // initial positions (solo una vez)
   useEffect(() => {
     const newPositions = {}
     const centerX = window.innerWidth / 2
     const centerY = window.innerHeight / 2
     const radius = 280
 
-    discoveredIds.forEach((id, index) => {
-      const angle = (index / discoveredIds.length) * Math.PI * 2
+    STARTING_CONCEPT_IDS.forEach((id, index) => {
+      const angle = (index / STARTING_CONCEPT_IDS.length) * Math.PI * 2
       newPositions[id] = {
         x: centerX + Math.cos(angle) * radius,
         y: centerY + Math.sin(angle) * radius,
       }
     })
+
     setPositions(newPositions)
-  }, []) // only once on mount
+  }, [])
 
-  // helper: combine and spawn result near drop point
-  const tryCombine = (aId, bId, spawnNear) => {
-    const resultId = combine(aId, bId)
-    if (!resultId) return false
-
-    if (!discoveredIds.includes(resultId)) {
-      setDiscoveredIds((prev) => [...prev, resultId])
-
-      const centerX = spawnNear?.x ?? window.innerWidth / 2
-      const centerY = spawnNear?.y ?? window.innerHeight / 2
-      const angle = Math.random() * Math.PI * 2
-      const r = 60 + Math.random() * 60
-
-      setPositions((prev) => ({
-        ...prev,
-        [resultId]: {
-          x: centerX + Math.cos(angle) * r,
-          y: centerY + Math.sin(angle) * r,
-        },
-      }))
-    }
-
-    // optional: remove selection highlights after success
-    setSelectedA(null)
-    setSelectedB(null)
-    return true
-  }
-
-  const handleConceptClick = (id) => {
-    // if it was a drag, don't treat as click
-    if (draggingRef.current.wasDrag) return
-
-    if (!selectedA) setSelectedA(id)
-    else if (!selectedB && id !== selectedA) setSelectedB(id)
-    else {
-      setSelectedA(id)
-      setSelectedB(null)
-    }
-  }
-
-  const getHitTarget = (dragId) => {
-    const p = positions[dragId]
+  // encuentra el target más cercano dentro del radio
+  const getHitTarget = (dragId, currentPositions) => {
+    const p = currentPositions[dragId]
     if (!p) return null
 
     let best = null
@@ -87,35 +45,56 @@ function App() {
 
     for (const otherId of discoveredIds) {
       if (otherId === dragId) continue
-      const q = positions[otherId]
+      const q = currentPositions[otherId]
       if (!q) continue
-      const dx = p.x - q.x
-      const dy = p.y - q.y
-      const dist = Math.hypot(dx, dy)
+
+      const dist = Math.hypot(p.x - q.x, p.y - q.y)
       if (dist < HIT_RADIUS && dist < bestDist) {
         bestDist = dist
         best = otherId
       }
     }
+
     return best
   }
 
+  // combina y reemplaza: borra a y b, crea result
+  const combineAndReplace = (aId, bId, spawnPos) => {
+    const resultId = combine(aId, bId)
+    if (!resultId) return false
+
+    // 1) actualizar discoveredIds (sacar a y b, meter result si no está)
+    setDiscoveredIds((prev) => {
+      const filtered = prev.filter((id) => id !== aId && id !== bId)
+      return filtered.includes(resultId) ? filtered : [...filtered, resultId]
+    })
+
+    // 2) actualizar posiciones (borrar a y b, setear result en spawnPos)
+    setPositions((prev) => {
+      const next = { ...prev }
+      delete next[aId]
+      delete next[bId]
+
+      next[resultId] = { x: spawnPos.x, y: spawnPos.y }
+      return next
+    })
+
+    return true
+  }
+
   const onPointerDownBubble = (id) => (e) => {
-    // left click / touch only
     e.preventDefault()
     e.stopPropagation()
 
     const p = positions[id]
     if (!p) return
 
-    // capture pointer so we keep receiving move/up even if cursor leaves button
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
     draggingRef.current = {
       id,
       offsetX: e.clientX - p.x,
       offsetY: e.clientY - p.y,
-      wasDrag: false,
     }
   }
 
@@ -123,8 +102,6 @@ function App() {
     const onMove = (e) => {
       const d = draggingRef.current
       if (!d.id) return
-
-      d.wasDrag = true
 
       const x = e.clientX - d.offsetX
       const y = e.clientY - d.offsetY
@@ -142,19 +119,20 @@ function App() {
       const dragId = d.id
       draggingRef.current.id = null
 
-      // if it was just a tiny click, allow click handler
-      // (we keep wasDrag true only if move happened)
-      const targetId = getHitTarget(dragId)
-      if (targetId) {
-        // try combine at drop point
-        const p = positions[dragId]
-        tryCombine(dragId, targetId, p)
-      }
+      // MUY IMPORTANTE:
+      // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
+      setPositions((prev) => {
+        const targetId = getHitTarget(dragId, prev)
+        if (!targetId) return prev
 
-      // reset after a tick so click doesn't fire
-      setTimeout(() => {
-        draggingRef.current.wasDrag = false
-      }, 0)
+        const spawnPos = prev[dragId]
+        if (!spawnPos) return prev
+
+        // combinamos (esto hará setDiscoveredIds + setPositions extra)
+        // y acá devolvemos prev tal cual, porque el cambio real lo hace combineAndReplace.
+        combineAndReplace(dragId, targetId, spawnPos)
+        return prev
+      })
     }
 
     window.addEventListener('pointermove', onMove)
@@ -164,7 +142,7 @@ function App() {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
-  }, [discoveredIds, positions]) // ok for now; later we can optimize
+  }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
 
   return (
     <div className="app-container">
@@ -178,49 +156,24 @@ function App() {
         {discoveredIds.map((id) => {
           const concept = CONCEPTS[id]
           const position = positions[id] || { x: 0, y: 0 }
-          const isSelected = id === selectedA || id === selectedB
 
           return (
             <ConceptBubble
               key={id}
               concept={concept}
               position={position}
-              onClick={() => handleConceptClick(id)}
-              isSelected={isSelected}
               onPointerDown={onPointerDownBubble(id)}
             />
           )
         })}
       </div>
 
-      {/* keep MyBoards for now; you can remove combine button later */}
-      <MyBoards
-        discoveredConcepts={discoveredIds.length}
-        onCombine={() => {}}
-        selectedA={selectedA ? CONCEPTS[selectedA] : null}
-        selectedB={selectedB ? CONCEPTS[selectedB] : null}
-      />
-
       <footer className="app-footer">
         <p>CONCEPTS IS STILL UNDER HEAVY</p>
       </footer>
 
-      <div className="bottom-concepts">
-        <ConceptBubble
-          concept={CONCEPTS.earth}
-          position={{ x: '40%', y: '88%' }}
-          onClick={() => handleConceptClick('earth')}
-          isSelected={selectedA === 'earth' || selectedB === 'earth'}
-          onPointerDown={onPointerDownBubble('earth')}
-        />
-        <ConceptBubble
-          concept={CONCEPTS.air}
-          position={{ x: '60%', y: '88%' }}
-          onClick={() => handleConceptClick('air')}
-          isSelected={selectedA === 'air' || selectedB === 'air'}
-          onPointerDown={onPointerDownBubble('air')}
-        />
-      </div>
+      {/* Si querés que la barra de abajo NO sea draggable, la sacamos después.
+          Por ahora la dejo fuera para no duplicar conceptos (te explico abajo). */}
     </div>
   )
 }
