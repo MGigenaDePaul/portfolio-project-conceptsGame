@@ -46,14 +46,14 @@ function App() {
     const resultId = combine(selectedA, selectedB)
     
     if (resultId && !discoveredIds.includes(resultId)) {
-      // Añadir nuevo concepto
+      // add new concepts
       setDiscoveredIds([...discoveredIds, resultId])
       
-      // Posicionar el nuevo concepto cerca del centro
+      // position new concept near the center
       const centerX = window.innerWidth / 2
       const centerY = window.innerHeight / 2
-      const randomAngle = Math.random() * Math.PI * 2
-      const randomRadius = 200 + Math.random() * 100
+      const randomAngle = Math.random() * Math.PI * 2 // randomAngle ∈ [0, 2π)
+      const randomRadius = 200 + Math.random() * 100 // randomRadius ∈ [200, 300] never too near the center nor too far from the center
       
       setPositions({
         ...positions,
