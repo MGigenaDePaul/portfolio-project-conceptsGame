@@ -1,3 +1,125 @@
-*{
-    background: #171A1D;
+/* App.css */
+
+/* 1) Global reset (DON'T set background on *) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #171a1d;
+  color: #c8d1db;
+  overflow: hidden; /* game feel */
+}
+
+/* 2) App layout */
+.app-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  /* dotted grid background like the screenshot */
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.06) 1px, transparent 1px) 0 0 / 22px 22px,
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0.55) 100%),
+    #171a1d;
+}
+
+/* 3) Header (title centered) */
+.app-header {
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: none; /* title doesn't block clicks */
+}
+
+.app-title {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: rgba(200, 209, 219, 0.9);
+  line-height: 1;
+  text-align: center;
+}
+
+.app-subtitle {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: rgba(200, 209, 219, 0.85);
+  transform: rotate(-12deg) translateY(10px);
+  transform-origin: left center;
+}
+
+/* 4) Concepts play area (absolute so bubbles use left/top correctly) */
+.concepts-area {
+  position: absolute;
+  inset: 0; /* full screen */
+  z-index: 10;
+}
+
+/* 5) Center panel (MyBoards already absolute + translate) */
+.my-boards-container {
+  z-index: 50; /* keep above bubbles */
+}
+
+/* 6) Footer warning box (bottom-left like screenshot) */
+.app-footer {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.app-footer p {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 90, 90, 0.85);
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 90, 90, 0.35);
+  border-radius: 6px;
+  max-width: 340px;
+}
+
+/* 7) Bottom concepts (two bubbles at bottom center) */
+.bottom-concepts {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+  z-index: 35;
+  pointer-events: none; /* IMPORTANT: don't steal clicks from bubbles */
+}
+
+/* but allow clicking the actual buttons inside */
+.bottom-concepts .concept-bubble {
+  pointer-events: auto;
+}
+
+/* Optional: make the bottom ones slightly larger like the real game */
+.bottom-concepts .concept-bubble {
+  padding: 12px 18px;
+  border-radius: 26px;
 }
