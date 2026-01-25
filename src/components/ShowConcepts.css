@@ -1,0 +1,10 @@
+.container-individual-concepts {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title-game{
+    text-align: center;
+}
+
