@@ -84,6 +84,7 @@ body {
   left: 18px;
   bottom: 18px;
   z-index: 40;
+  text-align: center;
   pointer-events: none;
 }
 
@@ -92,13 +93,14 @@ body {
   padding: 10px 12px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: rgba(255, 90, 90, 0.85);
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 90, 90, 0.35);
   border-radius: 6px;
   max-width: 340px;
+  font-size: 14px;
 }
 
 /* 7) Bottom concepts (two bubbles at bottom center) */
@@ -124,13 +126,4 @@ body {
   border-radius: 26px;
 }
 
-.concept-bubble {
-  touch-action: none; /* important for mobile dragging */
-  user-select: none;
-  cursor: grab;
-}
-
-.concept-bubble:active {
-  cursor: grabbing;
-}
 

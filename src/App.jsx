@@ -169,7 +169,8 @@ function App() {
       </div>
 
       <footer className="app-footer">
-        <p>CONCEPTS IS STILL UNDER HEAVY</p>
+        <p>CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, 
+          DISCOVERED CONCEPTS WILL BE LOST</p>
       </footer>
 
       {/* Si querés que la barra de abajo NO sea draggable, la sacamos después.
