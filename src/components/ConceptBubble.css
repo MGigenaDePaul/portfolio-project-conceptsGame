@@ -1,0 +1,48 @@
+.concept-bubble {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(30, 35, 40, 0.9);
+  border: 1px solid rgba(200, 209, 219, 0.15);
+  border-radius: 24px;
+  color: #c8d1db;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.concept-bubble:hover {
+  background: rgba(40, 45, 50, 0.95);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translate(-50%, -50%) scale(1.05);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+}
+
+.concept-bubble.selected {
+  background: rgba(139, 92, 246, 0.2);
+  border: 2px solid #8b5cf6;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.concept-bubble.dragging {
+  cursor: grabbing;
+  opacity: 0.8;
+  z-index: 100;
+}
+
+.concept-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.concept-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
