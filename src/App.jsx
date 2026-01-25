@@ -11,18 +11,19 @@ function App() {
   const [selectedB, setSelectedB] = useState(null)
   const [positions, setPositions] = useState({})
 
-  // Generar posiciones aleatorias al iniciar
+  // in the beggining generate random positions
   useEffect(() => {
     const newPositions = {}
-    const centerX = window.innerWidth / 2
+    const centerX = window.innerWidth / 2  // centerX and centerY form the screen center
     const centerY = window.innerHeight / 2
     const radius = 280
 
     discoveredIds.forEach((id, index) => {
       const angle = (index / discoveredIds.length) * Math.PI * 2
       newPositions[id] = {
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
+        x: centerX + Math.cos(angle) * radius, // cos(angle) horizontal direction
+        y: centerY + Math.sin(angle) * radius, // sin(angle) vertical direction
+        // for example cos(0)=1 and sin(0)=0  (this two things point to the right of the center)
       }
     })
     setPositions(newPositions)
