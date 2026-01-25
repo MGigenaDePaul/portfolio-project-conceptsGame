@@ -11,18 +11,19 @@ function App() {
   const [selectedB, setSelectedB] = useState(null)
   const [positions, setPositions] = useState({})
 
-  // Generar posiciones aleatorias al iniciar
+  // in the beggining generate random positions
   useEffect(() => {
     const newPositions = {}
-    const centerX = window.innerWidth / 2
+    const centerX = window.innerWidth / 2  // centerX and centerY form the screen center
     const centerY = window.innerHeight / 2
     const radius = 280
 
     discoveredIds.forEach((id, index) => {
       const angle = (index / discoveredIds.length) * Math.PI * 2
       newPositions[id] = {
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
+        x: centerX + Math.cos(angle) * radius, // cos(angle) horizontal direction
+        y: centerY + Math.sin(angle) * radius, // sin(angle) vertical direction
+        // for example cos(0)=1 and sin(0)=0  (this two things point to the right of the center)
       }
     })
     setPositions(newPositions)
@@ -45,14 +46,14 @@ function App() {
     const resultId = combine(selectedA, selectedB)
     
     if (resultId && !discoveredIds.includes(resultId)) {
-      // Añadir nuevo concepto
+      // add new concepts
       setDiscoveredIds([...discoveredIds, resultId])
       
-      // Posicionar el nuevo concepto cerca del centro
+      // position new concept near the center
       const centerX = window.innerWidth / 2
       const centerY = window.innerHeight / 2
-      const randomAngle = Math.random() * Math.PI * 2
-      const randomRadius = 200 + Math.random() * 100
+      const randomAngle = Math.random() * Math.PI * 2 // randomAngle ∈ [0, 2π)
+      const randomRadius = 200 + Math.random() * 100 // randomRadius ∈ [200, 300] never too near the center nor too far from the center
       
       setPositions({
         ...positions,
@@ -90,9 +91,10 @@ function App() {
       </header>
 
       <div className="concepts-area">
+        {/*for each id, draw a bubble */}
         {discoveredIds.map((id) => {
-          const concept = CONCEPTS[id]
-          const position = positions[id] || { x: 0, y: 0 }
+          const concept = CONCEPTS[id] // id is type string 
+          const position = positions[id] || { x: 0, y: 0 } // if position doesn't exist, {0, 0} to not crash it
           const isSelected = id === selectedA || id === selectedB
 
           return (
@@ -118,7 +120,7 @@ function App() {
         <p>CONCEPTS IS STILL UNDER HEAVY</p>
       </footer>
 
-      {/* Conceptos duplicados en la parte inferior como en la imagen */}
+      {/* duplicated concepts in the inferior part, similar to the game */}
       <div className="bottom-concepts">
         <ConceptBubble
           concept={CONCEPTS.earth}
