@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { CONCEPTS, STARTING_CONCEPT_IDS } from './game/concepts'
+import { STARTING_CONCEPT_IDS } from './game/concepts'
 import { combine } from './game/combine'
-import ConceptBubble from './components/ConceptBubble'
+import { Routes, Route } from 'react-router-dom'
+import HomeScreen from './pages/HomeScreen'
 import './App.css'
 
 const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
@@ -205,40 +206,19 @@ const App = () => {
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1 className="app-title">
-          Concepts <span className="app-subtitle">Demo</span>
-        </h1>
-      </header>
-
-      <div className="concepts-area">
-        {discoveredIds.map((id) => {
-          const concept = CONCEPTS[id]
-          const position = positions[id] || { x: 0, y: 0 }
-
-          return (
-            <ConceptBubble
-              key={id}
-              concept={concept}
-              position={position}
-              onPointerDown={onPointerDownBubble(id)}
-              isDropTarget={id === hoverTargetId}
-            />
-          )
-        })}
-      </div>
-
-      <footer className="app-footer">
-        <p>
-          CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, DISCOVERED CONCEPTS WILL BE
-          LOST
-        </p>
-      </footer>
-
-      {/* Si querés que la barra de abajo NO sea draggable, la sacamos después.
-          Por ahora la dejo fuera para no duplicar conceptos (te explico abajo). */}
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <HomeScreen
+            discoveredIds={discoveredIds}
+            positions={positions}
+            onPointerDownBubble={onPointerDownBubble}
+            hoverTargetId={hoverTargetId}
+          />
+        }
+      />
+    </Routes>
   )
 }
 
