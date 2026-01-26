@@ -17,6 +17,8 @@ const App = () => {
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
+  const pressBubbleAudioRef = useRef(null)
+  const soundBeforeCombiningAudioRef = useRef(null) 
 
   useEffect(() => {
     const combineAudio = new Audio('/sounds/success.mp3')
@@ -27,8 +29,18 @@ const App = () => {
     failAudio.volume = 0.4
     failAudio.preload = 'auto'
 
+    const pressBubbleAudio= new Audio('/sounds/pressBubble.mp3')
+    pressBubbleAudio.volume = 0.5
+    pressBubbleAudio.preload = 'auto'
+
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    soundBeforeCombiningAudio.volume = 0.4
+    soundBeforeCombiningAudio.preload = 'auto'
+
     combineAudioRef.current = combineAudio
     failAudioRef.current = failAudio
+    pressBubbleAudioRef.current = pressBubbleAudio
+    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio
   }, [])
 
   const playCombineSound = () => {
@@ -40,6 +52,20 @@ const App = () => {
 
   const playFailSound = () => {
     const a = failAudioRef.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
+
+  const playPressBubbleSound = () => {
+    const a = pressBubbleAudioRef.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
+
+  const playSoundBeforeCombining = () => {
+    const a = soundBeforeCombiningAudioRef.current
     if (!a) return
     a.currentTime = 0
     a.play().catch(() => {})
@@ -114,7 +140,7 @@ const App = () => {
       const filtered = prev.filter((id) => id !== aId && id !== bId) // aca se saca a y b
       return filtered.includes(resultId) ? filtered : [...filtered, resultId] // resultId="steam" no estaba por ejemplo → lo agrega
     })
-
+        
     // 2) actualizar posiciones (borrar a y b, setear result en spawnPos)
     setPositions((prev) => {
       const next = { ...prev } // copia del objeto
@@ -136,6 +162,7 @@ const App = () => {
         Evita que el evento:
           suba al contenedor padre
           dispare otros handlers (por ejemplo click global) */
+    playPressBubbleSound()
 
     const p = positions[id] // lee posicion actual del bubble
     if (!p) return
@@ -192,13 +219,21 @@ const App = () => {
         const spawnPos = prev[dragId]
         if (!spawnPos) return prev
 
+
+    // Reproducir sonido de soltar ANTES de combinar
+        playSoundBeforeCombining()
+
         // combinamos (esto hará setDiscoveredIds + setPositions extra)
         // y acá devolvemos prev tal cual, porque el cambio real lo hace combineAndReplace.
-        const combine = combineAndReplace(dragId, targetId, spawnPos)
-        if (!combine) {
-          playFailSound()
-          showNotification('Too complex for demo! Go play in a board!', spawnPos)
-        }
+        // Pequeño delay para que el sonido de soltar se escuche antes del resultado
+        setTimeout(() => {
+          const combined = combineAndReplace(dragId, targetId, spawnPos)
+          if (!combined) {
+            playFailSound()
+            showNotification('Too complex for demo! Go play in a board!', spawnPos)
+          }
+        }, 700)
+       
         return prev
       })
     }
