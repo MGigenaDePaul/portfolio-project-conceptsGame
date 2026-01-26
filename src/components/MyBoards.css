@@ -45,14 +45,14 @@
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: #c8d1db;
+  color: #FFFF;
 }
 
 .board-card {
   width: 100%;
   background: rgba(30, 35, 40, 0.9);
-  border: 1px solid rgba(200, 209, 219, 0.15);
-  border-radius: 16px;
+  border: 1px solid #596773;
+  border-radius: 5px;
   padding: 20px;
   backdrop-filter: blur(10px);
   transition: all 0.2s;
@@ -105,8 +105,8 @@
   width: 100%;
   padding: 14px;
   background: transparent;
-  border: 1px dashed rgba(200, 209, 219, 0.2);
-  border-radius: 12px;
+  border: 1px dashed #596773;
+  border-radius: 5px;
   color: rgba(200, 209, 219, 0.5);
   font-size: 14px;
   font-weight: 600;

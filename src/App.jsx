@@ -11,6 +11,7 @@ const App = () => {
   const [discoveredIds, setDiscoveredIds] = useState(STARTING_CONCEPT_IDS)
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
+  const [draggingId, setDraggingId] = useState(null)
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
@@ -137,6 +138,8 @@ const App = () => {
     const p = positions[id] // lee posicion actual del bubble
     if (!p) return
 
+    setDraggingId(id)
+
     e.currentTarget.setPointerCapture?.(e.pointerId) // setPointerCapture() asegura que el elemento reciba eventos aunque el puntero salga
 
     draggingRef.current = {
@@ -175,6 +178,7 @@ const App = () => {
       const dragId = d.id
       draggingRef.current.id = null
 
+      setDraggingId(null)
       setHoverTargetId(null)
       // MUY IMPORTANTE:
       // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
@@ -215,6 +219,7 @@ const App = () => {
             positions={positions}
             onPointerDownBubble={onPointerDownBubble}
             hoverTargetId={hoverTargetId}
+            draggingId={draggingId}
           />
         }
       />
