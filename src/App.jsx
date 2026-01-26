@@ -82,7 +82,7 @@ function App() {
     return true
   }
 
-  const onPointerDownBubble = (id) => (e) => {
+  const onPointerDownBubble = (id) => (e) => { // tocamos el bubble, arranquemos el drag
     e.preventDefault()
     e.stopPropagation() 
     /* stopPropagation() 
@@ -90,10 +90,18 @@ function App() {
           suba al contenedor padre
           dispare otros handlers (por ejemplo click global) */
 
+    console.log('POINTER DOWN', {
+      id,
+      x: e.clientX,
+      y: e.clientY,
+      pointerId: e.pointerId,
+      target: e.currentTarget
+    })
+
     const p = positions[id] // lee posicion actual del bubble
     if (!p) return
 
-    e.currentTarget.setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId) // setPointerCapture() asegura que el elemento reciba eventos aunque el puntero salga
 
     draggingRef.current = {
       id, // bubble que estoy arrastrando ahora
@@ -141,8 +149,8 @@ function App() {
       })
     }
 
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointermove', onMove) // cada vez que se mueva el puntero, avisame
+    window.addEventListener('pointerup', onUp)  // cuando el puntero se suelte, avisame
 
     return () => {
       window.removeEventListener('pointermove', onMove)
