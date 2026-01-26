@@ -36,6 +36,15 @@
   box-shadow: 0 8px 24px rgba(139, 92, 246, 0.18);
 }
 
+.concept-bubble.drop-target {
+  border-color: rgba(139, 92, 246, 0.85);
+  box-shadow:
+    0 0 0 2px rgba(139, 92, 246, 0.25),
+    0 0 30px rgba(139, 92, 246, 0.35),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
 .concept-emoji {
   font-size: 24px;
   line-height: 1;

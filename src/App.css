@@ -40,6 +40,7 @@ body {
   position: absolute;
   top: 42px;
   left: 50%;
+  margin: 70px 0 0;
   transform: translateX(-50%);
   z-index: 30;
   pointer-events: none; /* title doesn't block clicks */
