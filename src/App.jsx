@@ -107,8 +107,8 @@ function App() {
       const d = draggingRef.current
       if (!d.id) return
 
-      const x = e.clientX - d.offsetX
-      const y = e.clientY - d.offsetY
+      const x = e.clientX - d.offsetX // lo que el mouse toca en x menos la posicion del dragging en x
+      const y = e.clientY - d.offsetY // lo mismo que pero en la posicion y 
 
       setPositions((prev) => ({
         ...prev,
@@ -116,19 +116,21 @@ function App() {
       }))
     }
 
-    const onUp = (e) => {
+    const onUp = (e) => { // soltar el bubble
       const d = draggingRef.current
-      if (!d.id) return
+      if (!d.id) return 
 
+      // guardar que bubble era y cortar el drag
       const dragId = d.id
       draggingRef.current.id = null
 
       // MUY IMPORTANTE:
       // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
       setPositions((prev) => {
-        const targetId = getHitTarget(dragId, prev)
+        const targetId = getHitTarget(dragId, prev) // hay algun bubble cerca para combinar? si no, no pasa nada, si sí, seguimos
         if (!targetId) return prev
 
+        // obtener donde solte el bubble
         const spawnPos = prev[dragId]
         if (!spawnPos) return prev
 
