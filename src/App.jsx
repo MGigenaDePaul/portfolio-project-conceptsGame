@@ -3,6 +3,7 @@ import { STARTING_CONCEPT_IDS } from './game/concepts'
 import { combine } from './game/combine'
 import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
+import Notification from './components/Notification'
 import './App.css'
 
 const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
@@ -12,6 +13,7 @@ const App = () => {
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
+  const [notification, setNotification] = useState({ isVisible: false, message: '' })
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
@@ -41,6 +43,14 @@ const App = () => {
     if (!a) return
     a.currentTime = 0
     a.play().catch(() => {})
+  }
+
+  const showNotification = (message) => {
+    setNotification({ isVisible: true, message })
+  }
+
+  const hideNotification = () => {
+    setNotification({ isVisible: false, message: '' })
   }
 
   // dragging state
@@ -195,6 +205,7 @@ const App = () => {
         const combine = combineAndReplace(dragId, targetId, spawnPos)
         if (!combine) {
           playFailSound()
+          showNotification('Too complex for demo! Go play in a board!')
         }
         return prev
       })
@@ -210,6 +221,11 @@ const App = () => {
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
 
   return (
+  <>
+    <Notification message={notification.message}
+    isVisible={notification.isVisible}
+    onClose={hideNotification}
+    />
     <Routes>
       <Route
         path="/"
@@ -224,6 +240,7 @@ const App = () => {
         }
       />
     </Routes>
+  </>
   )
 }
 
