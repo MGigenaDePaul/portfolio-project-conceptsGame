@@ -11,14 +11,44 @@ const App = () => {
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
 
+  const combineAudioRef = useRef(null)
+  const failAudioRef = useRef(null)
+
+  useEffect(() => {
+    const combineAudio = new Audio('/sounds/success.mp3')
+    combineAudio.volume = 0.6
+    combineAudio.preload = 'auto'
+
+    const failAudio = new Audio('/sounds/fail.mp3')
+    failAudio.volume = 0.4
+    failAudio.preload = 'auto'
+
+    combineAudioRef.current = combineAudio
+    failAudioRef.current = failAudio
+  }, [])
+
+  const playCombineSound = () => {
+    const a = combineAudioRef.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
+
+  const playFailSound = () => {
+    const a = failAudioRef.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
+
   // dragging state
   const draggingRef = useRef({
     id: null, // ahora mismo no arrastro ningun bubble
-    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210) 
+    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210)
     offsetY: 0, // entonces offsetX = 215 - 200 = 15 offsetY = 210 - 200 = 10
   })
 
-  // initial positions 
+  // initial positions
   useEffect(() => {
     const newPositions = {}
     const centerX = window.innerWidth / 2
@@ -60,9 +90,12 @@ const App = () => {
   }
 
   // combina y reemplaza: borra a y b, crea result
-  const combineAndReplace = (aId, bId, spawnPos) => { // aId es bubble arrastrado, bId bubble target y spawnPost es la posicion donde quiero que aparezca el resultado (normalmente donde la posicion del drag al soltar)
+  const combineAndReplace = (aId, bId, spawnPos) => {
+    // aId es bubble arrastrado, bId bubble target y spawnPost es la posicion donde quiero que aparezca el resultado (normalmente donde la posicion del drag al soltar)
     const resultId = combine(aId, bId)
     if (!resultId) return false
+
+    playCombineSound()
 
     // 1) actualizar discoveredIds (sacar a y b, meter result si no está)
     setDiscoveredIds((prev) => {
@@ -83,9 +116,10 @@ const App = () => {
     return true
   }
 
-  const onPointerDownBubble = (id) => (e) => { // tocamos el bubble, arranquemos el drag
+  const onPointerDownBubble = (id) => (e) => {
+    // tocamos el bubble, arranquemos el drag
     e.preventDefault()
-    e.stopPropagation() 
+    e.stopPropagation()
     /* stopPropagation() 
         Evita que el evento:
           suba al contenedor padre
@@ -96,7 +130,7 @@ const App = () => {
       x: e.clientX,
       y: e.clientY,
       pointerId: e.pointerId,
-      target: e.currentTarget
+      target: e.currentTarget,
     })
 
     const p = positions[id] // lee posicion actual del bubble
@@ -117,13 +151,13 @@ const App = () => {
       if (!d.id) return
 
       const x = e.clientX - d.offsetX // lo que el mouse toca en x menos la posicion del dragging en x
-      const y = e.clientY - d.offsetY // lo mismo que pero en la posicion y 
+      const y = e.clientY - d.offsetY // lo mismo que pero en la posicion y
 
       setPositions((prev) => {
         const next = {
-        ...prev,
-        [d.id]: { x, y },
-      }
+          ...prev,
+          [d.id]: { x, y },
+        }
         const targetId = getHitTarget(d.id, next)
         setHoverTargetId(targetId)
 
@@ -131,9 +165,10 @@ const App = () => {
       })
     }
 
-    const onUp = (e) => { // soltar el bubble
+    const onUp = (e) => {
+      // soltar el bubble
       const d = draggingRef.current
-      if (!d.id) return 
+      if (!d.id) return
 
       // guardar que bubble era y cortar el drag
       const dragId = d.id
@@ -152,16 +187,19 @@ const App = () => {
 
         // combinamos (esto hará setDiscoveredIds + setPositions extra)
         // y acá devolvemos prev tal cual, porque el cambio real lo hace combineAndReplace.
-        combineAndReplace(dragId, targetId, spawnPos)
+        const combine = combineAndReplace(dragId, targetId, spawnPos)
+        if (!combine) {
+          playFailSound()
+        }
         return prev
       })
     }
 
     window.addEventListener('pointermove', onMove) // cada vez que se mueva el puntero, avisame
-    window.addEventListener('pointerup', onUp)  // cuando el puntero se suelte, avisame
+    window.addEventListener('pointerup', onUp) // cuando el puntero se suelte, avisame
 
     return () => {
-      window.removeEventListener('pointermove', onMove) 
+      window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
@@ -192,8 +230,10 @@ const App = () => {
       </div>
 
       <footer className="app-footer">
-        <p>CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, 
-          DISCOVERED CONCEPTS WILL BE LOST</p>
+        <p>
+          CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, DISCOVERED CONCEPTS WILL BE
+          LOST
+        </p>
       </footer>
 
       {/* Si querés que la barra de abajo NO sea draggable, la sacamos después.
