@@ -6,15 +6,16 @@ import './App.css'
 
 const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
 
-function App() {
+const App = () => {
   const [discoveredIds, setDiscoveredIds] = useState(STARTING_CONCEPT_IDS)
   const [positions, setPositions] = useState({})
+  const [hoverTargetId, setHoverTargetId] = useState(null)
 
   // dragging state
   const draggingRef = useRef({
     id: null, // ahora mismo no arrastro ningun bubble
-    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210) entonces offsetX = 215 - 200 = 15 offsetY = 210 - 200 = 10
-    offsetY: 0,
+    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210) 
+    offsetY: 0, // entonces offsetX = 215 - 200 = 15 offsetY = 210 - 200 = 10
   })
 
   // initial positions 
@@ -118,10 +119,16 @@ function App() {
       const x = e.clientX - d.offsetX // lo que el mouse toca en x menos la posicion del dragging en x
       const y = e.clientY - d.offsetY // lo mismo que pero en la posicion y 
 
-      setPositions((prev) => ({
+      setPositions((prev) => {
+        const next = {
         ...prev,
         [d.id]: { x, y },
-      }))
+      }
+        const targetId = getHitTarget(d.id, next)
+        setHoverTargetId(targetId)
+
+        return next
+      })
     }
 
     const onUp = (e) => { // soltar el bubble
@@ -132,6 +139,7 @@ function App() {
       const dragId = d.id
       draggingRef.current.id = null
 
+      setHoverTargetId(null)
       // MUY IMPORTANTE:
       // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
       setPositions((prev) => {
@@ -153,7 +161,7 @@ function App() {
     window.addEventListener('pointerup', onUp)  // cuando el puntero se suelte, avisame
 
     return () => {
-      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointermove', onMove) 
       window.removeEventListener('pointerup', onUp)
     }
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
@@ -177,6 +185,7 @@ function App() {
               concept={concept}
               position={position}
               onPointerDown={onPointerDownBubble(id)}
+              isDropTarget={id === hoverTargetId}
             />
           )
         })}

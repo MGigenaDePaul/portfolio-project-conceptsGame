@@ -1,13 +1,10 @@
 import './ConceptBubble.css'
 
-const ConceptBubble = ({ concept, position, onPointerDown }) => {
+const ConceptBubble = ({ concept, position, onPointerDown, isDropTarget }) => {
   return (
     <div
-      className="concept-bubble"
-      style={{
-        left: position.x,
-        top: position.y,
-      }}
+      className={`concept-bubble ${isDropTarget ? 'drop-target' : ''}`}
+      style={{ left: position.x, top: position.y }}
       onPointerDown={onPointerDown}
       role="button"
       tabIndex={0}
