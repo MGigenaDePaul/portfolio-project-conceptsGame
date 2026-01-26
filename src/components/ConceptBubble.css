@@ -48,6 +48,11 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
+.concept-bubble.dragging {
+  z-index: 999;   /* 👈 siempre arriba */
+}
+
+
 .concept-emoji {
   font-size: 24px;
   line-height: 1;

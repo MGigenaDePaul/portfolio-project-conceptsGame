@@ -1,10 +1,12 @@
 import ConceptBubble from '../components/ConceptBubble'
+import MyBoards from '../components/MyBoards'
 import { CONCEPTS } from '../game/concepts'
 const HomeScreen = ({
   discoveredIds,
   positions,
   onPointerDownBubble,
   hoverTargetId,
+  draggingId
 }) => {
   return (
     <div className="app-container">
@@ -26,10 +28,14 @@ const HomeScreen = ({
               position={position}
               onPointerDown={onPointerDownBubble(id)}
               isDropTarget={id === hoverTargetId}
+              isDragging={id === draggingId}
             />
           )
         })}
       </div>
+
+      <MyBoards />
+
 
       <footer className="app-footer">
         <p>
