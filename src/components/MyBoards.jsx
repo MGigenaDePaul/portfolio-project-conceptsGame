@@ -24,9 +24,7 @@ const MyBoards = ({ discoveredConcepts, onCombine, selectedA, selectedB }) => {
         </div>
       </div>
 
-      <button className="create-board-button">
-        + Create new board
-      </button>
+      <button className="create-board-button">+ Create new board</button>
 
       {canCombine && (
         <button className="combine-button" onClick={onCombine}>
