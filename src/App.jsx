@@ -12,12 +12,12 @@ function App() {
 
   // dragging state
   const draggingRef = useRef({
-    id: null,
-    offsetX: 0,
+    id: null, // ahora mismo no arrastro ningun bubble
+    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210) entonces offsetX = 215 - 200 = 15 offsetY = 210 - 200 = 10
     offsetY: 0,
   })
 
-  // initial positions (solo una vez)
+  // initial positions 
   useEffect(() => {
     const newPositions = {}
     const centerX = window.innerWidth / 2
@@ -40,15 +40,15 @@ function App() {
     const p = currentPositions[dragId]
     if (!p) return null
 
-    let best = null
-    let bestDist = Infinity
+    let best = null // todavia no hay target
+    let bestDist = Infinity // distancia del mejor candidato
 
     for (const otherId of discoveredIds) {
-      if (otherId === dragId) continue
+      if (otherId === dragId) continue // No tiene sentido medir distancia entre un bubble y sí mismo, por lo tanto, continue
       const q = currentPositions[otherId]
-      if (!q) continue
+      if (!q) continue // si no tengo posicion para este bubble, ignoralo
 
-      const dist = Math.hypot(p.x - q.x, p.y - q.y)
+      const dist = Math.hypot(p.x - q.x, p.y - q.y) // "calcular DISTANCIA entre p y q" p es la posicion del bubble que soltas, q es la posicion del otro bubble del tablero
       if (dist < HIT_RADIUS && dist < bestDist) {
         bestDist = dist
         best = otherId
@@ -59,23 +59,23 @@ function App() {
   }
 
   // combina y reemplaza: borra a y b, crea result
-  const combineAndReplace = (aId, bId, spawnPos) => {
+  const combineAndReplace = (aId, bId, spawnPos) => { // aId es bubble arrastrado, bId bubble target y spawnPost es la posicion donde quiero que aparezca el resultado (normalmente donde la posicion del drag al soltar)
     const resultId = combine(aId, bId)
     if (!resultId) return false
 
     // 1) actualizar discoveredIds (sacar a y b, meter result si no está)
     setDiscoveredIds((prev) => {
-      const filtered = prev.filter((id) => id !== aId && id !== bId)
-      return filtered.includes(resultId) ? filtered : [...filtered, resultId]
+      const filtered = prev.filter((id) => id !== aId && id !== bId) // aca se saca a y b
+      return filtered.includes(resultId) ? filtered : [...filtered, resultId] // resultId="steam" no estaba por ejemplo → lo agrega
     })
 
     // 2) actualizar posiciones (borrar a y b, setear result en spawnPos)
     setPositions((prev) => {
-      const next = { ...prev }
-      delete next[aId]
-      delete next[bId]
+      const next = { ...prev } // copia del objeto
+      delete next[aId] // borrar posicion a
+      delete next[bId] // borrar posicion b
 
-      next[resultId] = { x: spawnPos.x, y: spawnPos.y }
+      next[resultId] = { x: spawnPos.x, y: spawnPos.y } // crear posicion del resultado en spawnPros -> next = {earth:{x: 300, y: 200}}
       return next
     })
 
@@ -84,17 +84,21 @@ function App() {
 
   const onPointerDownBubble = (id) => (e) => {
     e.preventDefault()
-    e.stopPropagation()
+    e.stopPropagation() 
+    /* stopPropagation() 
+        Evita que el evento:
+          suba al contenedor padre
+          dispare otros handlers (por ejemplo click global) */
 
-    const p = positions[id]
+    const p = positions[id] // lee posicion actual del bubble
     if (!p) return
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
     draggingRef.current = {
-      id,
-      offsetX: e.clientX - p.x,
-      offsetY: e.clientY - p.y,
+      id, // bubble que estoy arrastrando ahora
+      offsetX: e.clientX - p.x, // ejemplo para estos offsets -> Bubble está en (200,200), Mouse toca en (215,210)
+      offsetY: e.clientY - p.y, // ENTONCES offsetX = 15 y offsetY=10, luego si el mouse es (300,300) x = 300 - 15 = 285, y = 300 - 10 = 290
     }
   }
 
