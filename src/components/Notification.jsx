@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import './Notification.css'
 
-const Notification = ({ message, isVisible, onClose, duration = 3000 }) => {
+const Notification = ({ message, isVisible, onClose, position, duration = 3000 }) => {
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
@@ -15,7 +15,13 @@ const Notification = ({ message, isVisible, onClose, duration = 3000 }) => {
   if (!isVisible) return null
 
   return (
-    <div className="notification-container">
+    <div 
+      className="notification-container" 
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px` 
+      }}
+    >
       <div className="notification">
         <span className="notification-icon">⚠️</span>
         <span className="notification-text">{message}</span>
