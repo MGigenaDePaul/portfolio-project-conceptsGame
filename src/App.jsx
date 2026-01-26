@@ -3,6 +3,7 @@ import { STARTING_CONCEPT_IDS } from './game/concepts'
 import { combine } from './game/combine'
 import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
+import Notification from './components/Notification'
 import './App.css'
 
 const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
@@ -12,6 +13,7 @@ const App = () => {
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
+  const [notification, setNotification] = useState({ isVisible: false, message: '', position: { x: 0, y: 0 }  })
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
@@ -41,6 +43,14 @@ const App = () => {
     if (!a) return
     a.currentTime = 0
     a.play().catch(() => {})
+  }
+
+  const showNotification = (message, position) => {
+    setNotification({ isVisible: true, message, position })
+  }
+
+  const hideNotification = () => {
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 }  })
   }
 
   // dragging state
@@ -127,14 +137,6 @@ const App = () => {
           suba al contenedor padre
           dispare otros handlers (por ejemplo click global) */
 
-    console.log('POINTER DOWN', {
-      id,
-      x: e.clientX,
-      y: e.clientY,
-      pointerId: e.pointerId,
-      target: e.currentTarget,
-    })
-
     const p = positions[id] // lee posicion actual del bubble
     if (!p) return
 
@@ -195,6 +197,7 @@ const App = () => {
         const combine = combineAndReplace(dragId, targetId, spawnPos)
         if (!combine) {
           playFailSound()
+          showNotification('Too complex for demo! Go play in a board!', spawnPos)
         }
         return prev
       })
@@ -210,6 +213,12 @@ const App = () => {
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
 
   return (
+  <>
+    <Notification message={notification.message}
+    isVisible={notification.isVisible}
+    position={notification.position}
+    onClose={hideNotification}
+    />
     <Routes>
       <Route
         path="/"
@@ -224,6 +233,7 @@ const App = () => {
         }
       />
     </Routes>
+  </>
   )
 }
 
