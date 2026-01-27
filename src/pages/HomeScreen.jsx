@@ -3,7 +3,7 @@ import MyBoards from '../components/MyBoards'
 import { CONCEPTS } from '../game/concepts'
 
 const HomeScreen = ({
-  discoveredIds,
+  instances,
   positions,
   onPointerDownBubble,
   hoverTargetId,
@@ -21,19 +21,20 @@ const HomeScreen = ({
       <MyBoards />
 
       <div className="concepts-area">
-        {discoveredIds.map((id) => {
-          const concept = CONCEPTS[id]
-          const position = positions[id] || { x: 0, y: 0 }
+        {Object.keys(instances).map((instanceId) => {
+          const instance = instances[instanceId]
+          const concept = CONCEPTS[instance.conceptId]
+          const position = positions[instanceId] || { x: 0, y: 0 }
 
           return (
             <ConceptBubble
-              key={id}
+              key={instanceId}
               concept={concept}
               position={position}
-              onPointerDown={onPointerDownBubble(id)}
-              isDropTarget={id === hoverTargetId}
-              isDragging={id === draggingId}
-              zIndex={zIndexes[id] || 0}
+              onPointerDown={onPointerDownBubble(instanceId)}
+              isDropTarget={instanceId === hoverTargetId}
+              isDragging={instanceId === draggingId}
+              zIndex={zIndexes[instanceId] || 0}
             />
           )
         })}

@@ -1,4 +1,26 @@
+// Generar IDs únicos para instancias
+let instanceCounter = 0
+export const generateInstanceId = () => `instance-${instanceCounter++}`
+
 export const STARTING_CONCEPT_IDS = ['fire', 'water', 'earth', 'air']
+
+// Nueva función para crear instancias iniciales (2 de cada elemento)
+export const createStartingInstances = () => {
+  const instances = {}
+  
+  STARTING_CONCEPT_IDS.forEach(conceptId => {
+    // Crear 2 instancias de cada elemento
+    for (let i = 0; i < 2; i++) {
+      const instanceId = generateInstanceId()
+      instances[instanceId] = {
+        instanceId,
+        conceptId, // referencia al concepto original
+      }
+    }
+  })
+  
+  return instances
+}
 
 export const CONCEPTS = {
   fire: { id: 'fire', name: 'Fire', emoji: '🔥' },

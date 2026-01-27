@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import { STARTING_CONCEPT_IDS } from './game/concepts'
+import { createStartingInstances, generateInstanceId, CONCEPTS } from './game/concepts'
 import { combine } from './game/combine'
 import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
 import Notification from './components/Notification'
 import './App.css'
 
-const HIT_RADIUS = 46 // qué tan cerca tiene que estar para "drop encima"
+const HIT_RADIUS = 100
 
 const App = () => {
-  const [discoveredIds, setDiscoveredIds] = useState(STARTING_CONCEPT_IDS)
+  // Ahora usamos instances en vez de discoveredIds
+  const [instances, setInstances] = useState({}) // { instanceId: { instanceId, conceptId } }
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
@@ -18,8 +19,9 @@ const App = () => {
     message: '',
     position: { x: 0, y: 0 },
   })
-  const [zIndexes, setZIndexes] = useState({}) // Nuevo estado
+  const [zIndexes, setZIndexes] = useState({})
 
+  const zIndexCounter = useRef(1000)
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
   const pressBubbleAudioRef = useRef(null)
@@ -38,9 +40,7 @@ const App = () => {
     pressBubbleAudio.volume = 0.5
     pressBubbleAudio.preload = 'auto'
 
-    const soundBeforeCombiningAudio = new Audio(
-      '/sounds/soundBeforeCombining.mp3',
-    )
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
     soundBeforeCombiningAudio.volume = 0.4
     soundBeforeCombiningAudio.preload = 'auto'
 
@@ -86,23 +86,26 @@ const App = () => {
     setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
   }
 
-  // dragging state
   const draggingRef = useRef({
-    id: null, // ahora mismo no arrastro ningun bubble
-    offsetX: 0, // offsetX y offsetY guardan donde agarre el bubble, ejemplo --> Bubble está en (200, 200) Mouse toca en (215, 210)
-    offsetY: 0, // entonces offsetX = 215 - 200 = 15 offsetY = 210 - 200 = 10
+    id: null,
+    offsetX: 0,
+    offsetY: 0,
   })
 
-  // initial positions
+  // Initial positions - crear instancias iniciales
   useEffect(() => {
+    const startingInstances = createStartingInstances()
+    setInstances(startingInstances)
+
     const newPositions = {}
     const centerX = window.innerWidth / 2
     const centerY = window.innerHeight / 2
     const radius = 280
 
-    STARTING_CONCEPT_IDS.forEach((id, index) => {
-      const angle = (index / STARTING_CONCEPT_IDS.length) * Math.PI * 2
-      newPositions[id] = {
+    const instanceIds = Object.keys(startingInstances)
+    instanceIds.forEach((instanceId, index) => {
+      const angle = (index / instanceIds.length) * Math.PI * 2
+      newPositions[instanceId] = {
         x: centerX + Math.cos(angle) * radius,
         y: centerY + Math.sin(angle) * radius,
       }
@@ -111,20 +114,19 @@ const App = () => {
     setPositions(newPositions)
   }, [])
 
-  // encuentra el target más cercano dentro del radio
   const getHitTarget = (dragId, currentPositions) => {
     const p = currentPositions[dragId]
     if (!p) return null
 
-    let best = null // todavia no hay target
-    let bestDist = Infinity // distancia del mejor candidato
+    let best = null
+    let bestDist = Infinity
 
-    for (const otherId of discoveredIds) {
-      if (otherId === dragId) continue // No tiene sentido medir distancia entre un bubble y sí mismo, por lo tanto, continue
+    for (const otherId of Object.keys(instances)) {
+      if (otherId === dragId) continue
       const q = currentPositions[otherId]
-      if (!q) continue // si no tengo posicion para este bubble, ignoralo
+      if (!q) continue
 
-      const dist = Math.hypot(p.x - q.x, p.y - q.y) // "calcular DISTANCIA entre p y q" p es la posicion del bubble que soltas, q es la posicion del otro bubble del tablero
+      const dist = Math.hypot(p.x - q.x, p.y - q.y)
       if (dist < HIT_RADIUS && dist < bestDist) {
         bestDist = dist
         best = otherId
@@ -134,60 +136,64 @@ const App = () => {
     return best
   }
 
-  // combina y reemplaza: borra a y b, crea result
-  const combineAndReplace = (aId, bId, spawnPos) => {
-    // aId es bubble arrastrado, bId bubble target y spawnPost es la posicion donde quiero que aparezca el resultado (normalmente donde la posicion del drag al soltar)
-    const resultId = combine(aId, bId)
-    if (!resultId) return false
+  const combineAndReplace = (aInstanceId, bInstanceId, spawnPos) => {
+    const aInstance = instances[aInstanceId]
+    const bInstance = instances[bInstanceId]
+    
+    if (!aInstance || !bInstance) return false
+
+    // Combinar usando los conceptIds
+    const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId)
+    if (!resultConceptId) return false
 
     playCombineSound()
 
-    // 1) actualizar discoveredIds (sacar a y b, meter result si no está)
-    setDiscoveredIds((prev) => {
-      const filtered = prev.filter((id) => id !== aId && id !== bId) // aca se saca a y b
-      return filtered.includes(resultId) ? filtered : [...filtered, resultId] // resultId="steam" no estaba por ejemplo → lo agrega
+    // Crear nueva instancia del resultado
+    const resultInstanceId = generateInstanceId()
+
+    setInstances((prev) => {
+      const next = { ...prev }
+      delete next[aInstanceId]
+      delete next[bInstanceId]
+      next[resultInstanceId] = {
+        instanceId: resultInstanceId,
+        conceptId: resultConceptId,
+      }
+      return next
     })
 
-    // 2) actualizar posiciones (borrar a y b, setear result en spawnPos)
     setPositions((prev) => {
-      const next = { ...prev } // copia del objeto
-      delete next[aId] // borrar posicion a
-      delete next[bId] // borrar posicion b
-
-      next[resultId] = { x: spawnPos.x, y: spawnPos.y } // crear posicion del resultado en spawnPros -> next = {earth:{x: 300, y: 200}}
+      const next = { ...prev }
+      delete next[aInstanceId]
+      delete next[bInstanceId]
+      next[resultInstanceId] = { x: spawnPos.x, y: spawnPos.y }
       return next
     })
 
     return true
   }
 
-  const onPointerDownBubble = (id) => (e) => {
-    // tocamos el bubble, arranquemos el drag
+  const onPointerDownBubble = (instanceId) => (e) => {
     e.preventDefault()
     e.stopPropagation()
-    /* stopPropagation() 
-        Evita que el evento:
-          suba al contenedor padre
-          dispare otros handlers (por ejemplo click global) */
     playPressBubbleSound()
 
-    const p = positions[id] // lee posicion actual del bubble
+    const p = positions[instanceId]
     if (!p) return
 
-    setDraggingId(id)
+    setDraggingId(instanceId)
 
-    // Dar un z-index EXTREMADAMENTE alto al elemento arrastrado
     setZIndexes((prev) => ({
       ...prev,
-      [id]: 999,
+      [instanceId]: zIndexCounter.current++,
     }))
 
-    e.currentTarget.setPointerCapture?.(e.pointerId) // setPointerCapture() asegura que el elemento reciba eventos aunque el puntero salga
+    e.currentTarget.setPointerCapture?.(e.pointerId)
 
     draggingRef.current = {
-      id, // bubble que estoy arrastrando ahora
-      offsetX: e.clientX - p.x, // ejemplo para estos offsets -> Bubble está en (200,200), Mouse toca en (215,210)
-      offsetY: e.clientY - p.y, // ENTONCES offsetX = 15 y offsetY=10, luego si el mouse es (300,300) x = 300 - 15 = 285, y = 300 - 10 = 290
+      id: instanceId,
+      offsetX: e.clientX - p.x,
+      offsetY: e.clientY - p.y,
     }
   }
 
@@ -196,8 +202,8 @@ const App = () => {
       const d = draggingRef.current
       if (!d.id) return
 
-      const x = e.clientX - d.offsetX // lo que el mouse toca en x menos la posicion del dragging en x
-      const y = e.clientY - d.offsetY // lo mismo que pero en la posicion y
+      const x = e.clientX - d.offsetX
+      const y = e.clientY - d.offsetY
 
       setPositions((prev) => {
         const next = {
@@ -207,11 +213,10 @@ const App = () => {
         const targetId = getHitTarget(d.id, next)
         setHoverTargetId(targetId)
 
-        // Asegurar que el target tenga z-index menor que el arrastrado
         if (targetId) {
           setZIndexes((prevZ) => ({
             ...prevZ,
-            [targetId]: 0, // ← Forzar z-index bajo para el target
+            [targetId]: 0,
           }))
         }
 
@@ -220,24 +225,18 @@ const App = () => {
     }
 
     const onUp = (e) => {
-      // soltar el bubble
       const d = draggingRef.current
       if (!d.id) return
 
-      // guardar que bubble era y cortar el drag
       const dragId = d.id
       draggingRef.current.id = null
 
       setDraggingId(null)
       setHoverTargetId(null)
 
-      // MUY IMPORTANTE:
-      // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
-      // NO quitar el z-index todavía, mantenerlo durante la combinación
       setPositions((prev) => {
-        const targetId = getHitTarget(dragId, prev) // hay algun bubble cerca para combinar? si no, no pasa nada, si sí, seguimos
+        const targetId = getHitTarget(dragId, prev)
         if (!targetId) {
-          // si no hay target, resetear z-index
           setZIndexes((prevZ) => {
             const next = { ...prevZ }
             delete next[dragId]
@@ -246,26 +245,17 @@ const App = () => {
           return prev
         }
 
-        // obtener donde solte el bubble
         const spawnPos = prev[dragId]
         if (!spawnPos) return prev
 
-        // Reproducir sonido de soltar ANTES de combinar
         playSoundBeforeCombining()
 
-        // combinamos (esto hará setDiscoveredIds + setPositions extra)
-        // y acá devolvemos prev tal cual, porque el cambio real lo hace combineAndReplace.
-        // Pequeño delay para que el sonido de soltar se escuche antes del resultado
         setTimeout(() => {
           const combined = combineAndReplace(dragId, targetId, spawnPos)
           if (!combined) {
             playFailSound()
-            showNotification(
-              'Too complex for demo! Go play in a board!',
-              spawnPos,
-            )
+            showNotification('Too complex for demo! Go play in a board!', spawnPos)
           }
-          // Limpiar z-indexes después de la combinación
           setZIndexes((prevZ) => {
             const next = { ...prevZ }
             delete next[dragId]
@@ -278,14 +268,14 @@ const App = () => {
       })
     }
 
-    window.addEventListener('pointermove', onMove) // cada vez que se mueva el puntero, avisame
-    window.addEventListener('pointerup', onUp) // cuando el puntero se suelte, avisame
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
 
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
-  }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
+  }, [instances, positions])
 
   return (
     <>
@@ -300,7 +290,7 @@ const App = () => {
           path="/"
           element={
             <HomeScreen
-              discoveredIds={discoveredIds}
+              instances={instances}
               positions={positions}
               onPointerDownBubble={onPointerDownBubble}
               hoverTargetId={hoverTargetId}
