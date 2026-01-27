@@ -58,3 +58,21 @@
   font-weight: 600;
   letter-spacing: 0.3px;
 }
+
+/* Estilos específicos para Fire */
+.concept-bubble.concept-fire:hover,
+.concept-bubble.concept-fire.dragging {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #ff4131;
+  box-shadow: 
+    0 0 20px rgba(239, 68, 68, 0.4),
+    0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+.concept-bubble.concept-fire.drop-target {
+  border-color: rgba(239, 68, 68, 0.85);
+  box-shadow:
+    0 0 0 2px rgba(239, 68, 68, 0.35),
+    0 0 30px rgba(239, 68, 68, 0.5),
+    0 10px 30px rgba(220, 38, 38, 0.4);
+}
