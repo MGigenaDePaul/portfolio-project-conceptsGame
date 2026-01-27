@@ -177,11 +177,10 @@ const App = () => {
 
     setDraggingId(id)
 
-    // Darle el z-index MÁS ALTO al elemento arrastrado
-    const newZIndex = zIndexCounter.current++
+    // Dar un z-index EXTREMADAMENTE alto al elemento arrastrado
     setZIndexes((prev) => ({
       ...prev,
-      [id]: newZIndex,
+      [id]: 999,
     }))
 
     e.currentTarget.setPointerCapture?.(e.pointerId) // setPointerCapture() asegura que el elemento reciba eventos aunque el puntero salga

@@ -18,6 +18,8 @@ const HomeScreen = ({
         </h1>
       </header>
 
+      <MyBoards />
+    
       <div className="concepts-area">
         {discoveredIds.map((id) => {
           const concept = CONCEPTS[id]
@@ -31,13 +33,12 @@ const HomeScreen = ({
               onPointerDown={onPointerDownBubble(id)}
               isDropTarget={id === hoverTargetId}
               isDragging={id === draggingId}
-              zIndex={zIndexes[id] || 0}  // 
+              zIndex={zIndexes[id] || 0}  
             />
           )
         })}
       </div>
 
-      <MyBoards />
 
       <footer className="app-footer">
         <p>

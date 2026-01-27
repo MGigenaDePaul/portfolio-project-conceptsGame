@@ -92,7 +92,6 @@ body {
 
 /* 5) Center panel (MyBoards already absolute + translate) */
 .my-boards-container {
-  z-index: 50; /* keep above bubbles */
 }
 
 /* 6) Footer warning box (bottom-left like screenshot) */

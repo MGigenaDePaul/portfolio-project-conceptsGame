@@ -1,18 +1,21 @@
-// ConceptBubble.jsx
 import './ConceptBubble.css'
 
 const ConceptBubble = ({
   concept,
   position,
+  zIndex,
   onPointerDown,
   isDropTarget,
   isDragging,
-  zIndex,
 }) => {
   return (
     <div
-      className={`concept-bubble ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''}`}
-      style={{ left: position.x, top: position.y, zIndex: zIndex || 0 }}
+      className={`concept-bubble ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} concept-${concept.id}`}
+      style={{ 
+        left: position.x, 
+        top: position.y,
+        zIndex: zIndex || 0
+      }}
       onPointerDown={onPointerDown}
       role="button"
       tabIndex={0}
