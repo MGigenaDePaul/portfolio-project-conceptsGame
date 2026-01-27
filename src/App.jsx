@@ -13,27 +13,35 @@ const App = () => {
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
-  const [notification, setNotification] = useState({ isVisible: false, message: '', position: { x: 0, y: 0 }  })
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    message: '',
+    position: { x: 0, y: 0 },
+  })
+  const [zIndexes, setZIndexes] = useState({}) // Nuevo estado
 
+  const zIndexCounter = useRef(1) // Para incrementar z-index
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
   const pressBubbleAudioRef = useRef(null)
-  const soundBeforeCombiningAudioRef = useRef(null) 
+  const soundBeforeCombiningAudioRef = useRef(null)
 
   useEffect(() => {
     const combineAudio = new Audio('/sounds/success.mp3')
-    combineAudio.volume = 0.6
+    combineAudio.volume = 0.4
     combineAudio.preload = 'auto'
 
     const failAudio = new Audio('/sounds/fail.mp3')
-    failAudio.volume = 0.4
+    failAudio.volume = 0.2
     failAudio.preload = 'auto'
 
-    const pressBubbleAudio= new Audio('/sounds/pressBubble.mp3')
+    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
     pressBubbleAudio.volume = 0.5
     pressBubbleAudio.preload = 'auto'
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    const soundBeforeCombiningAudio = new Audio(
+      '/sounds/soundBeforeCombining.mp3',
+    )
     soundBeforeCombiningAudio.volume = 0.4
     soundBeforeCombiningAudio.preload = 'auto'
 
@@ -76,7 +84,7 @@ const App = () => {
   }
 
   const hideNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 }  })
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
   }
 
   // dragging state
@@ -140,7 +148,7 @@ const App = () => {
       const filtered = prev.filter((id) => id !== aId && id !== bId) // aca se saca a y b
       return filtered.includes(resultId) ? filtered : [...filtered, resultId] // resultId="steam" no estaba por ejemplo → lo agrega
     })
-        
+
     // 2) actualizar posiciones (borrar a y b, setear result en spawnPos)
     setPositions((prev) => {
       const next = { ...prev } // copia del objeto
@@ -169,6 +177,13 @@ const App = () => {
 
     setDraggingId(id)
 
+    // Darle el z-index MÁS ALTO al elemento arrastrado
+    const newZIndex = zIndexCounter.current++
+    setZIndexes((prev) => ({
+      ...prev,
+      [id]: newZIndex,
+    }))
+
     e.currentTarget.setPointerCapture?.(e.pointerId) // setPointerCapture() asegura que el elemento reciba eventos aunque el puntero salga
 
     draggingRef.current = {
@@ -194,6 +209,14 @@ const App = () => {
         const targetId = getHitTarget(d.id, next)
         setHoverTargetId(targetId)
 
+        // Asegurar que el target tenga z-index menor que el arrastrado
+        if (targetId) {
+          setZIndexes((prevZ) => ({
+            ...prevZ,
+            [targetId]: 0, // ← Forzar z-index bajo para el target
+          }))
+        }
+
         return next
       })
     }
@@ -209,18 +232,27 @@ const App = () => {
 
       setDraggingId(null)
       setHoverTargetId(null)
+
       // MUY IMPORTANTE:
       // usamos setPositions callback para tener el "estado más nuevo" y no uno viejo.
+      // NO quitar el z-index todavía, mantenerlo durante la combinación
       setPositions((prev) => {
         const targetId = getHitTarget(dragId, prev) // hay algun bubble cerca para combinar? si no, no pasa nada, si sí, seguimos
-        if (!targetId) return prev
+        if (!targetId) {
+          // si no hay target, resetear z-index
+          setZIndexes((prevZ) => {
+            const next = { ...prevZ }
+            delete next[dragId]
+            return next
+          })
+          return prev
+        }
 
         // obtener donde solte el bubble
         const spawnPos = prev[dragId]
         if (!spawnPos) return prev
 
-
-    // Reproducir sonido de soltar ANTES de combinar
+        // Reproducir sonido de soltar ANTES de combinar
         playSoundBeforeCombining()
 
         // combinamos (esto hará setDiscoveredIds + setPositions extra)
@@ -230,10 +262,20 @@ const App = () => {
           const combined = combineAndReplace(dragId, targetId, spawnPos)
           if (!combined) {
             playFailSound()
-            showNotification('Too complex for demo! Go play in a board!', spawnPos)
+            showNotification(
+              'Too complex for demo! Go play in a board!',
+              spawnPos,
+            )
           }
+          // Limpiar z-indexes después de la combinación
+          setZIndexes((prevZ) => {
+            const next = { ...prevZ }
+            delete next[dragId]
+            delete next[targetId]
+            return next
+          })
         }, 700)
-       
+
         return prev
       })
     }
@@ -248,27 +290,29 @@ const App = () => {
   }, [discoveredIds, positions]) // lo dejamos así por ahora (funciona perfecto)
 
   return (
-  <>
-    <Notification message={notification.message}
-    isVisible={notification.isVisible}
-    position={notification.position}
-    onClose={hideNotification}
-    />
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <HomeScreen
-            discoveredIds={discoveredIds}
-            positions={positions}
-            onPointerDownBubble={onPointerDownBubble}
-            hoverTargetId={hoverTargetId}
-            draggingId={draggingId}
-          />
-        }
+    <>
+      <Notification
+        message={notification.message}
+        isVisible={notification.isVisible}
+        position={notification.position}
+        onClose={hideNotification}
       />
-    </Routes>
-  </>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomeScreen
+              discoveredIds={discoveredIds}
+              positions={positions}
+              onPointerDownBubble={onPointerDownBubble}
+              hoverTargetId={hoverTargetId}
+              draggingId={draggingId}
+              zIndexes={zIndexes}
+            />
+          }
+        />
+      </Routes>
+    </>
   )
 }
 

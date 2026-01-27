@@ -15,19 +15,19 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1001;
-  
+
   width: 90%;
   max-width: 700px;
   max-height: 85vh;
-  
+
   background: #2a2f35;
   border: 1px solid #596773;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  
+
   display: flex;
   flex-direction: column;
-  
+
   animation: slideIn 0.3s ease;
 }
 
@@ -294,19 +294,19 @@
     width: 95%;
     max-height: 90vh;
   }
-  
+
   .guide-header {
     padding: 16px;
   }
-  
+
   .guide-body {
     padding: 16px;
   }
-  
+
   .guide-title {
     font-size: 18px;
   }
-  
+
   .element-icons {
     justify-content: center;
   }

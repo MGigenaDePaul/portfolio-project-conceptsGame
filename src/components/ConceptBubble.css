@@ -20,7 +20,7 @@
     background 0.15s ease;
 
   transform: translate(-50%, -50%);
-  z-index: 10;
+  /* z-index: 10; ← ELIMINAR ESTA LÍNEA */
 
   /* drag essentials */
   touch-action: none;
@@ -48,10 +48,9 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-.concept-bubble.dragging {
-  z-index: 999;   /* 👈 siempre arriba */
-}
-
+/* .concept-bubble.dragging {
+  z-index: 999; ← ELIMINAR TODO ESTO
+} */
 
 .concept-emoji {
   font-size: 24px;

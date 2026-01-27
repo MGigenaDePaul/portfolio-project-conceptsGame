@@ -147,15 +147,15 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
         <div className="guide-header">
           <h2 className="guide-title">Concepts Guide</h2>
           <div className="guide-actions">
-            <button 
-              className="guide-new-tab-btn" 
+            <button
+              className="guide-new-tab-btn"
               onClick={openInNewTab}
               title="Open in new tab"
             >
               ↗
             </button>
-            <button 
-              className="guide-close-btn" 
+            <button
+              className="guide-close-btn"
               onClick={onClose}
               title="Close (Esc)"
             >
@@ -175,18 +175,34 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
           <section className="guide-section">
             <h3 className="guide-section-title">Index</h3>
             <ul className="guide-index">
-              <li><a href="#the-game">The Game</a></li>
-              <li><a href="#complexity">Complexity</a></li>
-              <li><a href="#collections">Collections</a></li>
-              <li><a href="#leaderboards">Leaderboards</a></li>
-              <li><a href="#multiplayer">Multiplayer</a></li>
+              <li>
+                <a href="#the-game">The Game</a>
+              </li>
+              <li>
+                <a href="#complexity">Complexity</a>
+              </li>
+              <li>
+                <a href="#collections">Collections</a>
+              </li>
+              <li>
+                <a href="#leaderboards">Leaderboards</a>
+              </li>
+              <li>
+                <a href="#multiplayer">Multiplayer</a>
+              </li>
             </ul>
           </section>
 
           <section className="guide-section" id="the-game">
             <h3 className="guide-section-title">🎮 The Game</h3>
-            <p><strong>Concepts</strong> is a game about combining pairs of concepts to create new, derived concepts.</p>
-            <p>Once you create a new board, you start with the four classical elements:</p>
+            <p>
+              <strong>Concepts</strong> is a game about combining pairs of
+              concepts to create new, derived concepts.
+            </p>
+            <p>
+              Once you create a new board, you start with the four classical
+              elements:
+            </p>
             <div className="element-icons">
               <div className="element-item">
                 <span className="element-emoji">🌍</span>
@@ -205,37 +221,67 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
                 <span>Water</span>
               </div>
             </div>
-            <p>Starting from here, you can combine concepts to build anything you can imagine!</p>
+            <p>
+              Starting from here, you can combine concepts to build anything you
+              can imagine!
+            </p>
           </section>
 
           <section className="guide-section">
             <h3 className="guide-section-title">🎯 How to Play</h3>
             <ul className="guide-list">
-              <li><strong>Drag and Drop:</strong> Click and hold a concept bubble, then drag it onto another concept to combine them</li>
-              <li><strong>Discover New Concepts:</strong> Successful combinations will create new concepts that appear on your board</li>
-              <li><strong>Experiment:</strong> Not all combinations work, but there are hundreds of possible recipes to discover!</li>
-              <li><strong>Build Your Collection:</strong> Keep combining to unlock more and more complex concepts</li>
+              <li>
+                <strong>Drag and Drop:</strong> Click and hold a concept bubble,
+                then drag it onto another concept to combine them
+              </li>
+              <li>
+                <strong>Discover New Concepts:</strong> Successful combinations
+                will create new concepts that appear on your board
+              </li>
+              <li>
+                <strong>Experiment:</strong> Not all combinations work, but
+                there are hundreds of possible recipes to discover!
+              </li>
+              <li>
+                <strong>Build Your Collection:</strong> Keep combining to unlock
+                more and more complex concepts
+              </li>
             </ul>
           </section>
 
           <section className="guide-section" id="complexity">
             <h3 className="guide-section-title">📊 Complexity</h3>
-            <p>Each concept has a complexity level that indicates how many steps it takes to create from the base elements. The more complex a concept, the more combinations you had to discover to create it!</p>
+            <p>
+              Each concept has a complexity level that indicates how many steps
+              it takes to create from the base elements. The more complex a
+              concept, the more combinations you had to discover to create it!
+            </p>
           </section>
 
           <section className="guide-section" id="collections">
             <h3 className="guide-section-title">📚 Collections</h3>
-            <p>Concepts are organized into thematic collections. As you play, you'll discover concepts across different categories like nature, technology, mythology, and more.</p>
+            <p>
+              Concepts are organized into thematic collections. As you play,
+              you'll discover concepts across different categories like nature,
+              technology, mythology, and more.
+            </p>
           </section>
 
           <section className="guide-section" id="leaderboards">
             <h3 className="guide-section-title">🏆 Leaderboards</h3>
-            <p>Compete with other players to discover the most concepts and climb the global leaderboards. Can you discover them all?</p>
+            <p>
+              Compete with other players to discover the most concepts and climb
+              the global leaderboards. Can you discover them all?
+            </p>
           </section>
 
           <section className="guide-section" id="multiplayer">
             <h3 className="guide-section-title">👥 Multiplayer</h3>
-            <p>Play with friends in multiplayer mode! Share your board and collaborate to discover new concepts together, or compete to see who can discover the most.</p>
+            <p>
+              Play with friends in multiplayer mode! Share your board and
+              collaborate to discover new concepts together, or compete to see
+              who can discover the most.
+            </p>
           </section>
 
           <section className="guide-section">
@@ -244,14 +290,18 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
               <li>Try combining similar concepts together</li>
               <li>Think about real-world relationships between things</li>
               <li>Don't be afraid to experiment with unusual combinations</li>
-              <li>Some concepts can be created through multiple different recipes</li>
+              <li>
+                Some concepts can be created through multiple different recipes
+              </li>
             </ul>
           </section>
 
           <section className="guide-section guide-warning">
             <h3 className="guide-section-title">⚠️ Development Notice</h3>
             <p className="warning-text">
-              <strong>CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT.</strong> Discovered concepts may be lost between sessions. Save your progress by noting down your favorite combinations!
+              <strong>CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT.</strong>{' '}
+              Discovered concepts may be lost between sessions. Save your
+              progress by noting down your favorite combinations!
             </p>
           </section>
         </div>
