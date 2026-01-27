@@ -6,12 +6,12 @@ export const CONCEPTS = {
   earth: { id: 'earth', name: 'Earth', emoji: '🌍' },
   air: { id: 'air', name: 'Air', emoji: '🌬️' },
 
-  steam: { id: 'steam', name: 'Steam', emoji: '💨' },
+  steam: { id: 'steam', name: 'Steam', emoji: '☁️💧' },
   mud: { id: 'mud', name: 'Mud', emoji: '🟤' },
   rain: { id: 'rain', name: 'Rain', emoji: '🌧️' },
-  dust: { id: 'dust', name: 'Dust', emoji: '🌫️' },
-  smoke: { id: 'smoke', name: 'Smoke', emoji: '🚬' },
-  lava: { id: 'lava', name: 'Lava', emoji: '🌋' },
+  atmosphere: { id: 'atmosphere', name: 'Atmosphere', emoji: '🌍' },
+  smoke: { id: 'smoke', name: 'Smoke', emoji: '💨' },
+  volcano: { id: 'volcano', name: 'Volcano', emoji: '🌋' },
 }
 
 // Helper: get concept by id safely

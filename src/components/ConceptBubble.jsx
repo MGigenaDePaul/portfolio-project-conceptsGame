@@ -11,10 +11,10 @@ const ConceptBubble = ({
   return (
     <div
       className={`concept-bubble ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} concept-${concept.id}`}
-      style={{ 
-        left: position.x, 
+      style={{
+        left: position.x,
         top: position.y,
-        zIndex: zIndex || 0
+        zIndex: zIndex || 0,
       }}
       onPointerDown={onPointerDown}
       role="button"

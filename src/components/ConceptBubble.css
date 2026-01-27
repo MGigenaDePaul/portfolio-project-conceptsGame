@@ -4,10 +4,10 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: rgba(30, 35, 40, 0.9);
+  background: #161a1d;
   border: 1px solid rgba(200, 209, 219, 0.15);
-  border-radius: 24px;
-  color: #c8d1db;
+  border-radius: 10px;
+  color: #c7d1db;
   white-space: nowrap;
   backdrop-filter: blur(10px);
   transition:
@@ -16,7 +16,6 @@
     box-shadow 0.15s ease,
     background 0.15s ease;
   transform: translate(-50%, -50%);
-  /* z-index: 10; ← ELIMINAR ESTA LÍNEA */
 
   /* drag essentials */
   touch-action: none;
@@ -32,7 +31,6 @@
   background: rgba(40, 45, 50, 0.95);
   border-color: rgba(139, 92, 246, 0.4);
   transform: translate(-50%, -50%) scale(1.03);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.18);
 }
 
 .concept-bubble.drop-target {
@@ -43,10 +41,6 @@
     0 10px 30px rgba(0, 0, 0, 0.35);
   transform: translate(-50%, -50%) scale(1.06);
 }
-
-/* .concept-bubble.dragging {
-  z-index: 999; ← ELIMINAR TODO ESTO
-} */
 
 .concept-emoji {
   font-size: 24px;
@@ -59,20 +53,145 @@
   letter-spacing: 0.3px;
 }
 
-/* Estilos específicos para Fire */
+/* ========== ESTILOS ESPECÍFICOS POR ELEMENTO ========== */
+
+/* FIRE 🔥 */
 .concept-bubble.concept-fire:hover,
 .concept-bubble.concept-fire.dragging {
-  background: rgba(220, 38, 38, 0.25);
+  background: #4f0b07;
   border-color: #ff4131;
-  box-shadow: 
-    0 0 20px rgba(239, 68, 68, 0.4),
-    0 8px 24px rgba(239, 68, 68, 0.3);
 }
 
 .concept-bubble.concept-fire.drop-target {
-  border-color: rgba(239, 68, 68, 0.85);
+  background: #4f0b07;
+  border-color: #ff4131;
   box-shadow:
-    0 0 0 2px rgba(239, 68, 68, 0.35),
-    0 0 30px rgba(239, 68, 68, 0.5),
-    0 10px 30px rgba(220, 38, 38, 0.4);
+    0 0 0 2px rgba(255, 65, 49, 0.35),
+    0 0 30px rgba(255, 65, 49, 0.5),
+    0 10px 30px rgba(79, 11, 7, 0.4);
+  transform: translate(-50%, -50%) scale(1.06);
 }
+
+/* EARTH 🌍 */
+.concept-bubble.concept-earth:hover,
+.concept-bubble.concept-earth.dragging {
+  background: #003400;
+  border-color: #00e900;
+}
+
+.concept-bubble.concept-earth.drop-target {
+  background: #003400;
+  border-color: #00e900;
+  box-shadow:
+    0 0 0 2px rgba(0, 233, 0, 0.35),
+    0 0 30px rgba(0, 233, 0, 0.5),
+    0 10px 30px rgba(0, 52, 0, 0.4);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* WATER 💧 */
+.concept-bubble.concept-water:hover,
+.concept-bubble.concept-water.dragging {
+  background: #0e2459;
+  border-color: #55a9ff;
+}
+
+.concept-bubble.concept-water.drop-target {
+  background: #0e2459;
+  border-color: #55a9ff;
+  box-shadow:
+    0 0 0 2px rgba(85, 169, 255, 0.35),
+    0 0 30px rgba(85, 169, 255, 0.5),
+    0 10px 30px rgba(14, 36, 89, 0.4);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* AIR 🌪️ */
+.concept-bubble.concept-air:hover,
+.concept-bubble.concept-air.dragging {
+  background: #2e2e2e;
+  border-color: #d3d3d3;
+}
+
+.concept-bubble.concept-air.drop-target {
+  background: #2e2e2e;
+  border-color: #d3d3d3;
+  box-shadow:
+    0 0 0 2px rgba(211, 211, 211, 0.35),
+    0 0 30px rgba(211, 211, 211, 0.5),
+    0 10px 30px rgba(46, 46, 46, 0.4);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* ATMOSPHERE */
+.concept-bubble.concept-atmosphere:hover,
+.concept-bubble.concept-atmosphere.dragging {
+  background: #00304e;
+  border-color: #00d9ff;
+}
+
+.concept-bubble.concept-atmosphere.drop-target {
+  background: #00304e;
+  border-color: #00d9ff;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* SMOKE */
+.concept-bubble.concept-smoke:hover,
+.concept-bubble.concept-smoke.dragging {
+  background: #2e2e2e;
+  border-color: #bebebe;
+}
+
+.concept-bubble.concept-smoke.drop-target {
+  background: #2e2e2e;
+  border-color: #bebebe;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* MUD */
+.concept-bubble.concept-mud:hover,
+.concept-bubble.concept-mud.dragging {
+  background: #4c1300;
+  border-color: #ff6300
+;
+}
+
+.concept-bubble.concept-mud.drop-target {
+  background: #4c1300;
+  border-color: #ff6300;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* VOLCANO */
+.concept-bubble.concept-volcano:hover,
+.concept-bubble.concept-volcano.dragging {
+  background: #4f0d00
+;
+  border-color: #ff4900
+;
+}
+
+.concept-bubble.concept-volcano.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* STEAM */
+.concept-bubble.concept-steam:hover,
+.concept-bubble.concept-steam.dragging {
+  background: #002b55
+;
+  border-color: #00c5ff
+;
+}
+
+.concept-bubble.concept-steam.drop-target {
+  background: #002b55;
+  border-color: #00c5ff;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+
+

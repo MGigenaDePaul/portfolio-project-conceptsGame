@@ -6,7 +6,7 @@ export const RECIPES = {
   [pairKey('fire', 'water')]: 'steam',
   [pairKey('water', 'earth')]: 'mud',
   [pairKey('air', 'water')]: 'rain',
-  [pairKey('air', 'earth')]: 'dust',
+  [pairKey('air', 'earth')]: 'atmosphere',
   [pairKey('air', 'fire')]: 'smoke',
-  [pairKey('earth', 'fire')]: 'lava',
+  [pairKey('earth', 'fire')]: 'volcano',
 }

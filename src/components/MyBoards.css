@@ -8,8 +8,8 @@
   align-items: center;
   gap: 16px;
   min-width: 380px;
-  z-index: 1; 
-  pointer-events: none; 
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .my-boards-header {
@@ -19,7 +19,6 @@
   width: 100%;
   margin-bottom: 8px;
 }
-
 
 .help-button,
 .settings-button {
