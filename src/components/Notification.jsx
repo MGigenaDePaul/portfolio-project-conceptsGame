@@ -6,7 +6,7 @@ const Notification = ({
   isVisible,
   onClose,
   position,
-  duration = 3000,
+  duration = 2000,
 }) => {
   useEffect(() => {
     if (isVisible) {

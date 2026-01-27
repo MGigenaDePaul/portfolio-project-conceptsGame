@@ -20,7 +20,6 @@ const App = () => {
   })
   const [zIndexes, setZIndexes] = useState({}) // Nuevo estado
 
-  const zIndexCounter = useRef(1) // Para incrementar z-index
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
   const pressBubbleAudioRef = useRef(null)

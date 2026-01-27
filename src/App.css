@@ -22,7 +22,7 @@ body {
     Roboto,
     Arial,
     sans-serif;
-  background: #171a1d;
+  background: #161a1d;
   color: #c8d1db;
   overflow: hidden; /* game feel */
 }
@@ -91,8 +91,8 @@ body {
 }
 
 /* 5) Center panel (MyBoards already absolute + translate) */
-.my-boards-container {
-}
+/* .my-boards-container {
+} */
 
 /* 6) Footer warning box (bottom-left like screenshot) */
 .app-footer {
