@@ -1,12 +1,14 @@
 import ConceptBubble from '../components/ConceptBubble'
 import MyBoards from '../components/MyBoards'
 import { CONCEPTS } from '../game/concepts'
+
 const HomeScreen = ({
   discoveredIds,
   positions,
   onPointerDownBubble,
   hoverTargetId,
-  draggingId
+  draggingId,
+  zIndexes,
 }) => {
   return (
     <div className="app-container">
@@ -29,13 +31,13 @@ const HomeScreen = ({
               onPointerDown={onPointerDownBubble(id)}
               isDropTarget={id === hoverTargetId}
               isDragging={id === draggingId}
+              zIndex={zIndexes[id] || 0}  // 
             />
           )
         })}
       </div>
 
       <MyBoards />
-
 
       <footer className="app-footer">
         <p>

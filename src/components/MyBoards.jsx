@@ -9,7 +9,7 @@ const MyBoards = ({ discoveredConcepts }) => {
     <>
       <div className="my-boards-container">
         <div className="my-boards-header">
-          <button 
+          <button
             className="help-button"
             onClick={() => setIsGuideOpen(true)}
             title="Open guide"
@@ -37,9 +37,9 @@ const MyBoards = ({ discoveredConcepts }) => {
       </div>
 
       {/* Modal de guía */}
-      <ConceptsGuide 
-        isOpen={isGuideOpen} 
-        onClose={() => setIsGuideOpen(false)} 
+      <ConceptsGuide
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
       />
     </>
   )
