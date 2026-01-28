@@ -2,6 +2,8 @@
   position: absolute;
   display: flex;
   align-items: center;
+  min-width: 92.38px;
+  min-height: 38px;
   gap: 8px;
   padding: 10px 16px;
   background: #161a1d;
@@ -16,7 +18,6 @@
     box-shadow 0.15s ease,
     background 0.15s ease;
   transform: translate(-50%, -50%);
-
   /* drag essentials */
   touch-action: none;
   user-select: none;
