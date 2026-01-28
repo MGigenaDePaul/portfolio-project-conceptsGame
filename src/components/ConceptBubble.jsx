@@ -7,14 +7,22 @@ const ConceptBubble = ({
   onPointerDown,
   isDropTarget,
   isDragging,
+  spawnDelayMs = 0,
+  isSpawning = false,
 }) => {
   return (
     <div
-      className={`concept-bubble ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} concept-${concept.id}`}
+      className={`concept-bubble
+        ${isDropTarget ? 'drop-target' : ''}
+        ${isDragging ? 'dragging' : ''}
+        ${isSpawning ? 'spawning' : 'spawned'}
+        concept-${concept.id}
+      `}
       style={{
         left: position.x,
         top: position.y,
         zIndex: zIndex || 0,
+        transitionDelay: `${spawnDelayMs}ms`,
       }}
       onPointerDown={onPointerDown}
       role="button"

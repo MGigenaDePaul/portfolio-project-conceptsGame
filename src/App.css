@@ -56,8 +56,10 @@ body {
   position: absolute;
   top: 42px;
   left: 50%;
-  margin: 70px 0 0;
+  padding: 10px;
+  margin: 96px 0 0;
   transform: translateX(-50%);
+  /* border: 2px solid white; */
   z-index: 30;
   pointer-events: none; /* title doesn't block clicks */
 }
