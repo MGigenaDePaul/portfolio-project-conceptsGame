@@ -146,7 +146,7 @@
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
-/* ATMOSPHERE */
+/* ATMOSPHERE 🌍 */
 .concept-bubble.concept-atmosphere:hover,
 .concept-bubble.concept-atmosphere.dragging {
   background: #00304e;
@@ -159,7 +159,7 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-/* SMOKE */
+/* SMOKE 💨 */
 .concept-bubble.concept-smoke:hover,
 .concept-bubble.concept-smoke.dragging {
   background: #2e2e2e;
@@ -172,7 +172,7 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-/* MUD */
+/* MUD 🟤 */
 .concept-bubble.concept-mud:hover,
 .concept-bubble.concept-mud.dragging {
   background: #4c1300;
@@ -185,7 +185,7 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-/* VOLCANO */
+/* VOLCANO 🌋 */
 .concept-bubble.concept-volcano:hover,
 .concept-bubble.concept-volcano.dragging {
   background: #4f0d00;
@@ -198,7 +198,7 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-/* STEAM */
+/* STEAM ☁️💧 */
 .concept-bubble.concept-steam:hover,
 .concept-bubble.concept-steam.dragging {
   background: #002b55;
@@ -208,5 +208,58 @@
 .concept-bubble.concept-steam.drop-target {
   background: #002b55;
   border-color: #00c5ff;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* OCEAN 🌊 */
+.concept-bubble.concept-ocean:hover,
+.concept-bubble.concept-ocean.dragging {
+  background: #002d52;
+  border-color: #00ceff;
+}
+
+.concept-bubble.concept-ocean.drop-target {
+  background: #002d52;
+  border-color: #00ceff;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* OXYGEN 🧪 */
+.concept-bubble.concept-oxygen:hover,
+.concept-bubble.concept-oxygen.dragging {
+  background: #003442;
+  border-color: #00e9ff;
+}
+
+.concept-bubble.concept-oxygen.drop-target {
+  background: #003442;
+  border-color: #00e9ff;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* INFERNO 💥 */
+.concept-bubble.concept-inferno:hover,
+.concept-bubble.concept-inferno.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-inferno.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+
+/* MOUNTAIN ⛰️ */
+.concept-bubble.concept-mountain:hover,
+.concept-bubble.concept-mountain.dragging {
+  background: #451c00;
+  border-color: #ff8c00;
+}
+
+.concept-bubble.concept-mountain.drop-target {
+  background: #451c00;
+  border-color: #ff8c00;
   transform: translate(-50%, -50%) scale(1.06);
 }
