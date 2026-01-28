@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import './ConceptBubble.css'
 
 const ConceptBubble = ({
@@ -10,19 +11,32 @@ const ConceptBubble = ({
   spawnDelayMs = 0,
   isSpawning = false,
 }) => {
+  const [hasSpawned, setHasSpawned] = useState(!isSpawning)
+
+  useEffect(() => {
+    if (isSpawning && spawnDelayMs >= 0) {
+      // Esperar el delay antes de activar la animación
+      const timer = setTimeout(() => {
+        setHasSpawned(true)
+      }, spawnDelayMs)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isSpawning, spawnDelayMs])
+
   return (
     <div
       className={`concept-bubble
         ${isDropTarget ? 'drop-target' : ''}
         ${isDragging ? 'dragging' : ''}
-        ${isSpawning ? 'spawning' : 'spawned'}
+        ${!hasSpawned ? 'spawning' : 'spawned'}
         concept-${concept.id}
       `}
       style={{
         left: position.x,
         top: position.y,
         zIndex: zIndex || 0,
-        transitionDelay: `${spawnDelayMs}ms`,
+        animationDelay: hasSpawned ? '0ms' : `${spawnDelayMs}ms`,
       }}
       onPointerDown={onPointerDown}
       role="button"

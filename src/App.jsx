@@ -10,11 +10,16 @@ import HomeScreen from './pages/HomeScreen'
 import Notification from './components/Notification'
 import './App.css'
 
-const HIT_RADIUS = 100
+// Radio de detección adaptativo según tamaño de pantalla
+const getHitRadius = () => {
+  const width = window.innerWidth
+  if (width < 480) return 60 // móvil pequeño
+  if (width < 768) return 75 // tablet
+  return 100 // desktop
+}
 
 const App = () => {
-  // Ahora usamos instances en vez de discoveredIds
-  const [instances, setInstances] = useState({}) // { instanceId: { instanceId, conceptId } }
+  const [instances, setInstances] = useState({})
   const [positions, setPositions] = useState({})
   const [hoverTargetId, setHoverTargetId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
@@ -24,12 +29,23 @@ const App = () => {
     position: { x: 0, y: 0 },
   })
   const [zIndexes, setZIndexes] = useState({})
+  const [hitRadius, setHitRadius] = useState(getHitRadius())
 
   const zIndexCounter = useRef(1000)
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
   const pressBubbleAudioRef = useRef(null)
   const soundBeforeCombiningAudioRef = useRef(null)
+
+  // Actualizar hit radius en resize
+  useEffect(() => {
+    const handleResize = () => {
+      setHitRadius(getHitRadius())
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const combineAudio = new Audio('/sounds/success.mp3')
@@ -98,30 +114,93 @@ const App = () => {
     offsetY: 0,
   })
 
-  // Initial positions - crear instancias iniciales
+  // Calcular radio adaptativo según tamaño de pantalla
+  const getCircleRadius = () => {
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const minDimension = Math.min(width, height)
+    
+    if (width < 480) {
+      return Math.min(minDimension * 0.28, 120) // móvil pequeño
+    } else if (width < 768) {
+      return Math.min(minDimension * 0.32, 180) // tablet
+    } else if (width < 1024) {
+      return Math.min(minDimension * 0.35, 220) // tablet landscape
+    }
+    return 280 // desktop
+  }
+
+  // Helper para verificar si una posición está muy cerca del centro (panel MY BOARDS)
+  const isPositionTooCloseToCenter = (x, y, centerX, centerY, minDistance) => {
+    const distance = Math.hypot(x - centerX, y - centerY)
+    return distance < minDistance
+  }
+
+  // Helper para generar posición aleatoria válida
+  const generateRandomPosition = (centerX, centerY, minDistanceFromCenter, margin) => {
+    const maxAttempts = 50
+    let attempts = 0
+    
+    while (attempts < maxAttempts) {
+      const x = margin + Math.random() * (window.innerWidth - margin * 2)
+      const y = margin + Math.random() * (window.innerHeight - margin * 2)
+      
+      if (!isPositionTooCloseToCenter(x, y, centerX, centerY, minDistanceFromCenter)) {
+        return { x, y }
+      }
+      attempts++
+    }
+    
+    // Fallback: posición en los bordes
+    const side = Math.floor(Math.random() * 4)
+    switch (side) {
+      case 0: return { x: margin, y: centerY + minDistanceFromCenter }
+      case 1: return { x: window.innerWidth - margin, y: centerY + minDistanceFromCenter }
+      case 2: return { x: centerX + minDistanceFromCenter, y: margin }
+      default: return { x: centerX + minDistanceFromCenter, y: window.innerHeight - margin }
+    }
+  }
+
+  // Initial positions - crear instancias iniciales con posicionamiento aleatorio
   useEffect(() => {
     const startingInstances = createStartingInstances()
     setInstances(startingInstances)
 
-    const newPositions = {}
-    const centerX = window.innerWidth / 2
-    const centerY = window.innerHeight / 2
-    const radius = 280
+    const positionInstances = () => {
+      const newPositions = {}
+      const centerX = window.innerWidth / 2
+      const centerY = window.innerHeight / 2
+      
+      // Distancia mínima del centro para no tocar el panel MY BOARDS
+      const width = window.innerWidth
+      const minDistanceFromCenter = width < 480 ? 180 : width < 768 ? 200 : width < 1024 ? 240 : 280
+      
+      // Margen desde los bordes
+      const margin = width < 480 ? 80 : width < 768 ? 100 : 120
 
-    const instanceIds = Object.keys(startingInstances)
+      const instanceIds = Object.keys(startingInstances)
 
-    // Barajar el array para orden aleatorio
-    const shuffledIds = instanceIds.sort(() => Math.random() - 0.5)
+      instanceIds.forEach((instanceId) => {
+        newPositions[instanceId] = generateRandomPosition(
+          centerX, 
+          centerY, 
+          minDistanceFromCenter, 
+          margin
+        )
+      })
 
-    shuffledIds.forEach((instanceId, index) => {
-      const angle = (index / shuffledIds.length) * Math.PI * 2
-      newPositions[instanceId] = {
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
-      }
-    })
+      setPositions(newPositions)
+    }
 
-    setPositions(newPositions)
+    positionInstances()
+
+    // Reposicionar en resize para evitar que las burbujas queden fuera de pantalla
+    const handleResize = () => {
+      positionInstances()
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   const getHitTarget = (dragId, currentPositions) => {
@@ -137,7 +216,7 @@ const App = () => {
       if (!q) continue
 
       const dist = Math.hypot(p.x - q.x, p.y - q.y)
-      if (dist < HIT_RADIUS && dist < bestDist) {
+      if (dist < hitRadius && dist < bestDist) {
         bestDist = dist
         best = otherId
       }
@@ -152,13 +231,11 @@ const App = () => {
 
     if (!aInstance || !bInstance) return false
 
-    // Combinar usando los conceptIds
     const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId)
     if (!resultConceptId) return false
 
     playCombineSound()
 
-    // Crear nueva instancia del resultado
     const resultInstanceId = generateInstanceId()
 
     setInstances((prev) => {
@@ -263,14 +340,12 @@ const App = () => {
         setTimeout(() => {
           const combined = combineAndReplace(dragId, targetId, spawnPos)
           if (!combined) {
-            // ❌ COMBINACIÓN FALLÓ
             playFailSound()
             showNotification(
               'Too complex for demo! Go play in a board!',
               spawnPos,
             )
 
-            // ⭐ MANTENER z-index alto por más tiempo cuando falla
             setTimeout(() => {
               setZIndexes((prevZ) => {
                 const next = { ...prevZ }
@@ -278,9 +353,8 @@ const App = () => {
                 delete next[targetId]
                 return next
               })
-            }, 1500) // despues de 1.5 seg limpiar z-indexes
+            }, 1500)
           } else {
-            // ✅ COMBINACIÓN EXITOSA - limpiar inmediatamente
             setZIndexes((prevZ) => {
               const next = { ...prevZ }
               delete next[dragId]
@@ -301,7 +375,7 @@ const App = () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
-  }, [instances, positions])
+  }, [instances, positions, hitRadius])
 
   return (
     <>

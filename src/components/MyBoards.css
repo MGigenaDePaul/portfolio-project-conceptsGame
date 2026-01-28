@@ -1,3 +1,5 @@
+/* MyBoards.css - RESPONSIVE VERSION */
+
 .my-boards-container {
   position: absolute;
   top: 50%;
@@ -6,8 +8,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  min-width: 256px;
+  gap: clamp(12px, 3vw, 16px); /* responsive gap */
+  min-width: clamp(200px, 80vw, 256px); /* responsive width */
+  max-width: 90vw;
   z-index: 1;
   pointer-events: none;
 }
@@ -17,14 +20,14 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: clamp(4px, 1.5vw, 8px);
   pointer-events: auto;
 }
 
 .help-button,
 .settings-button {
-  width: 36px;
-  height: 36px;
+  width: clamp(32px, 7vw, 36px); /* responsive button size */
+  height: clamp(32px, 7vw, 36px);
   border-radius: 50%;
   border: 1px solid rgba(200, 209, 219, 0.15);
   background: rgba(30, 35, 40, 0.8);
@@ -33,9 +36,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: clamp(14px, 3.5vw, 18px); /* responsive icon size */
   transition: all 0.2s;
   pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .help-button:hover,
@@ -43,11 +47,21 @@
   border-color: #1d7afc;
 }
 
+/* Touch devices - mejores áreas táctiles */
+@media (hover: none) and (pointer: coarse) {
+  .help-button,
+  .settings-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 .my-boards-title {
-  font-size: 16px;
+  font-size: clamp(12px, 3vw, 16px); /* responsive title */
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: clamp(0.8px, 0.2vw, 1.5px);
   color: #ffff;
+  white-space: nowrap;
 }
 
 .board-card {
@@ -55,7 +69,7 @@
   background: rgba(30, 35, 40, 0.9);
   border: 1px solid #596773;
   border-radius: 5px;
-  padding: 20px;
+  padding: clamp(12px, 3vw, 20px); /* responsive padding */
   backdrop-filter: blur(10px);
   transition: all 0.2s;
   pointer-events: auto;
@@ -68,19 +82,19 @@
 .board-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(8px, 2vw, 12px); /* responsive gap */
 }
 
 .board-avatar {
-  width: 40px;
-  height: 40px;
+  width: clamp(32px, 7vw, 40px); /* responsive avatar */
+  height: clamp(32px, 7vw, 40px);
   border-radius: 50%;
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 18px;
+  font-size: clamp(14px, 3.5vw, 18px); /* responsive letter */
   color: white;
   flex-shrink: 0;
   pointer-events: auto;
@@ -88,30 +102,35 @@
 
 .board-details {
   flex: 1;
+  min-width: 0; /* permite que el texto se trunque */
 }
 
 .board-name {
-  font-size: 16px;
+  font-size: clamp(13px, 3vw, 16px); /* responsive name */
   font-weight: 600;
   color: #fff;
-  margin-bottom: 4px;
+  margin-bottom: clamp(2px, 0.5vw, 4px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .board-stats {
   display: flex;
-  gap: 12px;
-  font-size: 13px;
+  gap: clamp(8px, 2vw, 12px);
+  font-size: clamp(11px, 2.5vw, 13px); /* responsive stats */
   color: rgba(200, 209, 219, 0.6);
+  flex-wrap: wrap;
 }
 
 .create-board-button {
   width: 100%;
-  padding: 14px;
+  padding: clamp(10px, 2.5vw, 14px); /* responsive padding */
   background: transparent;
   border: 1px dashed #596773;
   border-radius: 5px;
   color: rgba(200, 209, 219, 0.5);
-  font-size: 14px;
+  font-size: clamp(12px, 2.8vw, 14px); /* responsive font */
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -122,4 +141,210 @@
   background: rgba(30, 35, 40, 0.5);
   border-color: rgba(139, 92, 246, 0.3);
   color: rgba(200, 209, 219, 0.8);
+}
+
+/* ============================================ */
+/* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
+/* ============================================ */
+
+/* Small mobile (hasta 480px) */
+@media (max-width: 480px) {
+  .my-boards-container {
+    min-width: 180px;
+    max-width: 95vw;
+    gap: 10px;
+  }
+
+  .my-boards-header {
+    margin-bottom: 6px;
+  }
+
+  .help-button,
+  .settings-button {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .my-boards-title {
+    font-size: 11px;
+    letter-spacing: 0.8px;
+  }
+
+  .board-card {
+    padding: 10px;
+  }
+
+  .board-info {
+    gap: 8px;
+  }
+
+  .board-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .board-name {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .board-stats {
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .create-board-button {
+    padding: 10px;
+    font-size: 11px;
+  }
+}
+
+/* Tablets portrait (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .my-boards-container {
+    min-width: 220px;
+    gap: 14px;
+  }
+
+  .help-button,
+  .settings-button {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .my-boards-title {
+    font-size: 14px;
+  }
+
+  .board-card {
+    padding: 16px;
+  }
+
+  .board-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .board-name {
+    font-size: 14px;
+  }
+
+  .board-stats {
+    font-size: 12px;
+  }
+
+  .create-board-button {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+/* Tablets landscape (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .my-boards-container {
+    min-width: 240px;
+  }
+}
+
+/* Landscape mobile (altura muy pequeña) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .my-boards-container {
+    gap: 8px;
+    min-width: 160px;
+  }
+
+  .my-boards-header {
+    margin-bottom: 4px;
+  }
+
+  .help-button,
+  .settings-button {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .my-boards-title {
+    font-size: 10px;
+  }
+
+  .board-card {
+    padding: 8px;
+  }
+
+  .board-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .board-name {
+    font-size: 11px;
+  }
+
+  .board-stats {
+    font-size: 9px;
+  }
+
+  .create-board-button {
+    padding: 8px;
+    font-size: 10px;
+  }
+}
+
+/* Desktop grande (más de 1024px) - diseño original */
+@media (min-width: 1025px) {
+  .my-boards-container {
+    min-width: 256px;
+    gap: 16px;
+  }
+
+  .my-boards-header {
+    margin-bottom: 8px;
+  }
+
+  .help-button,
+  .settings-button {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .my-boards-title {
+    font-size: 16px;
+    letter-spacing: 1.5px;
+  }
+
+  .board-card {
+    padding: 20px;
+  }
+
+  .board-info {
+    gap: 12px;
+  }
+
+  .board-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .board-name {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .board-stats {
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .create-board-button {
+    padding: 14px;
+    font-size: 14px;
+  }
 }

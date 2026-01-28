@@ -1,270 +1,114 @@
-/* Overlay oscuro de fondo */
-.guide-overlay {
+/* ConceptsGuide.css - RESPONSIVE VERSION */
+
+/* Overlay del modal */
+.concepts-guide-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 20px); /* responsive padding */
   animation: fadeIn 0.2s ease;
 }
 
-/* Modal principal */
-.guide-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1001;
-
-  width: 90%;
-  max-width: 700px;
+/* Modal container */
+.concepts-guide-modal {
+  position: relative;
+  width: 100%;
+  max-width: clamp(320px, 90vw, 600px); /* responsive width */
   max-height: 85vh;
-
-  background: #2a2f35;
+  background: #1e2328;
   border: 1px solid #596773;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-
+  border-radius: clamp(8px, 2vw, 12px); /* responsive border radius */
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
   display: flex;
   flex-direction: column;
-
-  animation: slideIn 0.3s ease;
 }
 
 /* Header del modal */
-.guide-header {
+.concepts-guide-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
+  padding: clamp(12px, 3vw, 20px); /* responsive padding */
   border-bottom: 1px solid #596773;
-  background: #23282d;
-  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
 }
 
-.guide-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.5px;
-}
-
-.guide-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.guide-new-tab-btn,
-.guide-close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  border: 1px solid rgba(200, 209, 219, 0.2);
-  background: rgba(30, 35, 40, 0.8);
-  color: #c8d1db;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: all 0.2s;
-}
-
-.guide-new-tab-btn:hover,
-.guide-close-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: #8b5cf6;
-  transform: scale(1.05);
-}
-
-.guide-close-btn:hover {
-  background: rgba(255, 90, 90, 0.2);
-  border-color: rgba(255, 90, 90, 0.6);
-}
-
-/* Cuerpo del modal (scrolleable) */
-.guide-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  color: #c8d1db;
-  line-height: 1.6;
-}
-
-/* Scrollbar personalizado */
-.guide-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.guide-body::-webkit-scrollbar-track {
-  background: #1e2328;
-  border-radius: 4px;
-}
-
-.guide-body::-webkit-scrollbar-thumb {
-  background: #596773;
-  border-radius: 4px;
-}
-
-.guide-body::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
-}
-
-/* Mensaje de bienvenida */
-.guide-welcome {
-  font-size: 15px;
-  color: rgba(200, 209, 219, 0.9);
-  margin-bottom: 20px;
-}
-
-.guide-link-btn {
-  background: none;
-  border: none;
-  color: #8b5cf6;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: inherit;
-  padding: 0;
-  transition: color 0.2s;
-}
-
-.guide-link-btn:hover {
-  color: #a78bfa;
-}
-
-/* Secciones */
-.guide-section {
-  margin-bottom: 28px;
-}
-
-.guide-section-title {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
-}
-
-.guide-section p {
-  margin: 12px 0;
-  color: rgba(200, 209, 219, 0.85);
-}
-
-/* Índice */
-.guide-index {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px;
-}
-
-.guide-index li {
-  margin: 0;
-}
-
-.guide-index a {
-  display: block;
-  padding: 10px 14px;
-  background: rgba(30, 35, 40, 0.6);
-  border: 1px solid rgba(200, 209, 219, 0.1);
-  border-radius: 6px;
-  color: #8b5cf6;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-size: 14px;
-}
-
-.guide-index a:hover {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: #8b5cf6;
-  transform: translateX(4px);
-}
-
-/* Elementos/iconos */
-.element-icons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.element-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(30, 35, 40, 0.9);
-  border: 1px solid rgba(200, 209, 219, 0.15);
-  border-radius: 24px;
-  transition: all 0.2s;
-}
-
-.element-item:hover {
-  border-color: rgba(139, 92, 246, 0.4);
-  transform: scale(1.05);
-}
-
-.element-emoji {
-  font-size: 24px;
-  line-height: 1;
-}
-
-/* Listas */
-.guide-list {
-  padding-left: 24px;
-  margin: 12px 0;
-}
-
-.guide-list li {
-  margin: 10px 0;
-  color: rgba(200, 209, 219, 0.85);
-}
-
-.guide-list li strong {
-  color: #fff;
-}
-
-/* Sección de advertencia */
-.guide-warning {
-  background: rgba(255, 90, 90, 0.05);
-  border: 1px solid rgba(255, 90, 90, 0.2);
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.warning-text {
-  color: rgba(255, 90, 90, 0.9);
-  margin: 0;
-}
-
-/* Footer del modal */
-.guide-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #596773;
-  background: #23282d;
-  border-radius: 0 0 12px 12px;
-  display: flex;
-  justify-content: center;
-}
-
-.guide-footer-btn {
-  padding: 10px 24px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 8px;
-  color: #c8d1db;
-  font-size: 14px;
+.concepts-guide-title {
+  font-size: clamp(16px, 4vw, 24px); /* responsive title */
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+  color: #fff;
+  margin: 0;
 }
 
-.guide-footer-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: #8b5cf6;
+.concepts-guide-close {
+  width: clamp(32px, 7vw, 40px); /* responsive button */
+  height: clamp(32px, 7vw, 40px);
+  border-radius: 50%;
+  border: 1px solid rgba(200, 209, 219, 0.15);
+  background: transparent;
+  color: #c8d1db;
+  font-size: clamp(18px, 4vw, 24px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.concepts-guide-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #1d7afc;
+}
+
+/* Contenido del modal */
+.concepts-guide-content {
+  padding: clamp(16px, 4vw, 24px); /* responsive padding */
+  overflow-y: auto;
+  flex: 1;
+}
+
+.concepts-guide-content h2 {
+  font-size: clamp(16px, 3.5vw, 20px); /* responsive headings */
+  font-weight: 600;
+  color: #fff;
+  margin: clamp(16px, 3vw, 24px) 0 clamp(8px, 2vw, 12px);
+}
+
+.concepts-guide-content h2:first-child {
+  margin-top: 0;
+}
+
+.concepts-guide-content p,
+.concepts-guide-content li {
+  font-size: clamp(13px, 2.8vw, 15px); /* responsive text */
+  line-height: 1.6;
+  color: rgba(200, 209, 219, 0.85);
+  margin-bottom: clamp(8px, 2vw, 12px);
+}
+
+.concepts-guide-content ul {
+  padding-left: clamp(16px, 4vw, 24px);
+  margin-bottom: clamp(12px, 3vw, 16px);
+}
+
+.concepts-guide-content li {
+  margin-bottom: clamp(6px, 1.5vw, 8px);
+}
+
+.concepts-guide-content code {
+  background: rgba(139, 92, 246, 0.15);
+  padding: clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 8px);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: #8b5cf6;
 }
 
 /* Animaciones */
@@ -277,37 +121,211 @@
   }
 }
 
-@keyframes slideIn {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateY(0);
   }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .guide-modal {
-    width: 95%;
+/* ============================================ */
+/* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
+/* ============================================ */
+
+/* Small mobile (hasta 480px) */
+@media (max-width: 480px) {
+  .concepts-guide-overlay {
+    padding: 8px;
+  }
+
+  .concepts-guide-modal {
+    max-width: 100%;
     max-height: 90vh;
+    border-radius: 8px;
   }
 
-  .guide-header {
-    padding: 16px;
+  .concepts-guide-header {
+    padding: 12px;
   }
 
-  .guide-body {
-    padding: 16px;
+  .concepts-guide-title {
+    font-size: 16px;
   }
 
-  .guide-title {
+  .concepts-guide-close {
+    width: 32px;
+    height: 32px;
     font-size: 18px;
   }
 
-  .element-icons {
-    justify-content: center;
+  .concepts-guide-content {
+    padding: 12px;
+  }
+
+  .concepts-guide-content h2 {
+    font-size: 15px;
+    margin: 14px 0 8px;
+  }
+
+  .concepts-guide-content p,
+  .concepts-guide-content li {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .concepts-guide-content ul {
+    padding-left: 16px;
+    margin-bottom: 12px;
+  }
+
+  .concepts-guide-content code {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+}
+
+/* Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .concepts-guide-modal {
+    max-width: 85vw;
+  }
+
+  .concepts-guide-header {
+    padding: 16px;
+  }
+
+  .concepts-guide-title {
+    font-size: 20px;
+  }
+
+  .concepts-guide-close {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .concepts-guide-content {
+    padding: 18px;
+  }
+
+  .concepts-guide-content h2 {
+    font-size: 18px;
+  }
+
+  .concepts-guide-content p,
+  .concepts-guide-content li {
+    font-size: 14px;
+  }
+
+  .concepts-guide-content code {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mobile (altura muy pequeña) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .concepts-guide-overlay {
+    padding: 8px;
+    align-items: flex-start;
+  }
+
+  .concepts-guide-modal {
+    max-height: 95vh;
+    margin-top: 8px;
+  }
+
+  .concepts-guide-header {
+    padding: 10px 12px;
+  }
+
+  .concepts-guide-title {
+    font-size: 14px;
+  }
+
+  .concepts-guide-close {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .concepts-guide-content {
+    padding: 12px;
+  }
+
+  .concepts-guide-content h2 {
+    font-size: 14px;
+    margin: 10px 0 6px;
+  }
+
+  .concepts-guide-content p,
+  .concepts-guide-content li {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .concepts-guide-content ul {
+    padding-left: 14px;
+    margin-bottom: 10px;
+  }
+
+  .concepts-guide-content code {
+    font-size: 10px;
+  }
+}
+
+/* Touch devices - mejorar área táctil */
+@media (hover: none) and (pointer: coarse) {
+  .concepts-guide-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Desktop grande (más de 1024px) */
+@media (min-width: 1025px) {
+  .concepts-guide-overlay {
+    padding: 20px;
+  }
+
+  .concepts-guide-modal {
+    max-width: 600px;
+    border-radius: 12px;
+  }
+
+  .concepts-guide-header {
+    padding: 20px;
+  }
+
+  .concepts-guide-title {
+    font-size: 24px;
+  }
+
+  .concepts-guide-close {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  .concepts-guide-content {
+    padding: 24px;
+  }
+
+  .concepts-guide-content h2 {
+    font-size: 20px;
+    margin: 24px 0 12px;
+  }
+
+  .concepts-guide-content p,
+  .concepts-guide-content li {
+    font-size: 15px;
+  }
+
+  .concepts-guide-content code {
+    font-size: 14px;
   }
 }

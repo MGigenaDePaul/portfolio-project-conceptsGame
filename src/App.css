@@ -1,6 +1,6 @@
-/* App.css */
+/* App.css - RESPONSIVE VERSION */
 
-/* 1) Global reset (DON'T set background on *) */
+/* 1) Global reset */
 *,
 *::before,
 *::after {
@@ -24,17 +24,18 @@ body {
     sans-serif;
   background: #161a1d;
   color: #c8d1db;
-  overflow: hidden; /* game feel */
+  overflow: hidden;
 }
 
-/* 2) App layout */
+/* 2) App layout - RESPONSIVE */
 .app-container {
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* mejor para móviles */
   overflow: hidden;
 
-  /* dotted grid background like the screenshot */
+  /* dotted grid background */
   background:
     radial-gradient(
         circle at center,
@@ -51,56 +52,52 @@ body {
     #171a1d;
 }
 
-/* 3) Header (title centered) */
+/* 3) Header (title centered) - RESPONSIVE */
 .app-header {
   position: absolute;
-  top: 42px;
+  top: 20px;
   left: 50%;
   padding: 10px;
-  margin: 96px 0 0;
   transform: translateX(-50%);
-  /* border: 2px solid white; */
   z-index: 30;
-  pointer-events: none; /* title doesn't block clicks */
+  pointer-events: none;
+  text-align: center;
 }
 
 .app-title {
   margin: 0;
-  font-size: 56px;
+  font-size: clamp(28px, 6vw, 56px); /* responsive font size */
   font-weight: 500;
   letter-spacing: 0.5px;
   color: rgba(200, 209, 219, 0.9);
-  line-height: 1;
+  line-height: 1.2;
   text-align: center;
 }
 
 .app-subtitle {
   display: inline-block;
-  margin-left: 10px;
-  font-size: 18px;
+  margin-left: 8px;
+  font-size: clamp(12px, 3vw, 18px); /* responsive */
   font-weight: 700;
   letter-spacing: 0.8px;
   color: rgba(200, 209, 219, 0.85);
-  transform: rotate(-12deg) translateY(10px);
+  transform: rotate(-12deg) translateY(8px);
   transform-origin: left center;
 }
 
-/* 4) Concepts play area (absolute so bubbles use left/top correctly) */
+/* 4) Concepts play area */
 .concepts-area {
   position: absolute;
-  inset: 0; /* full screen */
+  inset: 0;
   z-index: 10;
 }
 
-/* 5) Center panel (MyBoards already absolute + translate) */
-/* .my-boards-container {
-} */
-
-/* 6) Footer warning box (bottom-left like screenshot) */
+/* 6) Footer warning box - RESPONSIVE */
 .app-footer {
   position: absolute;
-  left: 18px;
-  bottom: 18px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   z-index: 40;
   text-align: center;
   pointer-events: none;
@@ -108,38 +105,186 @@ body {
 
 .app-footer p {
   margin: 0;
-  padding: 10px 12px;
-  font-size: 12px;
+  padding: 8px 12px;
+  font-size: clamp(10px, 2.5vw, 14px); /* responsive */
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: rgba(255, 90, 90, 0.85);
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 90, 90, 0.35);
   border-radius: 6px;
-  max-width: 340px;
-  font-size: 14px;
+  max-width: 100%;
+  line-height: 1.4;
 }
 
-/* 7) Bottom concepts (two bubbles at bottom center) */
+/* 7) Bottom concepts - RESPONSIVE */
 .bottom-concepts {
   position: absolute;
   left: 50%;
-  bottom: 64px;
+  bottom: clamp(40px, 8vh, 64px); /* responsive */
   transform: translateX(-50%);
   display: flex;
-  gap: 18px;
+  gap: clamp(10px, 2vw, 18px); /* responsive gap */
   z-index: 35;
-  pointer-events: none; /* IMPORTANT: don't steal clicks from bubbles */
+  pointer-events: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
 }
 
-/* but allow clicking the actual buttons inside */
 .bottom-concepts .concept-bubble {
   pointer-events: auto;
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px); /* responsive padding */
+  border-radius: 26px;
 }
 
-/* Optional: make the bottom ones slightly larger like the real game */
-.bottom-concepts .concept-bubble {
-  padding: 12px 18px;
-  border-radius: 26px;
+/* ============================================ */
+/* MEDIA QUERIES - MOBILE FIRST */
+/* ============================================ */
+
+/* Small mobile devices (hasta 480px) */
+@media (max-width: 480px) {
+  .app-header {
+    top: 12px;
+    padding: 5px;
+  }
+
+  .app-title {
+    font-size: 24px;
+  }
+
+  .app-subtitle {
+    font-size: 11px;
+    margin-left: 6px;
+  }
+
+  .app-footer {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .app-footer p {
+    padding: 6px 10px;
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+
+  .bottom-concepts {
+    bottom: 35px;
+    gap: 8px;
+    padding: 0 8px;
+  }
+}
+
+/* Tablets portrait (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-header {
+    top: 16px;
+  }
+
+  .app-title {
+    font-size: 36px;
+  }
+
+  .app-subtitle {
+    font-size: 14px;
+  }
+
+  .app-footer p {
+    font-size: 11px;
+  }
+
+  .bottom-concepts {
+    bottom: 50px;
+    gap: 12px;
+  }
+}
+
+/* Tablets landscape y desktop pequeño (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-header {
+    top: 24px;
+  }
+
+  .app-title {
+    font-size: 44px;
+  }
+
+  .app-subtitle {
+    font-size: 16px;
+  }
+
+  .bottom-concepts {
+    bottom: 56px;
+    gap: 14px;
+  }
+}
+
+/* Desktop (más de 1024px) - diseño original */
+@media (min-width: 1025px) {
+  .app-header {
+    top: 42px;
+    margin: 96px 0 0;
+  }
+
+  .app-title {
+    font-size: 56px;
+  }
+
+  .app-subtitle {
+    font-size: 18px;
+    margin-left: 10px;
+    transform: rotate(-12deg) translateY(10px);
+  }
+
+  .app-footer {
+    left: 18px;
+    right: auto;
+    bottom: 18px;
+    max-width: 340px;
+  }
+
+  .app-footer p {
+    font-size: 14px;
+  }
+
+  .bottom-concepts {
+    bottom: 64px;
+    gap: 18px;
+  }
+
+  .bottom-concepts .concept-bubble {
+    padding: 12px 18px;
+  }
+}
+
+/* Landscape mobile (altura muy pequeña) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app-header {
+    top: 8px;
+  }
+
+  .app-title {
+    font-size: 20px;
+  }
+
+  .app-subtitle {
+    font-size: 10px;
+  }
+
+  .app-footer {
+    bottom: 6px;
+  }
+
+  .app-footer p {
+    padding: 4px 8px;
+    font-size: 8px;
+  }
+
+  .bottom-concepts {
+    bottom: 25px;
+    gap: 6px;
+  }
 }
