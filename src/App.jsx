@@ -92,27 +92,31 @@ const App = () => {
     offsetY: 0,
   })
 
-  // Initial positions - crear instancias iniciales
-  useEffect(() => {
-    const startingInstances = createStartingInstances()
-    setInstances(startingInstances)
+// Initial positions - crear instancias iniciales
+useEffect(() => {
+  const startingInstances = createStartingInstances()
+  setInstances(startingInstances)
 
-    const newPositions = {}
-    const centerX = window.innerWidth / 2
-    const centerY = window.innerHeight / 2
-    const radius = 280
+  const newPositions = {}
+  const centerX = window.innerWidth / 2
+  const centerY = window.innerHeight / 2
+  const radius = 280
 
-    const instanceIds = Object.keys(startingInstances)
-    instanceIds.forEach((instanceId, index) => {
-      const angle = (index / instanceIds.length) * Math.PI * 2
-      newPositions[instanceId] = {
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
-      }
-    })
+  const instanceIds = Object.keys(startingInstances)
+  
+  // Barajar el array para orden aleatorio
+  const shuffledIds = instanceIds.sort(() => Math.random() - 0.5)
+  
+  shuffledIds.forEach((instanceId, index) => {
+    const angle = (index / shuffledIds.length) * Math.PI * 2
+    newPositions[instanceId] = {
+      x: centerX + Math.cos(angle) * radius,
+      y: centerY + Math.sin(angle) * radius,
+    }
+  })
 
-    setPositions(newPositions)
-  }, [])
+  setPositions(newPositions)
+}, [])
 
   const getHitTarget = (dragId, currentPositions) => {
     const p = currentPositions[dragId]
