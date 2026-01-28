@@ -13,11 +13,11 @@ const Notification = ({
   useEffect(() => {
     if (isVisible) {
       setIsExiting(false)
-      
+
       const timer = setTimeout(() => {
         // Activar animación de salida
         setIsExiting(true)
-        
+
         // Esperar que termine la animación antes de cerrar
         setTimeout(() => {
           onClose()

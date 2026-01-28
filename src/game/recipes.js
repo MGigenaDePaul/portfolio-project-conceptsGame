@@ -9,4 +9,9 @@ export const RECIPES = {
   [pairKey('air', 'earth')]: 'atmosphere',
   [pairKey('air', 'fire')]: 'smoke',
   [pairKey('earth', 'fire')]: 'volcano',
+
+  [pairKey('water', 'water')]: 'ocean',
+  [pairKey('air', 'air')]: 'oxygen',
+  [pairKey('fire', 'fire')]: 'inferno',
+  [pairKey('earth', 'earth')]: 'mountain',
 }

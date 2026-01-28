@@ -7,8 +7,8 @@ export const STARTING_CONCEPT_IDS = ['fire', 'water', 'earth', 'air']
 // Nueva función para crear instancias iniciales (2 de cada elemento)
 export const createStartingInstances = () => {
   const instances = {}
-  
-  STARTING_CONCEPT_IDS.forEach(conceptId => {
+
+  STARTING_CONCEPT_IDS.forEach((conceptId) => {
     // Crear 2 instancias de cada elemento
     for (let i = 0; i < 2; i++) {
       const instanceId = generateInstanceId()
@@ -18,7 +18,7 @@ export const createStartingInstances = () => {
       }
     }
   })
-  
+
   return instances
 }
 
@@ -34,6 +34,11 @@ export const CONCEPTS = {
   atmosphere: { id: 'atmosphere', name: 'Atmosphere', emoji: '🌍' },
   smoke: { id: 'smoke', name: 'Smoke', emoji: '💨' },
   volcano: { id: 'volcano', name: 'Volcano', emoji: '🌋' },
+
+  ocean: { id: 'ocean', name: 'Ocean', emoji: '🌊' },
+  oxygen: { id: 'oxygen', name: 'Oxygen', emoji: '🧪' },
+  inferno: { id: 'inferno', name: 'Inferno', emoji: '💥' },
+  mountain: { id: 'mountain', name: 'Mountain', emoji: '⛰️' },
 }
 
 // Helper: get concept by id safely

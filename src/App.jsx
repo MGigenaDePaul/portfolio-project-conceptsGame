@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { createStartingInstances, generateInstanceId, CONCEPTS } from './game/concepts'
+import {
+  createStartingInstances,
+  generateInstanceId,
+  CONCEPTS,
+} from './game/concepts'
 import { combine } from './game/combine'
 import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
@@ -40,7 +44,9 @@ const App = () => {
     pressBubbleAudio.volume = 0.5
     pressBubbleAudio.preload = 'auto'
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    const soundBeforeCombiningAudio = new Audio(
+      '/sounds/soundBeforeCombining.mp3',
+    )
     soundBeforeCombiningAudio.volume = 0.4
     soundBeforeCombiningAudio.preload = 'auto'
 
@@ -92,31 +98,31 @@ const App = () => {
     offsetY: 0,
   })
 
-// Initial positions - crear instancias iniciales
-useEffect(() => {
-  const startingInstances = createStartingInstances()
-  setInstances(startingInstances)
+  // Initial positions - crear instancias iniciales
+  useEffect(() => {
+    const startingInstances = createStartingInstances()
+    setInstances(startingInstances)
 
-  const newPositions = {}
-  const centerX = window.innerWidth / 2
-  const centerY = window.innerHeight / 2
-  const radius = 280
+    const newPositions = {}
+    const centerX = window.innerWidth / 2
+    const centerY = window.innerHeight / 2
+    const radius = 280
 
-  const instanceIds = Object.keys(startingInstances)
-  
-  // Barajar el array para orden aleatorio
-  const shuffledIds = instanceIds.sort(() => Math.random() - 0.5)
-  
-  shuffledIds.forEach((instanceId, index) => {
-    const angle = (index / shuffledIds.length) * Math.PI * 2
-    newPositions[instanceId] = {
-      x: centerX + Math.cos(angle) * radius,
-      y: centerY + Math.sin(angle) * radius,
-    }
-  })
+    const instanceIds = Object.keys(startingInstances)
 
-  setPositions(newPositions)
-}, [])
+    // Barajar el array para orden aleatorio
+    const shuffledIds = instanceIds.sort(() => Math.random() - 0.5)
+
+    shuffledIds.forEach((instanceId, index) => {
+      const angle = (index / shuffledIds.length) * Math.PI * 2
+      newPositions[instanceId] = {
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius,
+      }
+    })
+
+    setPositions(newPositions)
+  }, [])
 
   const getHitTarget = (dragId, currentPositions) => {
     const p = currentPositions[dragId]
@@ -143,7 +149,7 @@ useEffect(() => {
   const combineAndReplace = (aInstanceId, bInstanceId, spawnPos) => {
     const aInstance = instances[aInstanceId]
     const bInstance = instances[bInstanceId]
-    
+
     if (!aInstance || !bInstance) return false
 
     // Combinar usando los conceptIds
@@ -255,32 +261,34 @@ useEffect(() => {
         playSoundBeforeCombining()
 
         setTimeout(() => {
-      const combined = combineAndReplace(dragId, targetId, spawnPos)
-      if (!combined) {
-        // ❌ COMBINACIÓN FALLÓ
-        playFailSound()
-        showNotification('Too complex for demo! Go play in a board!', spawnPos)
-        
-        // ⭐ MANTENER z-index alto por más tiempo cuando falla
-        setTimeout(() => {
-          setZIndexes((prevZ) => {
-            const next = { ...prevZ }
-            delete next[dragId]
-            delete next[targetId]
-            return next
-          })
-        }, 1500) // despues de 1.5 seg limpiar z-indexes
-        
-      } else {
-        // ✅ COMBINACIÓN EXITOSA - limpiar inmediatamente
-        setZIndexes((prevZ) => {
-          const next = { ...prevZ }
-          delete next[dragId]
-          delete next[targetId]
-          return next
-        })
-      }
-    }, 700)
+          const combined = combineAndReplace(dragId, targetId, spawnPos)
+          if (!combined) {
+            // ❌ COMBINACIÓN FALLÓ
+            playFailSound()
+            showNotification(
+              'Too complex for demo! Go play in a board!',
+              spawnPos,
+            )
+
+            // ⭐ MANTENER z-index alto por más tiempo cuando falla
+            setTimeout(() => {
+              setZIndexes((prevZ) => {
+                const next = { ...prevZ }
+                delete next[dragId]
+                delete next[targetId]
+                return next
+              })
+            }, 1500) // despues de 1.5 seg limpiar z-indexes
+          } else {
+            // ✅ COMBINACIÓN EXITOSA - limpiar inmediatamente
+            setZIndexes((prevZ) => {
+              const next = { ...prevZ }
+              delete next[dragId]
+              delete next[targetId]
+              return next
+            })
+          }
+        }, 700)
 
         return prev
       })
