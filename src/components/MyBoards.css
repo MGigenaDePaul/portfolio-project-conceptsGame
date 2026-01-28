@@ -24,6 +24,21 @@
   pointer-events: auto;
 }
 
+.my-boards-header-standalone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 150px)); /* Ajusta según necesites */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: clamp(200px, 80vw, 256px);
+  max-width: 90vw;
+  margin-bottom: clamp(4px, 1.5vw, 8px);
+  z-index: 50; /* Por encima de todo */
+  pointer-events: auto;
+}
+
 .help-button,
 .settings-button {
   width: clamp(32px, 7vw, 36px); /* responsive button size */
