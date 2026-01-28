@@ -21,7 +21,7 @@ const HomeScreen = ({
       <MyBoards />
 
       <div className="concepts-area">
-        {Object.keys(instances).map((instanceId) => {
+        {Object.keys(instances).map((instanceId, index) => {
           const instance = instances[instanceId]
           const concept = CONCEPTS[instance.conceptId]
           const position = positions[instanceId] || { x: 0, y: 0 }
@@ -35,6 +35,8 @@ const HomeScreen = ({
               isDropTarget={instanceId === hoverTargetId}
               isDragging={instanceId === draggingId}
               zIndex={zIndexes[instanceId] || 0}
+              spawnDelayMs={index * 150} // 80ms entre cada burbuja
+              isSpawning={true}
             />
           )
         })}

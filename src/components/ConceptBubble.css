@@ -1,11 +1,28 @@
+/* ConceptBubble.css - RESPONSIVE VERSION */
+
+/* ========== ANIMACIONES DE SPAWN ========== */
+@keyframes bubbleSpawn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .concept-bubble {
   position: absolute;
   display: flex;
   align-items: center;
-  min-width: 92.38px;
-  min-height: 38px;
-  gap: 8px;
-  padding: 10px 16px;
+  min-width: clamp(70px, 15vw, 92.38px); /* responsive width */
+  min-height: clamp(32px, 6vh, 38px); /* responsive height */
+  gap: clamp(4px, 1.5vw, 8px); /* responsive gap */
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px); /* responsive padding */
   background: #161a1d;
   border: 1px solid rgba(200, 209, 219, 0.15);
   border-radius: 10px;
@@ -18,10 +35,23 @@
     box-shadow 0.15s ease,
     background 0.15s ease;
   transform: translate(-50%, -50%);
+  
   /* drag essentials */
   touch-action: none;
   user-select: none;
   cursor: grab;
+}
+
+/* Estado inicial: oculto */
+.concept-bubble.spawning {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3);
+}
+
+/* Estado de aparición */
+.concept-bubble.spawned {
+animation: bubbleSpawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* cubic-bezier para efecto de rebote suave */
 }
 
 .concept-bubble:active {
@@ -34,13 +64,13 @@
   transform: translate(-50%, -50%) scale(1.03);
 }
 
-/* Cuando se está arrastrando - inclinación muy sutil */
+/* Dragging state */
 .concept-bubble.dragging {
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
   cursor: grabbing;
 }
 
-/* Cuando es drop target - inclinación muy sutil */
+/* Drop target state */
 .concept-bubble.drop-target {
   border-color: rgba(139, 92, 246, 0.85);
   box-shadow:
@@ -51,12 +81,13 @@
 }
 
 .concept-emoji {
-  font-size: 24px;
+  font-size: clamp(18px, 4vw, 24px); /* responsive emoji */
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .concept-name {
-  font-size: 15px;
+  font-size: clamp(12px, 2.5vw, 15px); /* responsive text */
   font-weight: 600;
   letter-spacing: 0.3px;
 }
@@ -251,7 +282,6 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-
 /* MOUNTAIN ⛰️ */
 .concept-bubble.concept-mountain:hover,
 .concept-bubble.concept-mountain.dragging {
@@ -263,4 +293,90 @@
   background: #451c00;
   border-color: #ff8c00;
   transform: translate(-50%, -50%) scale(1.06);
+}
+
+/* ============================================ */
+/* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
+/* ============================================ */
+
+/* Small mobile (hasta 480px) */
+@media (max-width: 480px) {
+  .concept-bubble {
+    min-width: 65px;
+    min-height: 30px;
+    padding: 6px 10px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+
+  .concept-emoji {
+    font-size: 16px;
+  }
+
+  .concept-name {
+    font-size: 11px;
+  }
+
+  /* Escala más pequeña en hover/drag para móviles */
+  .concept-bubble:hover,
+  .concept-bubble.dragging {
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+
+  .concept-bubble.drop-target {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+/* Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .concept-bubble {
+    min-width: 75px;
+    min-height: 34px;
+    padding: 7px 12px;
+    gap: 6px;
+  }
+
+  .concept-emoji {
+    font-size: 20px;
+  }
+
+  .concept-name {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mobile (altura muy pequeña) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .concept-bubble {
+    min-width: 60px;
+    min-height: 26px;
+    padding: 5px 8px;
+    gap: 3px;
+    border-radius: 6px;
+  }
+
+  .concept-emoji {
+    font-size: 14px;
+  }
+
+  .concept-name {
+    font-size: 10px;
+  }
+}
+
+/* Touch devices - aumentar área táctil */
+@media (hover: none) and (pointer: coarse) {
+  .concept-bubble {
+    /* Área táctil mínima de 44x44px (recomendado por Apple) */
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Eliminar hover en dispositivos táctiles */
+  .concept-bubble:hover {
+    background: #161a1d;
+    border-color: rgba(200, 209, 219, 0.15);
+    transform: translate(-50%, -50%);
+  }
 }
