@@ -10,6 +10,7 @@ const ConceptBubble = ({
   isDragging,
   spawnDelayMs = 0,
   isSpawning = false,
+  isNewlyCombined = false, // Nuevo prop
 }) => {
   const [hasSpawned, setHasSpawned] = useState(!isSpawning)
 
@@ -24,12 +25,19 @@ const ConceptBubble = ({
     }
   }, [isSpawning, spawnDelayMs])
 
+  // Para elementos recién combinados, activar spawn inmediatamente
+  useEffect(() => {
+    if (isNewlyCombined) {
+      setHasSpawned(true)
+    }
+  }, [isNewlyCombined])
+
   return (
     <div
       className={`concept-bubble
         ${isDropTarget ? 'drop-target' : ''}
         ${isDragging ? 'dragging' : ''}
-        ${!hasSpawned ? 'spawning' : 'spawned'}
+        ${!hasSpawned ? 'spawning' : isNewlyCombined ? 'spawned-fast' : 'spawned'}
         concept-${concept.id}
       `}
       style={{

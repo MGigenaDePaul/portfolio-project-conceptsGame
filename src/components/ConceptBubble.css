@@ -15,6 +15,21 @@
   }
 }
 
+/* Animación rápida para elementos recién combinados */
+@keyframes bubbleSpawnFast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .concept-bubble {
   position: absolute;
   display: flex;
@@ -48,10 +63,16 @@
   transform: translate(-50%, -50%) scale(0.3);
 }
 
-/* Estado de aparición */
+/* Estado de aparición normal (spawn inicial) */
 .concept-bubble.spawned {
-animation: bubbleSpawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: bubbleSpawn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   /* cubic-bezier para efecto de rebote suave */
+}
+
+/* Estado de aparición rápida (elementos combinados) */
+.concept-bubble.spawned-fast {
+  animation: bubbleSpawnFast 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Más rápido: 0.25s en vez de 0.4s */
 }
 
 .concept-bubble:active {

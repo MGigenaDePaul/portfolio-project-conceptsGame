@@ -245,6 +245,7 @@ const App = () => {
       next[resultInstanceId] = {
         instanceId: resultInstanceId,
         conceptId: resultConceptId,
+        isNewlyCombined: true, // 🌟 Marcar como recién combinado
       }
       return next
     })
@@ -301,9 +302,11 @@ const App = () => {
         setHoverTargetId(targetId)
 
         if (targetId) {
+          // Mantener el dragging element por encima del target
           setZIndexes((prevZ) => ({
             ...prevZ,
-            [targetId]: 0,
+            [targetId]: zIndexCounter.current - 1, // target un nivel abajo
+            [d.id]: zIndexCounter.current, // dragging element encima
           }))
         }
 
