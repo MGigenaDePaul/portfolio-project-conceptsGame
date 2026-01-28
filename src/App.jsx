@@ -136,32 +136,89 @@ const App = () => {
     return distance < minDistance
   }
 
-  // Helper para generar posición aleatoria válida
-  const generateRandomPosition = (centerX, centerY, minDistanceFromCenter, margin) => {
-    const maxAttempts = 50
+  // Helper para verificar si una posición colisiona con otras burbujas ya posicionadas
+  const isPositionTooCloseToOthers = (x, y, existingPositions, minDistance = 120) => {
+    for (const pos of Object.values(existingPositions)) {
+      const distance = Math.hypot(x - pos.x, y - pos.y)
+      if (distance < minDistance) {
+        return true // Demasiado cerca de otra burbuja
+      }
+    }
+    return false // Posición válida
+  }
+
+  // Helper para generar posición aleatoria válida en un cuadrante específico
+  const generateRandomPositionInQuadrant = (
+    quadrant,
+    centerX,
+    centerY,
+    minDistanceFromCenter,
+    margin,
+    existingPositions = {}
+  ) => {
+    const maxAttempts = 100 // Más intentos para encontrar una posición válida
     let attempts = 0
-    
+
+    // Definir límites según el cuadrante
+    let minX, maxX, minY, maxY
+
+    switch (quadrant) {
+      case 0: // Top-Left
+        minX = margin
+        maxX = centerX - minDistanceFromCenter / 1.5
+        minY = margin
+        maxY = centerY - minDistanceFromCenter / 1.5
+        break
+      case 1: // Top-Right
+        minX = centerX + minDistanceFromCenter / 1.5
+        maxX = window.innerWidth - margin
+        minY = margin
+        maxY = centerY - minDistanceFromCenter / 1.5
+        break
+      case 2: // Bottom-Left
+        minX = margin
+        maxX = centerX - minDistanceFromCenter / 1.5
+        minY = centerY + minDistanceFromCenter / 1.5
+        maxY = window.innerHeight - margin
+        break
+      case 3: // Bottom-Right
+        minX = centerX + minDistanceFromCenter / 1.5
+        maxX = window.innerWidth - margin
+        minY = centerY + minDistanceFromCenter / 1.5
+        maxY = window.innerHeight - margin
+        break
+      default:
+        minX = margin
+        maxX = window.innerWidth - margin
+        minY = margin
+        maxY = window.innerHeight - margin
+    }
+
+    // Distancia mínima entre burbujas (responsive)
+    const width = window.innerWidth
+    const minDistanceBetweenBubbles = width < 480 ? 100 : width < 768 ? 110 : 120
+
     while (attempts < maxAttempts) {
-      const x = margin + Math.random() * (window.innerWidth - margin * 2)
-      const y = margin + Math.random() * (window.innerHeight - margin * 2)
-      
-      if (!isPositionTooCloseToCenter(x, y, centerX, centerY, minDistanceFromCenter)) {
+      const x = minX + Math.random() * (maxX - minX)
+      const y = minY + Math.random() * (maxY - minY)
+
+      // Verificar que no esté cerca del centro ni de otras burbujas
+      if (
+        !isPositionTooCloseToCenter(x, y, centerX, centerY, minDistanceFromCenter) &&
+        !isPositionTooCloseToOthers(x, y, existingPositions, minDistanceBetweenBubbles)
+      ) {
         return { x, y }
       }
       attempts++
     }
-    
-    // Fallback: posición en los bordes
-    const side = Math.floor(Math.random() * 4)
-    switch (side) {
-      case 0: return { x: margin, y: centerY + minDistanceFromCenter }
-      case 1: return { x: window.innerWidth - margin, y: centerY + minDistanceFromCenter }
-      case 2: return { x: centerX + minDistanceFromCenter, y: margin }
-      default: return { x: centerX + minDistanceFromCenter, y: window.innerHeight - margin }
-    }
+
+    // Fallback: posición en el borde del cuadrante con algo de aleatorización
+    const fallbackX = minX + (maxX - minX) * (0.3 + Math.random() * 0.4)
+    const fallbackY = minY + (maxY - minY) * (0.3 + Math.random() * 0.4)
+    return { x: fallbackX, y: fallbackY }
   }
 
-  // Initial positions - crear instancias iniciales con posicionamiento aleatorio
+  // Initial positions - crear instancias iniciales con posicionamiento balanceado y sin colisiones
   useEffect(() => {
     const startingInstances = createStartingInstances()
     setInstances(startingInstances)
@@ -170,22 +227,28 @@ const App = () => {
       const newPositions = {}
       const centerX = window.innerWidth / 2
       const centerY = window.innerHeight / 2
-      
+
       // Distancia mínima del centro para no tocar el panel MY BOARDS
       const width = window.innerWidth
-      const minDistanceFromCenter = width < 480 ? 180 : width < 768 ? 200 : width < 1024 ? 240 : 280
-      
+      const minDistanceFromCenter =
+        width < 480 ? 180 : width < 768 ? 200 : width < 1024 ? 240 : 280
+
       // Margen desde los bordes
       const margin = width < 480 ? 80 : width < 768 ? 100 : 120
 
       const instanceIds = Object.keys(startingInstances)
 
-      instanceIds.forEach((instanceId) => {
-        newPositions[instanceId] = generateRandomPosition(
-          centerX, 
-          centerY, 
-          minDistanceFromCenter, 
-          margin
+      // Distribuir burbujas en cuadrantes de manera balanceada, sin colisiones
+      instanceIds.forEach((instanceId, index) => {
+        const quadrant = index % 4 // 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
+
+        newPositions[instanceId] = generateRandomPositionInQuadrant(
+          quadrant,
+          centerX,
+          centerY,
+          minDistanceFromCenter,
+          margin,
+          newPositions // Pasar posiciones existentes para evitar colisiones
         )
       })
 
