@@ -1,4 +1,4 @@
-/* App.css - RESPONSIVE VERSION */
+/* App.css - RESPONSIVE VERSION - Z-INDEX FIXED */
 
 /* 1) Global reset */
 *,
@@ -59,7 +59,7 @@ body {
   left: 50%;
   padding: 10px;
   transform: translateX(-50%);
-  z-index: 30;
+  z-index: 30; /* 🔧 FIX: Debe ser < 9999 (dragging element) */
   pointer-events: none;
   text-align: center;
 }
@@ -89,7 +89,6 @@ body {
 .concepts-area {
   position: absolute;
   inset: 0;
-  z-index: 10;
 }
 
 /* 6) Footer warning box - RESPONSIVE */
@@ -98,7 +97,7 @@ body {
   left: 12px;
   right: 12px;
   bottom: 12px;
-  z-index: 40;
+  z-index: 40; /* 🔧 FIX: Debe ser < 9999 */
   text-align: center;
   pointer-events: none;
 }
@@ -126,7 +125,7 @@ body {
   transform: translateX(-50%);
   display: flex;
   gap: clamp(10px, 2vw, 18px); /* responsive gap */
-  z-index: 35;
+  z-index: 35; /* 🔧 FIX: Debe ser < 9999 */
   pointer-events: none;
   flex-wrap: wrap;
   justify-content: center;

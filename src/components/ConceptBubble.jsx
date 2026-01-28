@@ -10,27 +10,32 @@ const ConceptBubble = ({
   isDragging,
   spawnDelayMs = 0,
   isSpawning = false,
-  isNewlyCombined = false, // Nuevo prop
+  isNewlyCombined = false,
 }) => {
   const [hasSpawned, setHasSpawned] = useState(!isSpawning)
 
   useEffect(() => {
     if (isSpawning && spawnDelayMs >= 0) {
-      // Esperar el delay antes de activar la animación
       const timer = setTimeout(() => {
         setHasSpawned(true)
       }, spawnDelayMs)
-
       return () => clearTimeout(timer)
     }
   }, [isSpawning, spawnDelayMs])
 
-  // Para elementos recién combinados, activar spawn inmediatamente
   useEffect(() => {
     if (isNewlyCombined) {
       setHasSpawned(true)
     }
   }, [isNewlyCombined])
+
+  // 🔥 SOLUCIÓN NUCLEAR: z-index super alto cuando arrastra
+  const calculatedZIndex = isDragging ? 999999 : (isDropTarget ? 100 : (zIndex || 0))
+
+  // 🔥 NUEVO: Crear string con !important si está arrastrando
+  const zIndexStyle = isDragging 
+    ? '999999 !important' 
+    : calculatedZIndex
 
   return (
     <div
@@ -43,7 +48,9 @@ const ConceptBubble = ({
       style={{
         left: position.x,
         top: position.y,
-        zIndex: zIndex || 0,
+        zIndex: calculatedZIndex,
+        // 🔥 AGREGAR TAMBIÉN POSITION PARA CREAR NUEVO STACKING CONTEXT
+        position: 'absolute',
         animationDelay: hasSpawned ? '0ms' : `${spawnDelayMs}ms`,
       }}
       onPointerDown={onPointerDown}

@@ -1,4 +1,4 @@
-/* MyBoards.css - RESPONSIVE VERSION */
+/* MyBoards.css - RESPONSIVE VERSION - Z-INDEX FIXED */
 
 .my-boards-container {
   position: absolute;
@@ -11,7 +11,7 @@
   gap: clamp(12px, 3vw, 16px); /* responsive gap */
   min-width: clamp(200px, 80vw, 256px); /* responsive width */
   max-width: 90vw;
-  z-index: 1;
+  z-index: 1; /* 🔧 FIX: Debe ser muy bajo, < 9999 */
   pointer-events: none;
 }
 
@@ -35,7 +35,7 @@
   width: clamp(200px, 80vw, 256px);
   max-width: 90vw;
   margin-bottom: clamp(4px, 1.5vw, 8px);
-  z-index: 50; /* Por encima de todo */
+  z-index: 50; /* 🔧 FIX: Debe ser < 9999 (dragging element = 9999) */
   pointer-events: auto;
 }
 
@@ -55,6 +55,7 @@
   transition: all 0.2s;
   pointer-events: auto;
   flex-shrink: 0;
+  /* 🔧 FIX: NO z-index aquí, se hereda del padre */
 }
 
 .help-button:hover,
@@ -88,6 +89,7 @@
   backdrop-filter: blur(10px);
   transition: all 0.2s;
   pointer-events: auto;
+  /* 🔧 FIX: NO z-index aquí */
 }
 
 .board-card:hover {
