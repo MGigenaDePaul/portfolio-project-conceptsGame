@@ -1,0 +1,77 @@
+/* Overlay del modal */
+.guide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Apertura rápida */
+  animation: fadeIn 0.15s ease;
+  
+  cursor: pointer;
+}
+
+/* Cierre lento */
+.guide-overlay.closing {
+  animation: fadeOut 0.8s ease forwards;
+}
+
+/* Modal container */
+.guide-modal {
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  background: #1e2328;
+  border: 1px solid #596773;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Header del modal */
+.guide-header {
+  padding: 24px;
+  border-bottom: 1px solid #596773;
+  text-align: center;
+}
+
+.guide-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+/* Body del modal */
+.guide-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(85vh - 100px);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
