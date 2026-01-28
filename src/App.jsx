@@ -33,7 +33,7 @@ const App = () => {
     combineAudio.preload = 'auto'
 
     const failAudio = new Audio('/sounds/fail.mp3')
-    failAudio.volume = 0.2
+    failAudio.volume = 0.4
     failAudio.preload = 'auto'
 
     const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
@@ -251,18 +251,32 @@ const App = () => {
         playSoundBeforeCombining()
 
         setTimeout(() => {
-          const combined = combineAndReplace(dragId, targetId, spawnPos)
-          if (!combined) {
-            playFailSound()
-            showNotification('Too complex for demo! Go play in a board!', spawnPos)
-          }
+      const combined = combineAndReplace(dragId, targetId, spawnPos)
+      if (!combined) {
+        // ❌ COMBINACIÓN FALLÓ
+        playFailSound()
+        showNotification('Too complex for demo! Go play in a board!', spawnPos)
+        
+        // ⭐ MANTENER z-index alto por más tiempo cuando falla
+        setTimeout(() => {
           setZIndexes((prevZ) => {
             const next = { ...prevZ }
             delete next[dragId]
             delete next[targetId]
             return next
           })
-        }, 700)
+        }, 2000) // ← Esperar 2 segundos antes de limpiar z-indexes
+        
+      } else {
+        // ✅ COMBINACIÓN EXITOSA - limpiar inmediatamente
+        setZIndexes((prevZ) => {
+          const next = { ...prevZ }
+          delete next[dragId]
+          delete next[targetId]
+          return next
+        })
+      }
+    }, 700)
 
         return prev
       })
