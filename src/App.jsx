@@ -265,7 +265,7 @@ const App = () => {
             delete next[targetId]
             return next
           })
-        }, 2000) // ← Esperar 2 segundos antes de limpiar z-indexes
+        }, 1500) // despues de 1.5 seg limpiar z-indexes
         
       } else {
         // ✅ COMBINACIÓN EXITOSA - limpiar inmediatamente
