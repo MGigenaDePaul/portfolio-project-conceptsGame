@@ -1,4 +1,4 @@
-/* ConceptBubble.css - RESPONSIVE VERSION */
+/* ConceptBubble.css - RESPONSIVE VERSION - FIXED */
 
 /* ========== ANIMACIONES DE SPAWN ========== */
 @keyframes bubbleSpawn {
@@ -34,10 +34,10 @@
   position: absolute;
   display: flex;
   align-items: center;
-  min-width: clamp(70px, 15vw, 92.38px); /* responsive width */
-  min-height: clamp(32px, 6vh, 38px); /* responsive height */
-  gap: clamp(4px, 1.5vw, 8px); /* responsive gap */
-  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px); /* responsive padding */
+  min-width: clamp(70px, 15vw, 92.38px);
+  min-height: clamp(32px, 6vh, 38px);
+  gap: clamp(4px, 1.5vw, 8px);
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
   background: #161a1d;
   border: 1px solid rgba(200, 209, 219, 0.15);
   border-radius: 10px;
@@ -55,6 +55,8 @@
   touch-action: none;
   user-select: none;
   cursor: grab;
+  
+  /* 🔧 FIX: NO z-index aquí para que App.jsx controle el z-index */
 }
 
 /* Estado inicial: oculto */
@@ -66,13 +68,11 @@
 /* Estado de aparición normal (spawn inicial) */
 .concept-bubble.spawned {
   animation: bubbleSpawn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  /* cubic-bezier para efecto de rebote suave */
 }
 
 /* Estado de aparición rápida (elementos combinados) */
 .concept-bubble.spawned-fast {
   animation: bubbleSpawnFast 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  /* Más rápido: 0.25s en vez de 0.4s */
 }
 
 .concept-bubble:active {
@@ -89,9 +89,10 @@
 .concept-bubble.dragging {
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
   cursor: grabbing;
+  /* 🔧 FIX: z-index controlado por App.jsx via inline styles */
 }
 
-/* Drop target state */
+/* Drop target state - BASE (sin z-index) */
 .concept-bubble.drop-target {
   border-color: rgba(139, 92, 246, 0.85);
   box-shadow:
@@ -99,16 +100,17 @@
     0 0 30px rgba(139, 92, 246, 0.35),
     0 10px 30px rgba(0, 0, 0, 0.35);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+  /* 🔧 FIX: NO z-index - controlado por App.jsx */
 }
 
 .concept-emoji {
-  font-size: clamp(18px, 4vw, 24px); /* responsive emoji */
+  font-size: clamp(18px, 4vw, 24px);
   line-height: 1;
   flex-shrink: 0;
 }
 
 .concept-name {
-  font-size: clamp(12px, 2.5vw, 15px); /* responsive text */
+  font-size: clamp(12px, 2.5vw, 15px);
   font-weight: 600;
   letter-spacing: 0.3px;
 }
@@ -206,10 +208,18 @@
   border-color: #00d9ff;
 }
 
+.concept-bubble.concept-atmosphere.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-atmosphere.drop-target {
   background: #00304e;
   border-color: #00d9ff;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(0, 217, 255, 0.35),
+    0 0 30px rgba(0, 217, 255, 0.5),
+    0 10px 30px rgba(0, 48, 78, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* SMOKE 💨 */
@@ -219,10 +229,18 @@
   border-color: #bebebe;
 }
 
+.concept-bubble.concept-smoke.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-smoke.drop-target {
   background: #2e2e2e;
   border-color: #bebebe;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(190, 190, 190, 0.35),
+    0 0 30px rgba(190, 190, 190, 0.5),
+    0 10px 30px rgba(46, 46, 46, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* MUD 🟤 */
@@ -232,10 +250,18 @@
   border-color: #ff6300;
 }
 
+.concept-bubble.concept-mud.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-mud.drop-target {
   background: #4c1300;
   border-color: #ff6300;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 99, 0, 0.35),
+    0 0 30px rgba(255, 99, 0, 0.5),
+    0 10px 30px rgba(76, 19, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* VOLCANO 🌋 */
@@ -245,10 +271,18 @@
   border-color: #ff4900;
 }
 
+.concept-bubble.concept-volcano.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-volcano.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 73, 0, 0.35),
+    0 0 30px rgba(255, 73, 0, 0.5),
+    0 10px 30px rgba(79, 13, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* STEAM ☁️💧 */
@@ -258,10 +292,18 @@
   border-color: #00c5ff;
 }
 
+.concept-bubble.concept-steam.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-steam.drop-target {
   background: #002b55;
   border-color: #00c5ff;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(0, 197, 255, 0.35),
+    0 0 30px rgba(0, 197, 255, 0.5),
+    0 10px 30px rgba(0, 43, 85, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* OCEAN 🌊 */
@@ -271,10 +313,18 @@
   border-color: #00ceff;
 }
 
+.concept-bubble.concept-ocean.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-ocean.drop-target {
   background: #002d52;
   border-color: #00ceff;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(0, 206, 255, 0.35),
+    0 0 30px rgba(0, 206, 255, 0.5),
+    0 10px 30px rgba(0, 45, 82, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* OXYGEN 🧪 */
@@ -284,10 +334,18 @@
   border-color: #00e9ff;
 }
 
+.concept-bubble.concept-oxygen.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-oxygen.drop-target {
   background: #003442;
   border-color: #00e9ff;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(0, 233, 255, 0.35),
+    0 0 30px rgba(0, 233, 255, 0.5),
+    0 10px 30px rgba(0, 52, 66, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* INFERNO 💥 */
@@ -297,10 +355,18 @@
   border-color: #ff4900;
 }
 
+.concept-bubble.concept-inferno.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-inferno.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 73, 0, 0.35),
+    0 0 30px rgba(255, 73, 0, 0.5),
+    0 10px 30px rgba(79, 13, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* MOUNTAIN ⛰️ */
@@ -310,10 +376,39 @@
   border-color: #ff8c00;
 }
 
+.concept-bubble.concept-mountain.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
 .concept-bubble.concept-mountain.drop-target {
   background: #451c00;
   border-color: #ff8c00;
-  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(255, 140, 0, 0.35),
+    0 0 30px rgba(255, 140, 0, 0.5),
+    0 10px 30px rgba(69, 28, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* RAIN 🌧️ */
+.concept-bubble.concept-rain:hover,
+.concept-bubble.concept-rain.dragging {
+  background: #1a3a52;
+  border-color: #5dade2;
+}
+
+.concept-bubble.concept-rain.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-rain.drop-target {
+  background: #1a3a52;
+  border-color: #5dade2;
+  box-shadow:
+    0 0 0 2px rgba(93, 173, 226, 0.35),
+    0 0 30px rgba(93, 173, 226, 0.5),
+    0 10px 30px rgba(26, 58, 82, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* ============================================ */

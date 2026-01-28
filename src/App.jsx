@@ -30,6 +30,8 @@ const App = () => {
   })
   const [zIndexes, setZIndexes] = useState({})
   const [hitRadius, setHitRadius] = useState(getHitRadius())
+  // 🔧 FIX BUG 3: Track if combination is in progress
+  const [isCombining, setIsCombining] = useState(false)
 
   const zIndexCounter = useRef(1000)
   const combineAudioRef = useRef(null)
@@ -325,6 +327,13 @@ const App = () => {
   }
 
   const onPointerDownBubble = (instanceId) => (e) => {
+    // 🔧 FIX BUG 3: Prevent interaction during combination
+    if (isCombining) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+
     e.preventDefault()
     e.stopPropagation()
     playPressBubbleSound()
@@ -334,9 +343,10 @@ const App = () => {
 
     setDraggingId(instanceId)
 
+    // 🔧 FIX BUG 1 & 2: Set dragging element to very high z-index
     setZIndexes((prev) => ({
       ...prev,
-      [instanceId]: zIndexCounter.current++,
+      [instanceId]: 9999,
     }))
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
@@ -364,12 +374,12 @@ const App = () => {
         const targetId = getHitTarget(d.id, next)
         setHoverTargetId(targetId)
 
+        // 🔧 FIX BUG 2: Keep dragging element always on top
         if (targetId) {
-          // Mantener el dragging element por encima del target
           setZIndexes((prevZ) => ({
             ...prevZ,
-            [targetId]: zIndexCounter.current - 1, // target un nivel abajo
-            [d.id]: zIndexCounter.current, // dragging element encima
+            [targetId]: 100, // target lower
+            [d.id]: 9999, // dragging always highest
           }))
         }
 
@@ -403,6 +413,9 @@ const App = () => {
 
         playSoundBeforeCombining()
 
+        // 🔧 FIX BUG 3: Lock elements during combination
+        setIsCombining(true)
+
         setTimeout(() => {
           const combined = combineAndReplace(dragId, targetId, spawnPos)
           if (!combined) {
@@ -419,7 +432,9 @@ const App = () => {
                 delete next[targetId]
                 return next
               })
-            }, 1500)
+              // 🔧 FIX BUG 3: Unlock after notification time
+              setIsCombining(false)
+            }, 2000) // Wait for notification to disappear
           } else {
             setZIndexes((prevZ) => {
               const next = { ...prevZ }
@@ -427,6 +442,8 @@ const App = () => {
               delete next[targetId]
               return next
             })
+            // 🔧 FIX BUG 3: Unlock after successful combination
+            setIsCombining(false)
           }
         }, 700)
 
@@ -441,7 +458,7 @@ const App = () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
-  }, [instances, positions, hitRadius])
+  }, [instances, positions, hitRadius, isCombining])
 
   return (
     <>
