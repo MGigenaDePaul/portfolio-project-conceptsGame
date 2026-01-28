@@ -35,8 +35,9 @@ const HomeScreen = ({
               isDropTarget={instanceId === hoverTargetId}
               isDragging={instanceId === draggingId}
               zIndex={zIndexes[instanceId] || 0}
-              spawnDelayMs={index * 150} // 80ms entre cada burbuja
-              isSpawning={true}
+              spawnDelayMs={index * 150} // 150ms entre cada burbuja
+              isSpawning={!instance.isNewlyCombined} // No aplicar delay inicial a elementos combinados
+              isNewlyCombined={instance.isNewlyCombined} // Marcar si es recién combinado
             />
           )
         })}
