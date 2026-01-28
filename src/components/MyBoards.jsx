@@ -7,19 +7,21 @@ const MyBoards = ({ discoveredConcepts }) => {
 
   return (
     <>
-      <div className="my-boards-container">
-        <div className="my-boards-header">
-          <button
-            className="help-button"
-            onClick={() => setIsGuideOpen(true)}
-            title="Open guide"
-          >
-            ?
-          </button>
-          <h2 className="my-boards-title">MY BOARDS</h2>
-          <button className="settings-button">⚙️</button>
-        </div>
+      {/* Botones FUERA del container */}
+      <div className="my-boards-header-standalone">
+        <button
+          className="help-button"
+          onClick={() => setIsGuideOpen(true)}
+          title="Open guide"
+        >
+          ?
+        </button>
+        <h2 className="my-boards-title">MY BOARDS</h2>
+        <button className="settings-button">⚙️</button>
+      </div>
 
+      {/* Board sin header */}
+      <div className="my-boards-container">
         <div className="board-card">
           <div className="board-info">
             <span className="board-avatar">M</span>
@@ -36,7 +38,6 @@ const MyBoards = ({ discoveredConcepts }) => {
         <button className="create-board-button">+ Create new board</button>
       </div>
 
-      {/* Modal de guía */}
       <ConceptsGuide
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}

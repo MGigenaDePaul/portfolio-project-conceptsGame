@@ -1,114 +1,60 @@
-/* ConceptsGuide.css - RESPONSIVE VERSION */
-
 /* Overlay del modal */
-.concepts-guide-overlay {
+.guide-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
-  z-index: 9999;
+  z-index: 99999;
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(12px, 3vw, 20px); /* responsive padding */
-  animation: fadeIn 0.2s ease;
+  
+  /* Apertura rápida */
+  animation: fadeIn 0.15s ease;
+  
+  cursor: pointer;
+}
+
+/* Cierre lento */
+.guide-overlay.closing {
+  animation: fadeOut 0.8s ease forwards;
 }
 
 /* Modal container */
-.concepts-guide-modal {
-  position: relative;
-  width: 100%;
-  max-width: clamp(320px, 90vw, 600px); /* responsive width */
+.guide-modal {
+  width: 90%;
+  max-width: 700px;
   max-height: 85vh;
   background: #1e2328;
   border: 1px solid #596773;
-  border-radius: clamp(8px, 2vw, 12px); /* responsive border radius */
+  border-radius: 12px;
   overflow: hidden;
-  animation: slideUp 0.3s ease;
-  display: flex;
-  flex-direction: column;
+  cursor: default;
 }
 
 /* Header del modal */
-.concepts-guide-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: clamp(12px, 3vw, 20px); /* responsive padding */
+.guide-header {
+  padding: 24px;
   border-bottom: 1px solid #596773;
-  flex-shrink: 0;
+  text-align: center;
 }
 
-.concepts-guide-title {
-  font-size: clamp(16px, 4vw, 24px); /* responsive title */
+.guide-title {
+  font-size: 24px;
   font-weight: 600;
   color: #fff;
   margin: 0;
 }
 
-.concepts-guide-close {
-  width: clamp(32px, 7vw, 40px); /* responsive button */
-  height: clamp(32px, 7vw, 40px);
-  border-radius: 50%;
-  border: 1px solid rgba(200, 209, 219, 0.15);
-  background: transparent;
-  color: #c8d1db;
-  font-size: clamp(18px, 4vw, 24px);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.concepts-guide-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #1d7afc;
-}
-
-/* Contenido del modal */
-.concepts-guide-content {
-  padding: clamp(16px, 4vw, 24px); /* responsive padding */
+/* Body del modal */
+.guide-body {
+  padding: 24px;
   overflow-y: auto;
-  flex: 1;
-}
-
-.concepts-guide-content h2 {
-  font-size: clamp(16px, 3.5vw, 20px); /* responsive headings */
-  font-weight: 600;
-  color: #fff;
-  margin: clamp(16px, 3vw, 24px) 0 clamp(8px, 2vw, 12px);
-}
-
-.concepts-guide-content h2:first-child {
-  margin-top: 0;
-}
-
-.concepts-guide-content p,
-.concepts-guide-content li {
-  font-size: clamp(13px, 2.8vw, 15px); /* responsive text */
-  line-height: 1.6;
-  color: rgba(200, 209, 219, 0.85);
-  margin-bottom: clamp(8px, 2vw, 12px);
-}
-
-.concepts-guide-content ul {
-  padding-left: clamp(16px, 4vw, 24px);
-  margin-bottom: clamp(12px, 3vw, 16px);
-}
-
-.concepts-guide-content li {
-  margin-bottom: clamp(6px, 1.5vw, 8px);
-}
-
-.concepts-guide-content code {
-  background: rgba(139, 92, 246, 0.15);
-  padding: clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 8px);
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: clamp(12px, 2.5vw, 14px);
-  color: #8b5cf6;
+  max-height: calc(85vh - 100px);
 }
 
 /* Animaciones */
@@ -121,211 +67,11 @@
   }
 }
 
-@keyframes slideUp {
+@keyframes fadeOut {
   from {
-    opacity: 0;
-    transform: translateY(20px);
+    opacity: 1;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ============================================ */
-/* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
-/* ============================================ */
-
-/* Small mobile (hasta 480px) */
-@media (max-width: 480px) {
-  .concepts-guide-overlay {
-    padding: 8px;
-  }
-
-  .concepts-guide-modal {
-    max-width: 100%;
-    max-height: 90vh;
-    border-radius: 8px;
-  }
-
-  .concepts-guide-header {
-    padding: 12px;
-  }
-
-  .concepts-guide-title {
-    font-size: 16px;
-  }
-
-  .concepts-guide-close {
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-  }
-
-  .concepts-guide-content {
-    padding: 12px;
-  }
-
-  .concepts-guide-content h2 {
-    font-size: 15px;
-    margin: 14px 0 8px;
-  }
-
-  .concepts-guide-content p,
-  .concepts-guide-content li {
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .concepts-guide-content ul {
-    padding-left: 16px;
-    margin-bottom: 12px;
-  }
-
-  .concepts-guide-content code {
-    font-size: 11px;
-    padding: 2px 4px;
-  }
-}
-
-/* Tablets (481px - 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .concepts-guide-modal {
-    max-width: 85vw;
-  }
-
-  .concepts-guide-header {
-    padding: 16px;
-  }
-
-  .concepts-guide-title {
-    font-size: 20px;
-  }
-
-  .concepts-guide-close {
-    width: 36px;
-    height: 36px;
-    font-size: 20px;
-  }
-
-  .concepts-guide-content {
-    padding: 18px;
-  }
-
-  .concepts-guide-content h2 {
-    font-size: 18px;
-  }
-
-  .concepts-guide-content p,
-  .concepts-guide-content li {
-    font-size: 14px;
-  }
-
-  .concepts-guide-content code {
-    font-size: 13px;
-  }
-}
-
-/* Landscape mobile (altura muy pequeña) */
-@media (max-height: 500px) and (orientation: landscape) {
-  .concepts-guide-overlay {
-    padding: 8px;
-    align-items: flex-start;
-  }
-
-  .concepts-guide-modal {
-    max-height: 95vh;
-    margin-top: 8px;
-  }
-
-  .concepts-guide-header {
-    padding: 10px 12px;
-  }
-
-  .concepts-guide-title {
-    font-size: 14px;
-  }
-
-  .concepts-guide-close {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-  }
-
-  .concepts-guide-content {
-    padding: 12px;
-  }
-
-  .concepts-guide-content h2 {
-    font-size: 14px;
-    margin: 10px 0 6px;
-  }
-
-  .concepts-guide-content p,
-  .concepts-guide-content li {
-    font-size: 11px;
-    line-height: 1.4;
-    margin-bottom: 6px;
-  }
-
-  .concepts-guide-content ul {
-    padding-left: 14px;
-    margin-bottom: 10px;
-  }
-
-  .concepts-guide-content code {
-    font-size: 10px;
-  }
-}
-
-/* Touch devices - mejorar área táctil */
-@media (hover: none) and (pointer: coarse) {
-  .concepts-guide-close {
-    min-width: 44px;
-    min-height: 44px;
-  }
-}
-
-/* Desktop grande (más de 1024px) */
-@media (min-width: 1025px) {
-  .concepts-guide-overlay {
-    padding: 20px;
-  }
-
-  .concepts-guide-modal {
-    max-width: 600px;
-    border-radius: 12px;
-  }
-
-  .concepts-guide-header {
-    padding: 20px;
-  }
-
-  .concepts-guide-title {
-    font-size: 24px;
-  }
-
-  .concepts-guide-close {
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-
-  .concepts-guide-content {
-    padding: 24px;
-  }
-
-  .concepts-guide-content h2 {
-    font-size: 20px;
-    margin: 24px 0 12px;
-  }
-
-  .concepts-guide-content p,
-  .concepts-guide-content li {
-    font-size: 15px;
-  }
-
-  .concepts-guide-content code {
-    font-size: 14px;
+    opacity: 0;
   }
 }
