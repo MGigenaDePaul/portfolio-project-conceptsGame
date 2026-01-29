@@ -37,6 +37,7 @@ La pantalla se divide en **4 cuadrantes:**
 ## 🎲 Algoritmo de Distribución
 
 ### Con 8 burbujas (ejemplo):
+
 - Burbuja 0 → Cuadrante 0 (Top-Left)
 - Burbuja 1 → Cuadrante 1 (Top-Right)
 - Burbuja 2 → Cuadrante 2 (Bottom-Left)
@@ -47,6 +48,7 @@ La pantalla se divide en **4 cuadrantes:**
 - Burbuja 7 → Cuadrante 3 (Bottom-Right)
 
 ### Resultado:
+
 ✅ **2 burbujas en cada cuadrante** (distribuidas aleatoriamente dentro de su cuadrante)
 
 ---
@@ -85,18 +87,22 @@ switch (quadrant) {
 ## 🎯 Características
 
 ### ✅ Balance Perfecto
+
 - Cada cuadrante recibe el mismo número de burbujas (o diferencia de 1)
 - No más amontonamientos en un solo lado
 
 ### ✅ Aleatorio Dentro del Cuadrante
+
 - Cada burbuja aparece en una posición aleatoria **dentro** de su cuadrante asignado
 - Mantiene la sensación de caos organizado
 
 ### ✅ Zona Central Protegida
+
 - El panel "MY BOARDS" nunca es tocado
 - `minDistanceFromCenter / 1.5` crea una zona de seguridad
 
 ### ✅ Responsive
+
 - Los límites de los cuadrantes se ajustan según el tamaño de pantalla
 - Funciona en móvil, tablet y desktop
 
@@ -109,14 +115,15 @@ Con 8 elementos iniciales (Fire×2, Water×2, Earth×2, Air×2):
 ```
 🔥        🌍
    💧          🌬️
-   
+
       MY BOARDS
-      
+
 🌬️        💧
    🌍          🔥
 ```
 
 **Distribución:**
+
 - Top-Left: 2 burbujas
 - Top-Right: 2 burbujas
 - Bottom-Left: 2 burbujas
@@ -130,7 +137,7 @@ Con 8 elementos iniciales (Fire×2, Water×2, Earth×2, Air×2):
 
 ```javascript
 maxX = centerX - minDistanceFromCenter / 1.5
-                                     // ↑ Cambiar aquí
+// ↑ Cambiar aquí
 ```
 
 - `/1.5` - Zona de seguridad moderada (actual)
@@ -140,6 +147,7 @@ maxX = centerX - minDistanceFromCenter / 1.5
 ### Añadir más cuadrantes:
 
 Si quieres 8 cuadrantes en vez de 4:
+
 ```javascript
 const quadrant = index % 8 // En vez de % 4
 ```
@@ -151,6 +159,7 @@ Y definir 8 zonas en el switch.
 ## 🎮 Resultado Visual
 
 **Antes:**
+
 ```
 🔥🌍💧🌬️
 🌬️💧🌍🔥
@@ -158,6 +167,7 @@ Y definir 8 zonas en el switch.
 ```
 
 **Ahora:**
+
 ```
 🔥     🌍
   💧     🌬️
@@ -167,6 +177,7 @@ Y definir 8 zonas en el switch.
 🌬️     💧
   🌍     🔥
 ```
+
 ✅ Distribuidas uniformemente en toda la pantalla
 
 ---

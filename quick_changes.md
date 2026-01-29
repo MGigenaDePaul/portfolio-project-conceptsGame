@@ -3,6 +3,7 @@
 ## Archivo: App.jsx
 
 ### 1. Agregar nuevo estado (línea ~28)
+
 ```javascript
 // ANTES
 const [zIndexes, setZIndexes] = useState({})
@@ -17,6 +18,7 @@ const [isCombining, setIsCombining] = useState(false) // ⬅️ NUEVO
 ---
 
 ### 2. Modificar onPointerDownBubble (línea ~267)
+
 ```javascript
 // ANTES
 const onPointerDownBubble = (instanceId) => (e) => {
@@ -61,6 +63,7 @@ const onPointerDownBubble = (instanceId) => (e) => {
 ---
 
 ### 3. Modificar useEffect onMove (línea ~291)
+
 ```javascript
 // ANTES
 if (targetId) {
@@ -76,8 +79,8 @@ if (targetId) {
 if (targetId) {
   setZIndexes((prevZ) => ({
     ...prevZ,
-    [targetId]: 100,  // ⬅️ CAMBIAR: target más bajo
-    [d.id]: 9999,     // ⬅️ CAMBIAR: dragging siempre encima
+    [targetId]: 100, // ⬅️ CAMBIAR: target más bajo
+    [d.id]: 9999, // ⬅️ CAMBIAR: dragging siempre encima
   }))
 }
 ```
@@ -85,16 +88,14 @@ if (targetId) {
 ---
 
 ### 4. Modificar useEffect onUp (línea ~315)
+
 ```javascript
 // ANTES
 setTimeout(() => {
   const combined = combineAndReplace(dragId, targetId, spawnPos)
   if (!combined) {
     playFailSound()
-    showNotification(
-      'Too complex for demo! Go play in a board!',
-      spawnPos,
-    )
+    showNotification('Too complex for demo! Go play in a board!', spawnPos)
 
     setTimeout(() => {
       setZIndexes((prevZ) => {
@@ -121,10 +122,7 @@ setTimeout(() => {
   const combined = combineAndReplace(dragId, targetId, spawnPos)
   if (!combined) {
     playFailSound()
-    showNotification(
-      'Too complex for demo! Go play in a board!',
-      spawnPos,
-    )
+    showNotification('Too complex for demo! Go play in a board!', spawnPos)
 
     setTimeout(() => {
       setZIndexes((prevZ) => {
@@ -150,6 +148,7 @@ setTimeout(() => {
 ---
 
 ### 5. Actualizar dependencias del useEffect (línea ~350)
+
 ```javascript
 // ANTES
 }, [instances, positions, hitRadius])

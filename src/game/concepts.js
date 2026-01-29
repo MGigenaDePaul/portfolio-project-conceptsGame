@@ -30,7 +30,7 @@ export const CONCEPTS = {
 
   steam: { id: 'steam', name: 'Steam', emoji: '☁️💧' },
   mud: { id: 'mud', name: 'Mud', emoji: '🟤' },
-  rain: { id: 'rain', name: 'Rain', emoji: '🌧️' },
+  cloud: { id: 'cloud', name: 'Cloud', emoji: '☁️' },
   atmosphere: { id: 'atmosphere', name: 'Atmosphere', emoji: '🌍' },
   smoke: { id: 'smoke', name: 'Smoke', emoji: '💨' },
   volcano: { id: 'volcano', name: 'Volcano', emoji: '🌋' },
@@ -39,6 +39,10 @@ export const CONCEPTS = {
   oxygen: { id: 'oxygen', name: 'Oxygen', emoji: '🧪' },
   inferno: { id: 'inferno', name: 'Inferno', emoji: '💥' },
   mountain: { id: 'mountain', name: 'Mountain', emoji: '⛰️' },
+
+  plasma: { id: 'plasma', name: 'Plasma', emoji: '⚡' },
+  smog: { id: 'smog', name: 'Smog', emoji: '🌫️' },
+  dust: { id: 'dust', name: 'Dust', emoji: '💨' },
 }
 
 // Helper: get concept by id safely

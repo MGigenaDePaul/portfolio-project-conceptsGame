@@ -30,12 +30,14 @@ const ConceptBubble = ({
   }, [isNewlyCombined])
 
   // 🔥 SOLUCIÓN NUCLEAR: z-index super alto cuando arrastra
-  const calculatedZIndex = isDragging ? 999999 : (isDropTarget ? 100 : (zIndex || 0))
+  const calculatedZIndex = isDragging
+    ? 999999
+    : isDropTarget
+      ? 100
+      : zIndex || 0
 
   // 🔥 NUEVO: Crear string con !important si está arrastrando
-  const zIndexStyle = isDragging 
-    ? '999999 !important' 
-    : calculatedZIndex
+  const zIndexStyle = isDragging ? '999999 !important' : calculatedZIndex
 
   return (
     <div

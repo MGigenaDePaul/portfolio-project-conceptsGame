@@ -26,14 +26,11 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
   if (!isOpen && !isClosing) return null
 
   return (
-    <div 
+    <div
       className={`guide-overlay ${isClosing ? 'closing' : ''}`}
       onClick={handleClose}
     >
-      <div 
-        className="guide-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="guide-modal" onClick={(e) => e.stopPropagation()}>
         <div className="guide-header">
           <h2 className="guide-title">Concepts Guide</h2>
         </div>

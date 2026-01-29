@@ -121,7 +121,7 @@ const App = () => {
     const width = window.innerWidth
     const height = window.innerHeight
     const minDimension = Math.min(width, height)
-    
+
     if (width < 480) {
       return Math.min(minDimension * 0.28, 120) // móvil pequeño
     } else if (width < 768) {
@@ -139,7 +139,12 @@ const App = () => {
   }
 
   // Helper para verificar si una posición colisiona con otras burbujas ya posicionadas
-  const isPositionTooCloseToOthers = (x, y, existingPositions, minDistance = 120) => {
+  const isPositionTooCloseToOthers = (
+    x,
+    y,
+    existingPositions,
+    minDistance = 120,
+  ) => {
     for (const pos of Object.values(existingPositions)) {
       const distance = Math.hypot(x - pos.x, y - pos.y)
       if (distance < minDistance) {
@@ -156,7 +161,7 @@ const App = () => {
     centerY,
     minDistanceFromCenter,
     margin,
-    existingPositions = {}
+    existingPositions = {},
   ) => {
     const maxAttempts = 100 // Más intentos para encontrar una posición válida
     let attempts = 0
@@ -198,7 +203,8 @@ const App = () => {
 
     // Distancia mínima entre burbujas (responsive)
     const width = window.innerWidth
-    const minDistanceBetweenBubbles = width < 480 ? 100 : width < 768 ? 110 : 120
+    const minDistanceBetweenBubbles =
+      width < 480 ? 100 : width < 768 ? 110 : 120
 
     while (attempts < maxAttempts) {
       const x = minX + Math.random() * (maxX - minX)
@@ -206,8 +212,19 @@ const App = () => {
 
       // Verificar que no esté cerca del centro ni de otras burbujas
       if (
-        !isPositionTooCloseToCenter(x, y, centerX, centerY, minDistanceFromCenter) &&
-        !isPositionTooCloseToOthers(x, y, existingPositions, minDistanceBetweenBubbles)
+        !isPositionTooCloseToCenter(
+          x,
+          y,
+          centerX,
+          centerY,
+          minDistanceFromCenter,
+        ) &&
+        !isPositionTooCloseToOthers(
+          x,
+          y,
+          existingPositions,
+          minDistanceBetweenBubbles,
+        )
       ) {
         return { x, y }
       }
@@ -250,7 +267,7 @@ const App = () => {
           centerY,
           minDistanceFromCenter,
           margin,
-          newPositions // Pasar posiciones existentes para evitar colisiones
+          newPositions, // Pasar posiciones existentes para evitar colisiones
         )
       })
 
