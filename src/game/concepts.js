@@ -4,7 +4,6 @@ export const generateInstanceId = () => `instance-${instanceCounter++}`
 
 export const STARTING_CONCEPT_IDS = ['fire', 'water', 'earth', 'air']
 
-// Nueva función para crear instancias iniciales (2 de cada elemento)
 export const createStartingInstances = () => {
   const instances = {}
 

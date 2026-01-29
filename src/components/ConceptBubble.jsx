@@ -36,9 +36,6 @@ const ConceptBubble = ({
       ? 100
       : zIndex || 0
 
-  // 🔥 NUEVO: Crear string con !important si está arrastrando
-  const zIndexStyle = isDragging ? '999999 !important' : calculatedZIndex
-
   return (
     <div
       className={`concept-bubble
