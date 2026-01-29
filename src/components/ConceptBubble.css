@@ -50,12 +50,12 @@
     box-shadow 0.15s ease,
     background 0.15s ease;
   transform: translate(-50%, -50%);
-  
+
   /* drag essentials */
   touch-action: none;
   user-select: none;
   cursor: grab;
-  
+
   /* 🔧 FIX: NO z-index aquí para que App.jsx controle el z-index */
 }
 
@@ -390,24 +390,87 @@
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
-/* RAIN 🌧️ */
-.concept-bubble.concept-rain:hover,
-.concept-bubble.concept-rain.dragging {
-  background: #1a3a52;
-  border-color: #5dade2;
+/* CLOUD ☁️ */
+.concept-bubble.concept-cloud:hover,
+.concept-bubble.concept-cloud.dragging {
+  background: #052659;
+  border-color: #27afff;
 }
 
-.concept-bubble.concept-rain.dragging {
+.concept-bubble.concept-cloud.dragging {
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept-rain.drop-target {
-  background: #1a3a52;
-  border-color: #5dade2;
+.concept-bubble.concept-cloud.drop-target {
+  background: #052659;
+  border-color: #27afff;
   box-shadow:
     0 0 0 2px rgba(93, 173, 226, 0.35),
     0 0 30px rgba(93, 173, 226, 0.5),
     0 10px 30px rgba(26, 58, 82, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* PLASMA ⚡ */
+.concept-bubble.concept-plasma:hover,
+.concept-bubble.concept-plasma.dragging {
+  background: #36164e;
+  border-color: #f173ff;
+}
+
+.concept-bubble.concept-plasma.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-plasma.drop-target {
+  background: #36164e;
+  border-color: #f173ff;
+  box-shadow:
+    0 0 0 2px rgba(241, 115, 255, 0.35),
+    0 0 30px rgba(241, 115, 255, 0.5),
+    0 10px 30px rgba(54, 22, 78, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* SMOG 🌫️ */
+.concept-bubble.concept-smog:hover,
+.concept-bubble.concept-smog.dragging {
+  background: #451c00;
+  border-color: #ff8c00;
+}
+
+.concept-bubble.concept-smog.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-smog.drop-target {
+  background: #451c00;
+  border-color: #ff8c00;
+  box-shadow:
+    0 0 0 2px rgba(255, 140, 0, 0.35),
+    0 0 30px rgba(255, 140, 0, 0.5),
+    0 10px 30px rgba(69, 28, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* DUST 💨 */
+.concept-bubble.concept-dust:hover,
+.concept-bubble.concept-dust.dragging {
+  background: #441d00;
+  border-color: #ff8f00;
+}
+
+.concept-bubble.concept-dust.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-dust.drop-target {
+  background: #441d00;
+  border-color: #ff8f00;
+  box-shadow:
+    0 0 0 2px rgba(255, 143, 0, 0.35),
+    0 0 30px rgba(255, 143, 0, 0.5),
+    0 10px 30px rgba(68, 29, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
