@@ -35,7 +35,7 @@
   width: clamp(200px, 80vw, 256px);
   max-width: 90vw;
   margin-bottom: clamp(4px, 1.5vw, 8px);
-  z-index: 50; /* 🔧 FIX: Debe ser < 9999 (dragging element = 9999) */
+  /* z-index: 50;  */
   pointer-events: auto;
 }
 
