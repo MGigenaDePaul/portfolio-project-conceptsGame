@@ -285,7 +285,7 @@ const App = () => {
     if (notification.isVisible) {
       setTimeout(() => {
         hideNotification()
-      }, 1400) // esta es la duracion que importa para que deje de aparecer la notificacion
+      }, 2000) // esta es la duracion para esconder la notifiacion cuando arrastro cualquier elemento una vez que falla la combinacion
     }
 
     const p = positions[instanceId]
@@ -381,7 +381,10 @@ const App = () => {
               return next
             })
             setIsCombining(false)
-            // setNotification({ isVisible: false, message: '', position: {x: 0, y: 0}}) // agrego esto para que se salga de una vez la notificacion despues de 2 seg
+            setTimeout(() => {
+              hideNotification()
+            }, 2000) // aca se esconde cuando pasan 2 segundos, no hace ni falta agarrar un elemento
+
           } else {
             // Si funciona: limpio z-index y unlock inmediato
             setZIndexes((prevZ) => {
