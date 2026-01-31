@@ -282,6 +282,12 @@ const App = () => {
     e.stopPropagation()
     play(pressBubbleAudioRef)
 
+    if (notification.isVisible) {
+      setTimeout(() => {
+        hideNotification()
+      }, 1400)
+    }
+
     const p = positions[instanceId]
     if (!p) return
 
@@ -289,11 +295,11 @@ const App = () => {
 
     setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }))
 
-    e.currentTarget.setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId) // con setPointerCapture asegurar que el drag siga funcionando aunque el cursor salga del elemento, evitando que se pierdan eventos
 
     draggingRef.current = {
       id: instanceId,
-      offsetX: e.clientX - p.x, // Sirven para que la burbuja no salte al cursor cuando la agarrás desde un costado
+      offsetX: e.clientX - p.x, 
       offsetY: e.clientY - p.y,
     }
   }
@@ -368,7 +374,6 @@ const App = () => {
               spawnPos,
             )
 
-            setTimeout(() => {
               setZIndexes((prevZ) => {
                 const next = { ...prevZ }
                 delete next[dragId]
@@ -376,7 +381,7 @@ const App = () => {
                 return next
               })
               setIsCombining(false)
-            }, 2000)
+              // setNotification({ isVisible: false, message: '', position: {x: 0, y: 0}}) // agrego esto para que se salga de una vez la notificacion despues de 2 seg
           } else {
             // Si funciona: limpio z-index y unlock inmediato
             setZIndexes((prevZ) => {
@@ -389,12 +394,11 @@ const App = () => {
           }
         }, 700)
 
-        // 11) Importante: este setPositions no cambia posiciones acá
-        // (solo lo uso como lugar para decidir qué hacer al soltar)
+        // no cambio posiciones, lo uso para decidir que hacer al soltar
         return prev
       })
     }
-
+    
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
 
