@@ -285,7 +285,7 @@ const App = () => {
     if (notification.isVisible) {
       setTimeout(() => {
         hideNotification()
-      }, 1400)
+      }, 1400) // esta es la duracion que importa para que deje de aparecer la notificacion
     }
 
     const p = positions[instanceId]
@@ -299,7 +299,7 @@ const App = () => {
 
     draggingRef.current = {
       id: instanceId,
-      offsetX: e.clientX - p.x, 
+      offsetX: e.clientX - p.x,
       offsetY: e.clientY - p.y,
     }
   }
@@ -374,14 +374,14 @@ const App = () => {
               spawnPos,
             )
 
-              setZIndexes((prevZ) => {
-                const next = { ...prevZ }
-                delete next[dragId]
-                delete next[targetId]
-                return next
-              })
-              setIsCombining(false)
-              // setNotification({ isVisible: false, message: '', position: {x: 0, y: 0}}) // agrego esto para que se salga de una vez la notificacion despues de 2 seg
+            setZIndexes((prevZ) => {
+              const next = { ...prevZ }
+              delete next[dragId]
+              delete next[targetId]
+              return next
+            })
+            setIsCombining(false)
+            // setNotification({ isVisible: false, message: '', position: {x: 0, y: 0}}) // agrego esto para que se salga de una vez la notificacion despues de 2 seg
           } else {
             // Si funciona: limpio z-index y unlock inmediato
             setZIndexes((prevZ) => {
@@ -398,7 +398,7 @@ const App = () => {
         return prev
       })
     }
-    
+
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
 
@@ -414,7 +414,6 @@ const App = () => {
         message={notification.message}
         isVisible={notification.isVisible}
         position={notification.position}
-        onClose={hideNotification}
       />
 
       <Routes>
