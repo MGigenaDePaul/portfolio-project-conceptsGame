@@ -385,7 +385,6 @@ const App = () => {
             setTimeout(() => {
               hideNotification()
             }, 2000) // aca se esconde cuando pasan 2 segundos, no hace ni falta agarrar un elemento
-
           } else {
             // Si funciona: limpio z-index y unlock inmediato
             setZIndexes((prevZ) => {
@@ -434,7 +433,10 @@ const App = () => {
             />
           }
         />
-        <Route path='/guide' element={<FullGuide />}/>
+        <Route path="/guide" element={<FullGuide />} />
+        <Route path="/faq" element={<FullGuide />} />
+        <Route path="/privacy" element={<FullGuide />} />
+        <Route path="/terms" element={<FullGuide />} />
       </Routes>
     </>
   )
