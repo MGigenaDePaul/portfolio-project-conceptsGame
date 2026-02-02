@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import './ConceptsGuide.css'
+import { Link } from 'react-router-dom'
 
 const ConceptsGuide = ({ isOpen, onClose }) => {
   if (!isOpen) return null
@@ -20,9 +20,9 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
           {/* Intro */}
           <p className="intro-text">
             Welcome to Concepts! You can also open{' '}
-            <a href="#" className="guide-link">
+            <Link to='/guide' target='_blank' className='guide-link'>
               this guide in a new tab ↗
-            </a>
+            </Link>
             .
           </p>
 

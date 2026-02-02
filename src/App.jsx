@@ -4,6 +4,7 @@ import { combine } from './game/combine'
 import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
 import Notification from './components/Notification'
+import FullGuide from './pages/FullGuide'
 import './App.css'
 
 const getHitRadius = () => {
@@ -433,6 +434,7 @@ const App = () => {
             />
           }
         />
+        <Route path='/guide' element={<FullGuide />}/>
       </Routes>
     </>
   )
