@@ -30,21 +30,36 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
           <section className="guide-section">
             <h3>Index</h3>
             <div className="index-list">
-              <a href="#the-game" className="index-item index-game">
+              <button
+                onClick={() => document.getElementById('the-game')?.scrollIntoView({ behavior: 'smooth' })}
+                className="index-item index-game"
+              >
                 The Game
-              </a>
-              <a href="#complexity" className="index-item index-complexity">
+              </button>
+              <button
+                onClick={() => document.getElementById('complexity')?.scrollIntoView({ behavior: 'smooth' })}
+                className="index-item index-complexity"
+              >
                 Complexity
-              </a>
-              <a href="#collections" className="index-item index-collections">
+              </button>
+              <button
+                onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })}
+                className="index-item index-collections"
+              >
                 Collections
-              </a>
-              <a href="#leaderboards" className="index-item index-leaderboards">
+              </button>
+              <button
+                onClick={() => document.getElementById('leaderboards')?.scrollIntoView({ behavior: 'smooth' })}
+                className="index-item index-leaderboards"
+              >
                 Leaderboards
-              </a>
-              <a href="#multiplayer" className="index-item index-multiplayer">
+              </button>
+              <button
+                onClick={() => document.getElementById('multiplayer')?.scrollIntoView({ behavior: 'smooth' })}
+                className="index-item index-multiplayer"
+              >
                 Multiplayer
-              </a>
+              </button>
             </div>
           </section>
 

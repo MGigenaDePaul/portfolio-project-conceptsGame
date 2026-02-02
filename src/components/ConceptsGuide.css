@@ -202,6 +202,15 @@
   text-decoration: none;
   transition: all 0.2s;
   font-weight: 500;
+  /* Button styles */
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .index-item:hover {
