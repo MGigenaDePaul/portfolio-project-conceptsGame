@@ -1,63 +1,22 @@
-/* Overlay del modal */
-.guide-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
-  z-index: 99999;
+/* ConceptsGuide.css */
 
+/* ========================================= */
+/* OVERLAY & MODAL */
+/* ========================================= */
+
+.concepts-guide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Apertura rápida */
-  animation: fadeIn 0.15s ease;
-
-  cursor: pointer;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
 }
 
-/* Cierre lento */
-.guide-overlay.closing {
-  animation: fadeOut 0.8s ease forwards;
-}
-
-/* Modal container */
-.guide-modal {
-  width: 90%;
-  max-width: 700px;
-  max-height: 85vh;
-  background: #1e2328;
-  border: 1px solid #596773;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: default;
-}
-
-/* Header del modal */
-.guide-header {
-  padding: 24px;
-  border-bottom: 1px solid #596773;
-  text-align: center;
-}
-
-.guide-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-/* Body del modal */
-.guide-body {
-  padding: 24px;
-  overflow-y: auto;
-  max-height: calc(85vh - 100px);
-}
-
-/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -67,11 +26,715 @@
   }
 }
 
-@keyframes fadeOut {
+.concepts-guide-modal {
+  background: #1a1d21;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
   from {
-    opacity: 1;
+    transform: translateY(30px);
+    opacity: 0;
   }
   to {
-    opacity: 0;
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ========================================= */
+/* HEADER */
+/* ========================================= */
+
+.concepts-guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.concepts-guide-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.close-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* ========================================= */
+/* CONTENT */
+/* ========================================= */
+
+.concepts-guide-content {
+  padding: 28px;
+  overflow-y: auto;
+  flex: 1;
+  color: #c8d1db;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.concepts-guide-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.concepts-guide-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.concepts-guide-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.concepts-guide-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ========================================= */
+/* INTRO */
+/* ========================================= */
+
+.intro-text {
+  margin-bottom: 24px;
+  color: rgba(200, 209, 219, 0.9);
+}
+
+.guide-link {
+  color: #5dadec;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.guide-link:hover {
+  color: #7fc0f5;
+  text-decoration: underline;
+}
+
+/* ========================================= */
+/* SECTIONS */
+/* ========================================= */
+
+.guide-section {
+  margin-bottom: 36px;
+}
+
+.guide-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.section-title {
+  border-left: 4px solid #5dadec;
+  padding-left: 12px;
+  font-size: 28px !important;
+  margin-bottom: 20px !important;
+}
+
+.subsection-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 24px 0 12px 0;
+}
+
+.guide-section p {
+  margin: 12px 0;
+  color: rgba(200, 209, 219, 0.85);
+}
+
+.guide-section ul {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.guide-section li {
+  margin: 8px 0;
+  color: rgba(200, 209, 219, 0.85);
+}
+
+/* ========================================= */
+/* INDEX */
+/* ========================================= */
+
+.index-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.index-item {
+  padding: 10px 12px;
+  border-left: 3px solid;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #c8d1db;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-weight: 500;
+  /* Button styles */
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.index-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+.index-game {
+  border-color: #5dadec;
+}
+.index-complexity {
+  border-color: #a78bfa;
+}
+.index-collections {
+  border-color: #4ade80;
+}
+.index-leaderboards {
+  border-color: #fbbf24;
+}
+.index-multiplayer {
+  border-color: #f87171;
+}
+
+/* ========================================= */
+/* ELEMENTS ROW */
+/* ========================================= */
+
+.elements-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.element-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.element-emoji {
+  font-size: 20px;
+}
+
+.element-name {
+  color: #ffffff;
+  font-size: 15px;
+}
+
+/* ========================================= */
+/* COMPLEXITY */
+/* ========================================= */
+
+.complexity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.complexity-number {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: center;
+}
+
+.complexity-number.green {
+  background: #4ade80;
+  color: #052e16;
+}
+
+.complexity-number.yellow {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+/* ========================================= */
+/* COMPLEXITY DIAGRAM */
+/* ========================================= */
+
+.complexity-example {
+  margin: 24px 0;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+}
+
+.complexity-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.concept-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #2a2d32;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.concept-node.result {
+  border-color: #ff6b35;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.arrow-down,
+.arrow-up {
+  font-size: 24px;
+  color: #4ade80;
+}
+
+.arrow-right {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ========================================= */
+/* IMPROVEMENT EXAMPLE */
+/* ========================================= */
+
+.improvement-example {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  justify-content: center;
+}
+
+/* ========================================= */
+/* HIGHLIGHTS */
+/* ========================================= */
+
+.highlight-text {
+  color: #5dadec;
+  font-weight: 500;
+}
+
+.cascade-effect {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.go-play-link {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.go-play-link:hover {
+  color: #6ee7b7;
+  text-decoration: underline;
+}
+
+/* ========================================= */
+/* COLLECTIONS */
+/* ========================================= */
+
+.collection-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+
+.collection-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.collection-icon {
+  font-size: 32px;
+}
+
+.collection-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.collection-tier {
+  margin-bottom: 16px;
+}
+
+.tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.tier-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.tier-label.easy {
+  color: #4ade80;
+}
+
+.tier-label.medium {
+  color: #fb923c;
+}
+
+.tier-label.hard {
+  color: #ef4444;
+}
+
+.tier-progress {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tier-progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tier-progress-fill {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.tier-progress-fill.easy {
+  background: #4ade80;
+}
+
+.tier-progress-fill.medium {
+  background: #fb923c;
+}
+
+.tier-progress-fill.hard {
+  background: #ef4444;
+}
+
+.collection-concepts {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.collection-concepts h4 {
+  margin: 20px 0 12px 0;
+  font-size: 12px;
+}
+
+.remaining-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.concepts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.collection-concept {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.collection-concept.discovered {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.collection-concept.undiscovered {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================= */
+/* LEADERBOARDS */
+/* ========================================= */
+
+.discovered-label {
+  color: #4ade80;
+}
+
+.complexity-label {
+  color: #a78bfa;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 24px 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.leaderboard-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-table td {
+  padding: 14px 16px;
+  color: #c8d1db;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.discovered-column {
+  color: #4ade80 !important;
+}
+
+.complexity-column {
+  color: #a78bfa !important;
+}
+
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.rank-badge.gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #78350f;
+}
+
+.rank-badge.silver {
+  background: linear-gradient(135deg, #d4d4d8 0%, #a1a1aa 100%);
+  color: #27272a;
+}
+
+.rank-badge.bronze {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  color: #7c2d12;
+}
+
+.discovered-value {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.total-value {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+}
+
+.other-boards {
+  text-align: center;
+  padding: 20px !important;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.dots {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.rank-you {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.you-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #fb923c;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+/* ========================================= */
+/* MULTIPLAYER */
+/* ========================================= */
+
+.multiplayer-demo {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  padding: 60px;
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.multiplayer-cursor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cursor-steve {
+  color: #5dadec;
+}
+
+.cursor-alex {
+  color: #fb923c;
+}
+
+.cursor-icon {
+  font-size: 16px;
+}
+
+.multiplayer-concept {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #2a2d32;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.final-message {
+  text-align: center;
+  font-size: 16px;
+  margin-top: 32px;
+}
+
+/* ========================================= */
+/* RESPONSIVE */
+/* ========================================= */
+
+@media (max-width: 768px) {
+  .concepts-guide-modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .concepts-guide-header {
+    padding: 20px;
+  }
+
+  .concepts-guide-header h2 {
+    font-size: 20px;
+  }
+
+  .concepts-guide-content {
+    padding: 20px;
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 22px !important;
+  }
+
+  .complexity-diagram {
+    flex-direction: column;
+  }
+
+  .elements-row {
+    gap: 8px;
+  }
+
+  .element-badge {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .multiplayer-demo {
+    padding: 40px 20px;
+    gap: 20px;
   }
 }

@@ -87,7 +87,7 @@ body {
 
 /* 4) Concepts play area */
 .concepts-area {
-  position: absolute;
+  position: relative;
   inset: 0;
 }
 
