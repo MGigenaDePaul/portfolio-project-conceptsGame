@@ -6,7 +6,10 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
 
   return (
     <div className="concepts-guide-overlay" onClick={onClose}>
-      <div className="concepts-guide-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="concepts-guide-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="concepts-guide-header">
           <h2>Concepts Guide</h2>
@@ -20,7 +23,7 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
           {/* Intro */}
           <p className="intro-text">
             Welcome to Concepts! You can also open{' '}
-            <Link to='/guide' target='_blank' className='guide-link'>
+            <Link to="/guide" target="_blank" className="guide-link">
               this guide in a new tab ↗
             </Link>
             .
@@ -31,31 +34,51 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
             <h3>Index</h3>
             <div className="index-list">
               <button
-                onClick={() => document.getElementById('the-game')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('the-game')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="index-item index-game"
               >
                 The Game
               </button>
               <button
-                onClick={() => document.getElementById('complexity')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('complexity')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="index-item index-complexity"
               >
                 Complexity
               </button>
               <button
-                onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('collections')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="index-item index-collections"
               >
                 Collections
               </button>
               <button
-                onClick={() => document.getElementById('leaderboards')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('leaderboards')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="index-item index-leaderboards"
               >
                 Leaderboards
               </button>
               <button
-                onClick={() => document.getElementById('multiplayer')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('multiplayer')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
                 className="index-item index-multiplayer"
               >
                 Multiplayer
@@ -233,7 +256,10 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
                   <span className="tier-progress">✓ 4</span>
                 </div>
                 <div className="tier-progress-bar">
-                  <div className="tier-progress-fill easy" style={{ width: '100%' }}></div>
+                  <div
+                    className="tier-progress-fill easy"
+                    style={{ width: '100%' }}
+                  ></div>
                 </div>
               </div>
 
@@ -243,7 +269,10 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
                   <span className="tier-progress">3 of 5</span>
                 </div>
                 <div className="tier-progress-bar">
-                  <div className="tier-progress-fill medium" style={{ width: '60%' }}></div>
+                  <div
+                    className="tier-progress-fill medium"
+                    style={{ width: '60%' }}
+                  ></div>
                 </div>
               </div>
 
@@ -253,7 +282,10 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
                   <span className="tier-progress">1 of 3</span>
                 </div>
                 <div className="tier-progress-bar">
-                  <div className="tier-progress-fill hard" style={{ width: '33%' }}></div>
+                  <div
+                    className="tier-progress-fill hard"
+                    style={{ width: '33%' }}
+                  ></div>
                 </div>
               </div>
 
