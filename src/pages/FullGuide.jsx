@@ -111,12 +111,12 @@ const FullGuide = () => {
               <h2 className="section-title section-title-complexity">
                 Complexity
               </h2>
-              
+
               <p className="section-text">
                 The complexity is a number that indicates how many combinations
                 are needed to reach a concept.
               </p>
-              
+
               <p className="section-text">
                 The initial classical elements have a complexity of 1:{' '}
                 <span className="inline-complexity-badge">
@@ -145,49 +145,73 @@ const FullGuide = () => {
                   </div>
 
                   {/* Connection Line from Sea to Beach */}
-                  <svg className="diagram-connector connector-sea" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M 0 0 Q 50 50 100 100" stroke="#9aff6b" strokeWidth="3" fill="none" />
+                  <svg
+                    className="diagram-connector connector-sea"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M 0 0 Q 50 50 100 100"
+                      stroke="#9aff6b"
+                      strokeWidth="3"
+                      fill="none"
+                    />
                   </svg>
 
                   {/* Beach - Right (Result) */}
                   <div className="diagram-node node-beach">
                     <span className="node-emoji">🏖️</span>
                     <span className="node-name">Beach</span>
-                    <span className="node-complexity complexity-yellow">15</span>
+                    <span className="node-complexity complexity-yellow">
+                      15
+                    </span>
                   </div>
 
                   {/* Connection Line from Sun to Beach */}
-                  <svg className="diagram-connector connector-sun" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M 0 100 Q 50 50 100 0" stroke="#9aff6b" strokeWidth="3" fill="none" />
+                  <svg
+                    className="diagram-connector connector-sun"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M 0 100 Q 50 50 100 0"
+                      stroke="#9aff6b"
+                      strokeWidth="3"
+                      fill="none"
+                    />
                   </svg>
 
                   {/* Sun - Bottom */}
                   <div className="diagram-node node-sun">
                     <span className="node-emoji">☀️</span>
                     <span className="node-name">Sun</span>
-                    <span className="node-complexity complexity-yellow">14</span>
+                    <span className="node-complexity complexity-yellow">
+                      14
+                    </span>
                   </div>
                 </div>
               </div>
 
               <p className="section-text">
-                This way, each board has its own tree of concepts where each
-                can have different complexities. This leads to interesting
+                This way, each board has its own tree of concepts where each can
+                have different complexities. This leads to interesting
                 competitions, where you may be the only one holding the lowest
                 complexity!
               </p>
 
               {/* Cascade Effect */}
               <div className="cascade-subsection">
-                <h3 className="subsection-title">✨ Cascade effect improvements</h3>
-                
+                <h3 className="subsection-title">
+                  ✨ Cascade effect improvements
+                </h3>
+
                 <p className="section-text">
                   When you discover a better recipe (with lower complexity) for
                   a concept, every recipe that depends on that concept will{' '}
                   <strong>automatically recalculate</strong> and potentially
                   improve!
                 </p>
-                
+
                 <p className="section-text">
                   For example, assuming you already discovered the recipe from
                   above (<em>Sea + Sun = Beach</em>), if you now discover a
@@ -196,13 +220,13 @@ const FullGuide = () => {
 
                 {/* Sun Improvement */}
                 <div className="improvement-row">
-                  <div className="improvement-concept old">
+                  <div className="improvement-concept sun">
                     <span className="ic-emoji">☀️</span>
                     <span className="ic-name">Sun</span>
                     <span className="ic-complexity yellow">14</span>
                   </div>
                   <span className="improvement-arrow">→</span>
-                  <div className="improvement-concept new">
+                  <div className="improvement-concept sun">
                     <span className="ic-emoji">☀️</span>
                     <span className="ic-name">Sun</span>
                     <span className="ic-complexity green">8</span>
@@ -216,13 +240,13 @@ const FullGuide = () => {
 
                 {/* Beach Improvement */}
                 <div className="improvement-row">
-                  <div className="improvement-concept old">
+                  <div className="improvement-concept beach">
                     <span className="ic-emoji">🏖️</span>
                     <span className="ic-name">Beach</span>
                     <span className="ic-complexity yellow">15</span>
                   </div>
                   <span className="improvement-arrow">→</span>
-                  <div className="improvement-concept new">
+                  <div className="improvement-concept beach">
                     <span className="ic-emoji">🏖️</span>
                     <span className="ic-name">Beach</span>
                     <span className="ic-complexity green">9</span>
@@ -230,7 +254,8 @@ const FullGuide = () => {
                 </div>
 
                 <p className="section-text cascade-highlight">
-                  This creates a <strong className="cascade-text">cascade effect</strong> where
+                  This creates a{' '}
+                  <strong className="cascade-text">cascade effect</strong> where
                   a single discovery can improve dozens or even hundreds of
                   concepts at once, making trying to discover novel recipes a
                   fun challenge!
@@ -267,7 +292,10 @@ const FullGuide = () => {
                       <span className="tier-count complete">✓ 4</span>
                     </div>
                     <div className="tier-bar">
-                      <div className="tier-fill easy" style={{ width: '100%' }}></div>
+                      <div
+                        className="tier-fill easy"
+                        style={{ width: '100%' }}
+                      ></div>
                     </div>
                   </div>
 
@@ -277,7 +305,10 @@ const FullGuide = () => {
                       <span className="tier-count">3 of 5</span>
                     </div>
                     <div className="tier-bar">
-                      <div className="tier-fill medium" style={{ width: '60%' }}></div>
+                      <div
+                        className="tier-fill medium"
+                        style={{ width: '60%' }}
+                      ></div>
                     </div>
                   </div>
 
@@ -287,7 +318,10 @@ const FullGuide = () => {
                       <span className="tier-count">1 of 3</span>
                     </div>
                     <div className="tier-bar">
-                      <div className="tier-fill hard" style={{ width: '33%' }}></div>
+                      <div
+                        className="tier-fill hard"
+                        style={{ width: '33%' }}
+                      ></div>
                     </div>
                   </div>
                 </div>
@@ -297,19 +331,19 @@ const FullGuide = () => {
                   <div className="concept-tier">
                     <h4 className="tier-label easy">EASY</h4>
                     <div className="concept-grid">
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered apple">
                         <span>🍎 Apple</span>
                         <span className="item-complexity green">6</span>
                       </div>
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered orange">
                         <span>🍊 Orange</span>
                         <span className="item-complexity green">9</span>
                       </div>
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered pear">
                         <span>🍐 Pear</span>
                         <span className="item-complexity green">9</span>
                       </div>
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered banana">
                         <span>🍌 Banana</span>
                         <span className="item-complexity yellow">23</span>
                       </div>
@@ -321,15 +355,15 @@ const FullGuide = () => {
                       MEDIUM <span className="remaining">2 remaining</span>
                     </h4>
                     <div className="concept-grid">
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered mango">
                         <span>🥭 Mango</span>
                         <span className="item-complexity green">11</span>
                       </div>
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered pineapple">
                         <span>🍍 Pineapple</span>
                         <span className="item-complexity yellow">18</span>
                       </div>
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered watermelon">
                         <span>🍉 Watermelon</span>
                         <span className="item-complexity yellow">21</span>
                       </div>
@@ -343,7 +377,7 @@ const FullGuide = () => {
                       HARD <span className="remaining">2 remaining</span>
                     </h4>
                     <div className="concept-grid">
-                      <div className="concept-item discovered">
+                      <div className="concept-item discovered starfruit">
                         <span>⭐ Starfruit</span>
                         <span className="item-complexity green">12</span>
                       </div>
@@ -374,20 +408,20 @@ const FullGuide = () => {
                 <strong>global leaderboard</strong> where boards are ranked
                 across all collections.
               </p>
-              
+
               <p className="section-text">Leaderboards are sorted like this:</p>
 
               <ul className="leaderboard-rules">
                 <li>
-                  <strong className="rule-discovered">+ DISCOVERED:</strong> First,
-                  the leaderboard is sorted by the{' '}
+                  <strong className="rule-discovered">+ DISCOVERED:</strong>{' '}
+                  First, the leaderboard is sorted by the{' '}
                   <strong>number of concepts discovered</strong> in the
                   collection or across all collections if it's the global
                   leaderboard. The more discoveries the better.
                 </li>
                 <li>
-                  <strong className="rule-complexity">+ COMPLEXITY:</strong> Then,
-                  as tiebreak, the leaderboard is sorted by the{' '}
+                  <strong className="rule-complexity">+ COMPLEXITY:</strong>{' '}
+                  Then, as tiebreak, the leaderboard is sorted by the{' '}
                   <strong>sum of complexities</strong> of the discovered
                   concepts. The lower the complexity, the better.
                 </li>
@@ -488,7 +522,7 @@ const FullGuide = () => {
         {activeTab === 'faq' && (
           <div className="faq-content">
             <h2 className="faq-title">Concepts FAQ</h2>
-            
+
             <p className="faq-intro">
               Find answers to the most common questions about Concepts.
               <br />
@@ -509,12 +543,13 @@ const FullGuide = () => {
                 </summary>
                 <div className="faq-answer">
                   <p>
-                    <strong>Yes!</strong> Concepts is completely free to play and
-                    we intend to keep it that way!
+                    <strong>Yes!</strong> Concepts is completely free to play
+                    and we intend to keep it that way!
                   </p>
                   <p>
                     <strong>However</strong>, we do have some operational costs,
-                    which means we have to resort to some kind of monetization :(
+                    which means we have to resort to some kind of monetization
+                    :(
                   </p>
                 </div>
               </details>
@@ -539,13 +574,13 @@ const FullGuide = () => {
                 </summary>
                 <div className="faq-answer">
                   <p>
-                    Yes! Concepts works on all modern browsers and devices. You can
-                    even install it as a Progressive Web App (PWA) on your phone /
-                    desktop.
+                    Yes! Concepts works on all modern browsers and devices. You
+                    can even install it as a Progressive Web App (PWA) on your
+                    phone / desktop.
                   </p>
                   <p>
-                    Also, you can cross-play in multiplayer with friends no matter
-                    the device!
+                    Also, you can cross-play in multiplayer with friends no
+                    matter the device!
                   </p>
                 </div>
               </details>
@@ -557,8 +592,8 @@ const FullGuide = () => {
                 </summary>
                 <div className="faq-answer">
                   <p>
-                    Concepts was mostly developed in <strong>dark mode</strong>, so
-                    it's optimized to look its best there.
+                    Concepts was mostly developed in <strong>dark mode</strong>,
+                    so it's optimized to look its best there.
                   </p>
                 </div>
               </details>
@@ -571,7 +606,10 @@ const FullGuide = () => {
                 <div className="faq-answer">
                   <p>
                     You can reach out to us at{' '}
-                    <a href="mailto:support@conceptsgame.io" className="inline-email">
+                    <a
+                      href="mailto:support@conceptsgame.io"
+                      className="inline-email"
+                    >
                       support@conceptsgame.io
                     </a>
                     !
@@ -609,8 +647,8 @@ const FullGuide = () => {
                 </summary>
                 <div className="faq-answer">
                   <p>
-                    <strong>Nope</strong>, you can only combine two concepts at a
-                    time 😉 Nice try though!
+                    <strong>Nope</strong>, you can only combine two concepts at
+                    a time 😉 Nice try though!
                   </p>
                 </div>
               </details>
@@ -627,8 +665,8 @@ const FullGuide = () => {
                     maintain the competitive spirit!
                   </p>
                   <p>
-                    If someone finds an amazing recipe, they're welcome to share it
-                    if they want to.
+                    If someone finds an amazing recipe, they're welcome to share
+                    it if they want to.
                   </p>
                 </div>
               </details>
@@ -641,13 +679,14 @@ const FullGuide = () => {
                 <div className="faq-answer">
                   <p>
                     We believe that having a common goal to compete toward makes
-                    the game more meaningful than simply accumulating concepts and
-                    recipes.
+                    the game more meaningful than simply accumulating concepts
+                    and recipes.
                   </p>
                   <p>
                     Also, we don't want to incentivize players to pair concepts
-                    just to see the number go up. This way, players are encouraged
-                    to find the most efficient recipes for concepts in collections.
+                    just to see the number go up. This way, players are
+                    encouraged to find the most efficient recipes for concepts
+                    in collections.
                   </p>
                 </div>
               </details>
