@@ -6,7 +6,6 @@ const FullGuide = () => {
   const location = useLocation()
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false)
 
-  // Determine active tab based on current route
   const getActiveTab = () => {
     const path = location.pathname
     if (path === '/faq') return 'faq'
@@ -67,31 +66,6 @@ const FullGuide = () => {
                 concepts to create new, derived concepts.
               </p>
               <p className="section-text">
-                Try combining the two concepts below:
-              </p>
-
-              {/* Interactive Demo Box */}
-              <div className="demo-box">
-                <button className="reset-button">🔄 Reset</button>
-                <div className="demo-area">
-                  <div className="demo-warning">
-                    CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT. DISCOVERED
-                    CONCEPTS WILL BE LOST
-                  </div>
-                  <div className="demo-concepts">
-                    <div className="demo-bubble demo-bubble-earth">
-                      <span className="bubble-emoji">🌍</span>
-                      <span className="bubble-name">Earth</span>
-                    </div>
-                    <div className="demo-bubble demo-bubble-mud">
-                      <span className="bubble-emoji">🟤</span>
-                      <span className="bubble-name">Mud</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <p className="section-text">
                 Once you create a new board, you start with the four{' '}
                 <span className="highlight">classical elements</span>:
               </p>
@@ -137,52 +111,61 @@ const FullGuide = () => {
               <h2 className="section-title section-title-complexity">
                 Complexity
               </h2>
+              
               <p className="section-text">
                 The complexity is a number that indicates how many combinations
                 are needed to reach a concept.
               </p>
+              
               <p className="section-text">
                 The initial classical elements have a complexity of 1:{' '}
                 <span className="inline-complexity-badge">
                   <span className="badge-emoji">🌍</span>
                   <span className="badge-name">Earth</span>
-                  <span className="badge-number">1</span>
+                  <span className="badge-complexity-number green">1</span>
                 </span>
               </p>
 
               <p className="section-text">
                 To compute the complexity of a new concept, you must take the{' '}
-                <span className="underline-text">
+                <strong className="underline-emphasis">
                   maximum complexity of the two ingredients plus 1
-                </span>
+                </strong>
                 , for example:
               </p>
 
-              {/* Complexity Diagram */}
-              <div className="complexity-diagram">
-                <div className="diagram-visual">
-                  <div className="diagram-left">
-                    <div className="complexity-badge-large cb-sea">
-                      <span className="cb-emoji">🌊</span>
-                      <span className="cb-name">Sea</span>
-                      <span className="cb-number">6</span>
-                    </div>
-                    <div className="diagram-line"></div>
+              {/* Complexity Diagram - Exact Screenshot Match */}
+              <div className="complexity-diagram-box">
+                <div className="complexity-diagram">
+                  {/* Sea - Top */}
+                  <div className="diagram-node node-sea">
+                    <span className="node-emoji">🌊</span>
+                    <span className="node-name">Sea</span>
+                    <span className="node-complexity complexity-green">6</span>
                   </div>
-                  <div className="diagram-right">
-                    <div className="complexity-badge-large cb-beach">
-                      <span className="cb-emoji">🏖️</span>
-                      <span className="cb-name">Beach</span>
-                      <span className="cb-number">15</span>
-                    </div>
+
+                  {/* Connection Line from Sea to Beach */}
+                  <svg className="diagram-connector connector-sea" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M 0 0 Q 50 50 100 100" stroke="#9aff6b" strokeWidth="3" fill="none" />
+                  </svg>
+
+                  {/* Beach - Right (Result) */}
+                  <div className="diagram-node node-beach">
+                    <span className="node-emoji">🏖️</span>
+                    <span className="node-name">Beach</span>
+                    <span className="node-complexity complexity-yellow">15</span>
                   </div>
-                  <div className="diagram-bottom">
-                    <div className="complexity-badge-large cb-sun">
-                      <span className="cb-emoji">☀️</span>
-                      <span className="cb-name">Sun</span>
-                      <span className="cb-number">14</span>
-                    </div>
-                    <div className="diagram-line-bottom"></div>
+
+                  {/* Connection Line from Sun to Beach */}
+                  <svg className="diagram-connector connector-sun" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M 0 100 Q 50 50 100 0" stroke="#9aff6b" strokeWidth="3" fill="none" />
+                  </svg>
+
+                  {/* Sun - Bottom */}
+                  <div className="diagram-node node-sun">
+                    <span className="node-emoji">☀️</span>
+                    <span className="node-name">Sun</span>
+                    <span className="node-complexity complexity-yellow">14</span>
                   </div>
                 </div>
               </div>
@@ -195,35 +178,34 @@ const FullGuide = () => {
               </p>
 
               {/* Cascade Effect */}
-              <div className="cascade-section">
-                <h3 className="subsection-title">
-                  ✨ Cascade effect improvements
-                </h3>
+              <div className="cascade-subsection">
+                <h3 className="subsection-title">✨ Cascade effect improvements</h3>
+                
                 <p className="section-text">
                   When you discover a better recipe (with lower complexity) for
                   a concept, every recipe that depends on that concept will{' '}
                   <strong>automatically recalculate</strong> and potentially
                   improve!
                 </p>
+                
                 <p className="section-text">
                   For example, assuming you already discovered the recipe from
                   above (<em>Sea + Sun = Beach</em>), if you now discover a
                   better recipe for Sun:
                 </p>
 
-                <div className="cascade-example">
-                  <div className="cascade-change">
-                    <div className="complexity-badge-medium cbm-sun-old">
-                      <span className="cbm-emoji">☀️</span>
-                      <span className="cbm-name">Sun</span>
-                      <span className="cbm-number">14</span>
-                    </div>
-                    <span className="arrow-symbol">→</span>
-                    <div className="complexity-badge-medium cbm-sun-new">
-                      <span className="cbm-emoji">☀️</span>
-                      <span className="cbm-name">Sun</span>
-                      <span className="cbm-number">8</span>
-                    </div>
+                {/* Sun Improvement */}
+                <div className="improvement-row">
+                  <div className="improvement-concept old">
+                    <span className="ic-emoji">☀️</span>
+                    <span className="ic-name">Sun</span>
+                    <span className="ic-complexity yellow">14</span>
+                  </div>
+                  <span className="improvement-arrow">→</span>
+                  <div className="improvement-concept new">
+                    <span className="ic-emoji">☀️</span>
+                    <span className="ic-name">Sun</span>
+                    <span className="ic-complexity green">8</span>
                   </div>
                 </div>
 
@@ -232,24 +214,23 @@ const FullGuide = () => {
                   know that <em>Sea + Sun = Beach</em>:
                 </p>
 
-                <div className="cascade-example">
-                  <div className="cascade-change">
-                    <div className="complexity-badge-medium cbm-beach-old">
-                      <span className="cbm-emoji">🏖️</span>
-                      <span className="cbm-name">Beach</span>
-                      <span className="cbm-number">15</span>
-                    </div>
-                    <span className="arrow-symbol">→</span>
-                    <div className="complexity-badge-medium cbm-beach-new">
-                      <span className="cbm-emoji">🏖️</span>
-                      <span className="cbm-name">Beach</span>
-                      <span className="cbm-number">9</span>
-                    </div>
+                {/* Beach Improvement */}
+                <div className="improvement-row">
+                  <div className="improvement-concept old">
+                    <span className="ic-emoji">🏖️</span>
+                    <span className="ic-name">Beach</span>
+                    <span className="ic-complexity yellow">15</span>
+                  </div>
+                  <span className="improvement-arrow">→</span>
+                  <div className="improvement-concept new">
+                    <span className="ic-emoji">🏖️</span>
+                    <span className="ic-name">Beach</span>
+                    <span className="ic-complexity green">9</span>
                   </div>
                 </div>
 
                 <p className="section-text cascade-highlight">
-                  This creates a <span className="purple-text">cascade effect</span> where
+                  This creates a <strong className="cascade-text">cascade effect</strong> where
                   a single discovery can improve dozens or even hundreds of
                   concepts at once, making trying to discover novel recipes a
                   fun challenge!
@@ -264,116 +245,110 @@ const FullGuide = () => {
               </h2>
               <p className="section-text">
                 Collections are themed groups of concepts organized into three
-                tiers of increasing difficulty. Examples include Colors, Fruits,
-                Famous Scientists, and many, <strong>many</strong> more.
+                tiers of increasing difficulty.
+              </p>
+              <p className="section-text">
+                Examples include Colors, Fruits, Famous Scientists, and many,{' '}
+                <strong>many</strong> more.
               </p>
 
-              {/* Collection Example */}
-              <div className="collection-example">
+              {/* Collection Card */}
+              <div className="collection-card">
                 <div className="collection-header">
                   <span className="collection-icon">🍎</span>
-                  <h3 className="collection-title">Fruits (example)</h3>
+                  <h3 className="collection-name">Fruits (example)</h3>
                 </div>
 
                 {/* Progress Bars */}
-                <div className="collection-progress">
-                  <div className="progress-bar pb-easy">
-                    <div className="progress-label">
-                      <span className="progress-tier">EASY</span>
-                      <span className="progress-count progress-done">✓ 4</span>
+                <div className="tier-progress">
+                  <div className="tier-row">
+                    <div className="tier-info">
+                      <span className="tier-label easy">EASY</span>
+                      <span className="tier-count complete">✓ 4</span>
                     </div>
-                    <div className="progress-track">
-                      <div
-                        className="progress-fill pf-easy"
-                        style={{ width: '100%' }}
-                      ></div>
+                    <div className="tier-bar">
+                      <div className="tier-fill easy" style={{ width: '100%' }}></div>
                     </div>
                   </div>
 
-                  <div className="progress-bar pb-medium">
-                    <div className="progress-label">
-                      <span className="progress-tier">MEDIUM</span>
-                      <span className="progress-count">3 of 5</span>
+                  <div className="tier-row">
+                    <div className="tier-info">
+                      <span className="tier-label medium">MEDIUM</span>
+                      <span className="tier-count">3 of 5</span>
                     </div>
-                    <div className="progress-track">
-                      <div
-                        className="progress-fill pf-medium"
-                        style={{ width: '60%' }}
-                      ></div>
+                    <div className="tier-bar">
+                      <div className="tier-fill medium" style={{ width: '60%' }}></div>
                     </div>
                   </div>
 
-                  <div className="progress-bar pb-hard">
-                    <div className="progress-label">
-                      <span className="progress-tier">HARD</span>
-                      <span className="progress-count">1 of 3</span>
+                  <div className="tier-row">
+                    <div className="tier-info">
+                      <span className="tier-label hard">HARD</span>
+                      <span className="tier-count">1 of 3</span>
                     </div>
-                    <div className="progress-track">
-                      <div
-                        className="progress-fill pf-hard"
-                        style={{ width: '33%' }}
-                      ></div>
+                    <div className="tier-bar">
+                      <div className="tier-fill hard" style={{ width: '33%' }}></div>
                     </div>
                   </div>
                 </div>
 
                 {/* Concept Lists */}
-                <div className="concepts-list">
-                  <div className="tier-group">
-                    <div className="tier-label tier-easy">EASY</div>
-                    <div className="concept-pills">
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍎 Apple</span>
-                        <span className="cp-complexity">6</span>
+                <div className="collection-concepts">
+                  <div className="concept-tier">
+                    <h4 className="tier-label easy">EASY</h4>
+                    <div className="concept-grid">
+                      <div className="concept-item discovered">
+                        <span>🍎 Apple</span>
+                        <span className="item-complexity green">6</span>
                       </div>
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍊 Orange</span>
-                        <span className="cp-complexity">9</span>
+                      <div className="concept-item discovered">
+                        <span>🍊 Orange</span>
+                        <span className="item-complexity green">9</span>
                       </div>
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍐 Pear</span>
-                        <span className="cp-complexity">9</span>
+                      <div className="concept-item discovered">
+                        <span>🍐 Pear</span>
+                        <span className="item-complexity green">9</span>
                       </div>
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍌 Banana</span>
-                        <span className="cp-complexity">23</span>
+                      <div className="concept-item discovered">
+                        <span>🍌 Banana</span>
+                        <span className="item-complexity yellow">23</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="tier-group">
-                    <div className="tier-label tier-medium">
+                  <div className="concept-tier">
+                    <h4 className="tier-label medium">
                       MEDIUM <span className="remaining">2 remaining</span>
-                    </div>
-                    <div className="concept-pills">
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🥭 Mango</span>
-                        <span className="cp-complexity">11</span>
+                    </h4>
+                    <div className="concept-grid">
+                      <div className="concept-item discovered">
+                        <span>🥭 Mango</span>
+                        <span className="item-complexity green">11</span>
                       </div>
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍍 Pineapple</span>
-                        <span className="cp-complexity">18</span>
+                      <div className="concept-item discovered">
+                        <span>🍍 Pineapple</span>
+                        <span className="item-complexity yellow">18</span>
                       </div>
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">🍉 Watermelon</span>
-                        <span className="cp-complexity">21</span>
+                      <div className="concept-item discovered">
+                        <span>🍉 Watermelon</span>
+                        <span className="item-complexity yellow">21</span>
                       </div>
-                      <div className="concept-pill cp-locked">Coconut</div>
-                      <div className="concept-pill cp-locked">Kiwi</div>
+                      <div className="concept-item locked">Coconut</div>
+                      <div className="concept-item locked">Kiwi</div>
                     </div>
                   </div>
 
-                  <div className="tier-group">
-                    <div className="tier-label tier-hard">
+                  <div className="concept-tier">
+                    <h4 className="tier-label hard">
                       HARD <span className="remaining">2 remaining</span>
-                    </div>
-                    <div className="concept-pills">
-                      <div className="concept-pill cp-discovered">
-                        <span className="cp-content">⭐ Starfruit</span>
-                        <span className="cp-complexity">12</span>
+                    </h4>
+                    <div className="concept-grid">
+                      <div className="concept-item discovered">
+                        <span>⭐ Starfruit</span>
+                        <span className="item-complexity green">12</span>
                       </div>
-                      <div className="concept-pill cp-locked">Guava</div>
-                      <div className="concept-pill cp-locked">Pomegranate</div>
+                      <div className="concept-item locked">Guava</div>
+                      <div className="concept-item locked">Pomegranate</div>
                     </div>
                   </div>
                 </div>
@@ -395,93 +370,82 @@ const FullGuide = () => {
               <p className="section-text">
                 Every collection has a leaderboard where boards are ranked based
                 on the concepts they have discovered. There is{' '}
-                <strong>a leaderboard for each collection</strong>, and{' '}
-                <strong>a global leaderboard</strong> where boards are ranked
+                <strong>a leaderboard for each collection</strong>, and a{' '}
+                <strong>global leaderboard</strong> where boards are ranked
                 across all collections.
               </p>
+              
               <p className="section-text">Leaderboards are sorted like this:</p>
 
-              <div className="leaderboard-rules">
-                <div className="rule-item">
-                  <span className="rule-icon discovered-icon">
-                    ✦ DISCOVERED:
-                  </span>
-                  <span className="rule-text">
-                    First, the leaderboard is sorted by the{' '}
-                    <strong>number of concepts discovered</strong> in the
-                    collection or across all collections if it's the global
-                    leaderboard. The more discoveries the better.
-                  </span>
-                </div>
-                <div className="rule-item">
-                  <span className="rule-icon complexity-icon">
-                    ✦ COMPLEXITY:
-                  </span>
-                  <span className="rule-text">
-                    Then, as tiebreak, the leaderboard is sorted by the{' '}
-                    <strong>sum of complexities</strong> of the discovered
-                    concepts. The lower the complexity, the better.
-                  </span>
-                </div>
-              </div>
+              <ul className="leaderboard-rules">
+                <li>
+                  <strong className="rule-discovered">+ DISCOVERED:</strong> First,
+                  the leaderboard is sorted by the{' '}
+                  <strong>number of concepts discovered</strong> in the
+                  collection or across all collections if it's the global
+                  leaderboard. The more discoveries the better.
+                </li>
+                <li>
+                  <strong className="rule-complexity">+ COMPLEXITY:</strong> Then,
+                  as tiebreak, the leaderboard is sorted by the{' '}
+                  <strong>sum of complexities</strong> of the discovered
+                  concepts. The lower the complexity, the better.
+                </li>
+              </ul>
 
               {/* Leaderboard Table */}
-              <div className="leaderboard-table">
-                <div className="leaderboard-header">
-                  <div className="lb-col lb-rank">RANK</div>
-                  <div className="lb-col lb-board">BOARD</div>
-                  <div className="lb-col lb-discovered">✦ DISCOVERED</div>
-                  <div className="lb-col lb-complexity">✦ COMPLEXITY</div>
-                </div>
-
-                <div className="leaderboard-rows">
-                  <div className="lb-row lb-row-1">
-                    <div className="lb-col lb-rank">
+              <table className="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th>RANK</th>
+                    <th>BOARD</th>
+                    <th className="th-discovered">+ DISCOVERED</th>
+                    <th className="th-complexity">+ COMPLEXITY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
                       <div className="rank-badge rank-1">1</div>
-                    </div>
-                    <div className="lb-col lb-board">speedrunner_99</div>
-                    <div className="lb-col lb-discovered">
-                      <span className="lb-green">✓ 25</span>/25
-                    </div>
-                    <div className="lb-col lb-complexity lb-purple">345</div>
-                  </div>
-
-                  <div className="lb-row lb-row-2">
-                    <div className="lb-col lb-rank">
+                    </td>
+                    <td>speedrunner_99</td>
+                    <td className="td-discovered">
+                      <span className="complete-check">✓ 25</span>/25
+                    </td>
+                    <td className="td-complexity">345</td>
+                  </tr>
+                  <tr>
+                    <td>
                       <div className="rank-badge rank-2">2</div>
-                    </div>
-                    <div className="lb-col lb-board">concept_master</div>
-                    <div className="lb-col lb-discovered">17/25</div>
-                    <div className="lb-col lb-complexity lb-purple">152</div>
-                  </div>
-
-                  <div className="lb-row lb-row-3">
-                    <div className="lb-col lb-rank">
+                    </td>
+                    <td>concept_master</td>
+                    <td className="td-discovered">17/25</td>
+                    <td className="td-complexity">152</td>
+                  </tr>
+                  <tr>
+                    <td>
                       <div className="rank-badge rank-3">3</div>
-                    </div>
-                    <div className="lb-col lb-board">element_hunter</div>
-                    <div className="lb-col lb-discovered">17/25</div>
-                    <div className="lb-col lb-complexity lb-purple">164</div>
-                  </div>
-
-                  <div className="lb-row lb-separator">
-                    <div className="lb-col lb-full-width">
-                      ⋮ <span className="separator-text">38 other boards</span>
-                    </div>
-                  </div>
-
-                  <div className="lb-row lb-row-user">
-                    <div className="lb-col lb-rank">
-                      <div className="rank-number">#42</div>
-                    </div>
-                    <div className="lb-col lb-board">
+                    </td>
+                    <td>element_hunter</td>
+                    <td className="td-discovered">17/25</td>
+                    <td className="td-complexity">164</td>
+                  </tr>
+                  <tr className="separator-row">
+                    <td colSpan="4">
+                      <span className="dots">⋮</span>
+                      <span className="separator-text">38 other boards</span>
+                    </td>
+                  </tr>
+                  <tr className="user-row">
+                    <td>#42</td>
+                    <td>
                       fun_enjoyer <span className="you-badge">YOU</span>
-                    </div>
-                    <div className="lb-col lb-discovered">8/25</div>
-                    <div className="lb-col lb-complexity lb-purple">267</div>
-                  </div>
-                </div>
-              </div>
+                    </td>
+                    <td className="td-discovered">8/25</td>
+                    <td className="td-complexity">267</td>
+                  </tr>
+                </tbody>
+              </table>
 
               <p className="section-text">
                 Go get the lowest total complexity!
@@ -498,54 +462,196 @@ const FullGuide = () => {
                 discover concepts together!
               </p>
 
-              {/* Multiplayer Demo */}
-              <div className="multiplayer-demo">
-                <div className="mp-bubble mp-bubble-1">
-                  <span className="mp-cursor">▲</span>
-                  <span className="mp-name mp-name-steve">Steve</span>
+              {/* Multiplayer Visual */}
+              <div className="multiplayer-box">
+                <div className="mp-cursor cursor-steve">
+                  <span className="cursor-arrow">▶</span>
+                  <span className="cursor-name">Steve</span>
                 </div>
-                <div className="mp-bubble mp-bubble-2">
-                  <span className="mp-emoji">💧</span>
-                  <span className="mp-text">Water</span>
+                <div className="mp-element">
+                  <span className="mp-emoji">💨</span>
+                  <span className="mp-name">Steam</span>
                 </div>
-                <div className="mp-bubble mp-bubble-3">
-                  <span className="mp-emoji">🔥</span>
-                  <span className="mp-text">Fire</span>
-                </div>
-                <div className="mp-bubble mp-bubble-4">
-                  <span className="mp-cursor">▲</span>
-                  <span className="mp-name mp-name-alex">Alex</span>
+                <div className="mp-cursor cursor-alex">
+                  <span className="cursor-arrow">▶</span>
+                  <span className="cursor-name">Alex</span>
                 </div>
               </div>
 
-              <button
-                className="technical-details-toggle"
-                onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
-              >
-                ▶ Show technical details & facts
-              </button>
-
-              {showTechnicalDetails && (
-                <div className="technical-details">
-                  <p>Technical implementation details would go here...</p>
-                </div>
-              )}
+              <p className="section-text final-cta">
+                Ready to play? Let's <strong>go find some concepts!</strong>
+              </p>
             </section>
-
-            {/* Ready to Play */}
-            <div className="ready-to-play">
-              <p className="ready-text">Ready to play?</p>
-              <Link to="/" className="lets-go-button">
-                Let's go →
-              </Link>
-            </div>
           </>
         )}
 
         {activeTab === 'faq' && (
-          <div className="tab-content">
-            <h2>FAQ</h2>
-            <p>Frequently Asked Questions content...</p>
+          <div className="faq-content">
+            <h2 className="faq-title">Concepts FAQ</h2>
+            
+            <p className="faq-intro">
+              Find answers to the most common questions about Concepts.
+              <br />
+              Can't find what you're looking for or have feedback? Contact us at{' '}
+              <a href="mailto:support@conceptsgame.io" className="faq-email">
+                support@conceptsgame.io
+              </a>
+            </p>
+
+            {/* General Questions */}
+            <section className="faq-section">
+              <h3 className="faq-section-title">General Questions</h3>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Is Concepts free to play?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    <strong>Yes!</strong> Concepts is completely free to play and
+                    we intend to keep it that way!
+                  </p>
+                  <p>
+                    <strong>However</strong>, we do have some operational costs,
+                    which means we have to resort to some kind of monetization :(
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Do I need an account to play?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    <strong>Yes.</strong> This is necessary to keep track of all
+                    the statistics we all love and to prevent abuse.
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Can I play on mobile?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    Yes! Concepts works on all modern browsers and devices. You can
+                    even install it as a Progressive Web App (PWA) on your phone /
+                    desktop.
+                  </p>
+                  <p>
+                    Also, you can cross-play in multiplayer with friends no matter
+                    the device!
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Light or dark mode?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    Concepts was mostly developed in <strong>dark mode</strong>, so
+                    it's optimized to look its best there.
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Where can I send feedback / suggestions or report bugs?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    You can reach out to us at{' '}
+                    <a href="mailto:support@conceptsgame.io" className="inline-email">
+                      support@conceptsgame.io
+                    </a>
+                    !
+                  </p>
+                  <p>
+                    Please include as much detail as you can and a good email
+                    subject like:
+                  </p>
+                  <ul className="faq-list">
+                    <li>
+                      <code>[BUG] XYZ Menu not opening</code>
+                    </li>
+                    <li>
+                      <code>[SUGGESTION] Add the "Fruits" collection</code>
+                    </li>
+                    <li>
+                      <code>[FEEDBACK] The game is too fun!</code>
+                    </li>
+                    <li>
+                      <code>etc</code>
+                    </li>
+                  </ul>
+                </div>
+              </details>
+            </section>
+
+            {/* Game Questions */}
+            <section className="faq-section">
+              <h3 className="faq-section-title">Game Questions</h3>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Can I combine more than two concepts at once?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    <strong>Nope</strong>, you can only combine two concepts at a
+                    time 😉 Nice try though!
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Why there isn't a public tree of concepts?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    Leaderboards are all about discovering the most efficient
+                    recipes for concepts, so we keep the best recipes private to
+                    maintain the competitive spirit!
+                  </p>
+                  <p>
+                    If someone finds an amazing recipe, they're welcome to share it
+                    if they want to.
+                  </p>
+                </div>
+              </details>
+
+              <details className="faq-item">
+                <summary className="faq-question">
+                  <span className="faq-arrow">▼</span>
+                  Why leaderboards are based on collections?
+                </summary>
+                <div className="faq-answer">
+                  <p>
+                    We believe that having a common goal to compete toward makes
+                    the game more meaningful than simply accumulating concepts and
+                    recipes.
+                  </p>
+                  <p>
+                    Also, we don't want to incentivize players to pair concepts
+                    just to see the number go up. This way, players are encouraged
+                    to find the most efficient recipes for concepts in collections.
+                  </p>
+                </div>
+              </details>
+            </section>
           </div>
         )}
 
