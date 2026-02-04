@@ -84,6 +84,10 @@
   margin-bottom: 80px;
 }
 
+.guide-section p{
+  color:#ffff;
+}
+
 .section-title {
   font-size: 32px;
   font-weight: 600;
@@ -112,7 +116,6 @@
 .section-text {
   font-size: 16px;
   line-height: 1.7;
-  color: rgba(200, 209, 219, 0.9);
   margin-bottom: 16px;
 }
 
@@ -171,19 +174,35 @@
 }
 
 .element-earth {
-  border-color: #4ade80;
+  border-color: #00e900;
+}
+
+.element-earth:hover {
+  background-color: #003400;
 }
 
 .element-air {
-  border-color: #94a3b8;
+  border-color: #d3d3d3;
+}
+
+.element-air:hover {
+  background-color: #2e2e2e;
 }
 
 .element-fire {
-  border-color: #f87171;
+  border-color: #ff4131;
+}
+
+.element-fire:hover {
+  background-color: #4f0b07;
 }
 
 .element-water {
-  border-color: #5dadec;
+  border-color: #55a9ff;
+}
+
+.element-water:hover {
+  background-color: #0e2459;
 }
 
 .element-emoji {
@@ -211,6 +230,11 @@
   border-radius: 20px;
   vertical-align: middle;
   margin: 0 4px;
+  border-color: #00e900;
+}
+
+.inline-complexity-badge:hover {
+  background-color: #003400;
 }
 
 .badge-emoji {
@@ -280,20 +304,35 @@
 .node-sea {
   grid-column: 1;
   grid-row: 1;
-  border-color: rgba(93, 173, 226, 0.4);
+  border-color: #befc73;
 }
 
-.node-beach {
-  grid-column: 2;
-  grid-row: 2;
-  border-color: #ff6b35;
-  box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+.node-sea:hover {
+  border-color: #55a9ff;
+  background-color: #0e2459;
 }
 
 .node-sun {
   grid-column: 1;
   grid-row: 3;
-  border-color: rgba(251, 191, 36, 0.4);
+  border-color: #befc73;
+}
+
+.node-sun:hover {
+  border-color: #cfc700;
+  background-color: #2d2b00;
+}
+
+.node-beach {
+  grid-column: 2;
+  grid-row: 2;
+  border-color: #befc73;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.node-beach:hover {
+  border-color: #ffaa00;
+  background-color: #3c2400;
 }
 
 .node-emoji {
@@ -386,12 +425,22 @@
   border-radius: 10px;
 }
 
-.improvement-concept.old {
-  border-color: rgba(251, 191, 36, 0.4);
+.improvement-concept.sun {
+  border-color: #befc73;
 }
 
-.improvement-concept.new {
-  border-color: rgba(74, 222, 128, 0.4);
+.improvement-concept.sun:hover {
+  border-color: #cfc700;
+  background-color: #2d2b00;
+}
+
+.improvement-concept.beach {
+  border-color: #befc73;
+}
+
+.improvement-concept.beach:hover {
+  border-color: #ffaa00;
+  background-color: #3c2400;
 }
 
 .ic-emoji {
@@ -587,10 +636,55 @@
   color: #ffffff;
 }
 
+/* concept items pero hovers en cada concepto */
+.concept-item.discovered.apple:hover {
+  background-color: #4f0b07;
+  border-color: #ff4131;
+}
+
+.concept-item.discovered.orange:hover {
+  background-color: #461c00;
+  border-color: #ff8800;
+}
+
+.concept-item.discovered.pear:hover {
+  background-color: #282d00;
+  border-color: #bcce00;
+}
+
+.concept-item.discovered.banana:hover {
+  background-color: #362700;
+  border-color: #f2b700;
+}
+
+.concept-item.discovered.mango:hover {
+  background-color: #402100;
+  border-color: #ff9e00;
+}
+
+.concept-item.discovered.pineapple:hover {
+  background-color: #3a2500;
+  border-color: #ffad00;
+}
+
+.concept-item.discovered.watermelon:hover {
+  background-color: #4e0920;
+  border-color: #ff369d;
+}
+
+.concept-item.discovered.starfruit:hover {
+  background-color: #382600;
+  border-color: #f7b400;
+}
+
 .concept-item.locked {
   background: rgba(255, 255, 255, 0.02);
   border: 1px dashed rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.3);
+}
+
+.concept-item.locked:hover {
+  cursor: text;
 }
 
 .item-complexity {

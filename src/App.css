@@ -1,4 +1,4 @@
-/* App.css - RESPONSIVE VERSION - Z-INDEX FIXED */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
 
 /* 1) Global reset */
 *,
@@ -15,16 +15,15 @@ body,
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    Arial,
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial,
     sans-serif;
   background: #161a1d;
   color: #c8d1db;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 
 /* 2) App layout - RESPONSIVE */
 .app-container {

@@ -53,11 +53,11 @@ const ConceptBubble = ({
         animationDelay: hasSpawned ? '0ms' : `${spawnDelayMs}ms`,
       }}
       onPointerDown={onPointerDown}
-      role="button"
+      role='button'
       tabIndex={0}
     >
-      <span className="concept-emoji">{concept.emoji}</span>
-      <span className="concept-name">{concept.name}</span>
+      <span className='concept-emoji'>{concept.emoji}</span>
+      <span className='concept-name'>{concept.name}</span>
     </div>
   )
 }

@@ -8,26 +8,26 @@ const MyBoards = ({ discoveredConcepts }) => {
   return (
     <>
       {/* Botones FUERA del container */}
-      <div className="my-boards-header-standalone">
+      <div className='my-boards-header-standalone'>
         <button
-          className="help-button"
+          className='help-button'
           onClick={() => setIsGuideOpen(true)}
-          title="Open guide"
+          title='Open guide'
         >
           ?
         </button>
-        <h2 className="my-boards-title">MY BOARDS</h2>
-        <button className="settings-button">⚙️</button>
+        <h2 className='my-boards-title'>MY BOARDS</h2>
+        <button className='settings-button'>⚙️</button>
       </div>
 
       {/* Board sin header */}
-      <div className="my-boards-container">
-        <div className="board-card">
-          <div className="board-info">
-            <span className="board-avatar">M</span>
-            <div className="board-details">
-              <h3 className="board-name">Miqueas's board</h3>
-              <div className="board-stats">
+      <div className='my-boards-container'>
+        <div className='board-card'>
+          <div className='board-info'>
+            <span className='board-avatar'>M</span>
+            <div className='board-details'>
+              <h3 className='board-name'>Miqueas's board</h3>
+              <div className='board-stats'>
                 <span>{discoveredConcepts} concepts</span>
                 <span>18 recipes</span>
               </div>
@@ -35,7 +35,7 @@ const MyBoards = ({ discoveredConcepts }) => {
           </div>
         </div>
 
-        <button className="create-board-button">+ Create new board</button>
+        <button className='create-board-button'>+ Create new board</button>
       </div>
 
       <ConceptsGuide
