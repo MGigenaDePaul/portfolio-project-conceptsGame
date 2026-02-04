@@ -84,6 +84,10 @@
   margin-bottom: 80px;
 }
 
+.guide-section p{
+  color:#ffff;
+}
+
 .section-title {
   font-size: 32px;
   font-weight: 600;
@@ -112,7 +116,6 @@
 .section-text {
   font-size: 16px;
   line-height: 1.7;
-  color: rgba(200, 209, 219, 0.9);
   margin-bottom: 16px;
 }
 
@@ -634,42 +637,42 @@
 }
 
 /* concept items pero hovers en cada concepto */
-.concept-item.discovered.apple:hover{
+.concept-item.discovered.apple:hover {
   background-color: #4f0b07;
   border-color: #ff4131;
 }
 
-.concept-item.discovered.orange:hover{
+.concept-item.discovered.orange:hover {
   background-color: #461c00;
   border-color: #ff8800;
 }
 
-.concept-item.discovered.pear:hover{
+.concept-item.discovered.pear:hover {
   background-color: #282d00;
   border-color: #bcce00;
 }
 
-.concept-item.discovered.banana:hover{
+.concept-item.discovered.banana:hover {
   background-color: #362700;
   border-color: #f2b700;
 }
 
-.concept-item.discovered.mango:hover{
+.concept-item.discovered.mango:hover {
   background-color: #402100;
   border-color: #ff9e00;
 }
 
-.concept-item.discovered.pineapple:hover{
+.concept-item.discovered.pineapple:hover {
   background-color: #3a2500;
   border-color: #ffad00;
 }
 
-.concept-item.discovered.watermelon:hover{
+.concept-item.discovered.watermelon:hover {
   background-color: #4e0920;
   border-color: #ff369d;
 }
 
-.concept-item.discovered.starfruit:hover{
+.concept-item.discovered.starfruit:hover {
   background-color: #382600;
   border-color: #f7b400;
 }

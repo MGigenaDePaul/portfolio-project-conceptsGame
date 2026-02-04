@@ -421,7 +421,7 @@ const App = () => {
 
       <Routes>
         <Route
-          path="/"
+          path='/'
           element={
             <HomeScreen
               instances={instances}
@@ -433,10 +433,10 @@ const App = () => {
             />
           }
         />
-        <Route path="/guide" element={<FullGuide />} />
-        <Route path="/faq" element={<FullGuide />} />
-        <Route path="/privacy" element={<FullGuide />} />
-        <Route path="/terms" element={<FullGuide />} />
+        <Route path='/guide' element={<FullGuide />} />
+        <Route path='/faq' element={<FullGuide />} />
+        <Route path='/privacy' element={<FullGuide />} />
+        <Route path='/terms' element={<FullGuide />} />
       </Routes>
     </>
   )

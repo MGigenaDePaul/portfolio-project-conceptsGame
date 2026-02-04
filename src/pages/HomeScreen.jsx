@@ -11,16 +11,16 @@ const HomeScreen = ({
   zIndexes,
 }) => {
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1 className="app-title">
-          Concepts <span className="app-subtitle">Demo</span>
+    <div className='app-container'>
+      <header className='app-header'>
+        <h1 className='app-title'>
+          Concepts <span className='app-subtitle'>Demo</span>
         </h1>
       </header>
 
       <MyBoards />
 
-      <div className="concepts-area">
+      <div className='concepts-area'>
         {Object.keys(instances).map((instanceId, index) => {
           const instance = instances[instanceId]
           const concept = CONCEPTS[instance.conceptId]
@@ -43,7 +43,7 @@ const HomeScreen = ({
         })}
       </div>
 
-      <footer className="app-footer">
+      <footer className='app-footer'>
         <p>
           CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, DISCOVERED CONCEPTS WILL BE
           LOST

@@ -5,15 +5,15 @@ const Notification = ({ message, isVisible, position }) => {
 
   return (
     <div
-      className="notification-container"
+      className='notification-container'
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
       }}
     >
-      <div className="notification">
-        <span className="notification-icon">⚠️</span>
-        <span className="notification-text">{message}</span>
+      <div className='notification'>
+        <span className='notification-icon'>⚠️</span>
+        <span className='notification-text'>{message}</span>
       </div>
     </div>
   )
