@@ -1,10 +1,32 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { CONCEPTS, generateInstanceId } from '../game/concepts'
+import { combine } from '../game/combine'
 import './FullGuide.css'
 
 const FullGuide = () => {
   const location = useLocation()
-  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false)
+  const demoContainerRef = useRef(null)
+  const availableConceptIds = Object.keys(CONCEPTS)
+  
+  const getRandomConcepts = () => {
+    const array = [...availableConceptIds]
+    const arraySorted = array.sort(() => Math.random() - 0.5)
+
+    const selected = arraySorted.slice(0, 2) // solo 2 ids
+
+    return selected.map((conceptId, index) => ({
+      id: generateInstanceId(), // se genera id unico
+      conceptId,
+      position: index === 0 ? { x: 150, y: 140 } : { x: 550, y: 140 },
+    }))
+  }
+
+  // State for the interactive demo
+  const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
+  const [demoResult, setDemoResult] = useState(null)
+  const [isDragging, setIsDragging] = useState(null)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   const getActiveTab = () => {
     const path = location.pathname
@@ -15,6 +37,101 @@ const FullGuide = () => {
   }
 
   const activeTab = getActiveTab()
+
+  // Drag handlers for demo - MEJORADO CON POINTER EVENTS
+  const handleDemoPointerDown = (e, conceptId) => {
+    e.preventDefault()
+    const concept = demoConcepts.find((c) => c.id === conceptId)
+    if (!concept) return
+
+    const container = demoContainerRef.current
+    if (!container) return
+
+    const containerRect = container.getBoundingClientRect()
+
+    // Capturar el pointer para seguimiento suave
+    e.currentTarget.setPointerCapture(e.pointerId)
+
+    setIsDragging(conceptId)
+    setDragOffset({
+      x: e.clientX - containerRect.left - concept.position.x,
+      y: e.clientY - containerRect.top - concept.position.y,
+    })
+    setDemoResult(null)
+  }
+
+  const handleDemoPointerMove = (e) => {
+    if (isDragging && demoContainerRef.current) {
+      const container = demoContainerRef.current
+      const rect = container.getBoundingClientRect()
+
+      let x = e.clientX - rect.left - dragOffset.x
+      let y = e.clientY - rect.top - dragOffset.y
+
+      // Constrain to container bounds
+      const elementWidth = 150
+      const elementHeight = 50
+      x = Math.max(10, Math.min(x, rect.width - elementWidth - 10))
+      y = Math.max(10, Math.min(y, rect.height - elementHeight - 10))
+
+      setDemoConcepts((prev) =>
+        prev.map((c) =>
+          c.id === isDragging ? { ...c, position: { x, y } } : c,
+        ),
+      )
+    }
+  }
+
+  const handleDemoPointerUp = (e) => {
+    if (isDragging && demoConcepts.length === 2) {
+      const [concept1, concept2] = demoConcepts
+
+      // Calcular distancia entre centros
+      const centerX1 = concept1.position.x + 75
+      const centerY1 = concept1.position.y + 25
+      const centerX2 = concept2.position.x + 75
+      const centerY2 = concept2.position.y + 25
+
+      const distance = Math.sqrt(
+        Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2),
+      )
+
+      // Si están cerca, intentar combinar
+      if (distance < 180) {
+        const newConceptId = combine(concept1.conceptId, concept2.conceptId)
+
+        const midPos = {
+          x: (concept1.position.x + concept2.position.x) / 2 + 75,
+          y: (concept1.position.y + concept2.position.y) / 2 + 25,
+        }
+
+        if (newConceptId) {
+          setDemoResult({
+            conceptId: newConceptId,
+            position: midPos,
+          })
+
+          // Hacer que los conceptos originales desaparezcan
+          setTimeout(() => {
+            setDemoConcepts([])
+          }, 100)
+        }
+      }
+    }
+    
+    // Liberar el pointer capture
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+    
+    setIsDragging(null)
+  }
+
+  const handleDemoReset = () => {
+    setDemoConcepts(getRandomConcepts())
+    setDemoResult(null)
+    setIsDragging(null)
+  }
 
   return (
     <div className='full-guide-container'>
@@ -65,7 +182,74 @@ const FullGuide = () => {
                 <strong>Concepts</strong> is a game about combining pairs of
                 concepts to create new, derived concepts.
               </p>
-              <p className='section-text'>Try combining the two concepts below:</p>
+              <p className='section-text'>
+                Try combining the two concepts below:
+              </p>
+
+              {/* Interactive Demo Box */}
+              <div
+                ref={demoContainerRef}
+                className='complexity-diagram-box interactive-demo'
+              >
+                <button className='demo-reset-btn' onClick={handleDemoReset}>
+                  🔄 Reset
+                </button>
+
+                {!demoResult && (
+                  <div className='demo-instructions'>
+                    <p>
+                      CONCEPTS IS STILL IN DEVELOPMENT. DISCOVERED CONCEPTS WILL
+                      BE LOST
+                    </p>
+                  </div>
+                )}
+
+                {/* Draggable concepts */}
+                {demoConcepts.map((concept) => (
+                  <div
+                    key={concept.id}
+                    className={`demo-concept ${isDragging === concept.id ? 'dragging' : ''}`}
+                    style={{
+                      left: `${concept.position.x}px`,
+                      top: `${concept.position.y}px`,
+                      cursor: isDragging === concept.id ? 'grabbing' : 'grab',
+                      touchAction: 'none', // Importante para pointer events
+                    }}
+                    onPointerDown={(e) => handleDemoPointerDown(e, concept.id)}
+                    onPointerMove={handleDemoPointerMove}
+                    onPointerUp={handleDemoPointerUp}
+                    onPointerCancel={handleDemoPointerUp}
+                  >
+                    <span className='demo-emoji'>
+                      {CONCEPTS[concept.conceptId]?.emoji}
+                    </span>
+                    <span className='demo-name'>
+                      {CONCEPTS[concept.conceptId]?.name}
+                    </span>
+                  </div>
+                ))}
+
+                {/* Result */}
+                {demoResult && (
+                  <div
+                    className='demo-result'
+                    style={{
+                      left: `${demoResult.position.x}px`,
+                      top: `${demoResult.position.y}px`,
+                    }}
+                  >
+                    <div className='result-sparkle'>✨</div>
+                    <span className='demo-emoji'>
+                      {CONCEPTS[demoResult.conceptId]?.emoji}
+                    </span>
+                    <span className='demo-name'>
+                      {CONCEPTS[demoResult.conceptId]?.name}
+                    </span>
+                    <div className='result-label'>New Discovery!</div>
+                  </div>
+                )}
+              </div>
+
               <p className='section-text'>
                 Once you create a new board, you start with the four{' '}
                 <span className='highlight'>classical elements</span>:

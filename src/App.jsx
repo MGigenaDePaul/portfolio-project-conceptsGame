@@ -332,7 +332,6 @@ const App = () => {
 
     const onUp = () => {
       const d = draggingRef.current
-      console.log('no hay drag', d)
       if (!d.id) return
 
       const dragId = d.id
