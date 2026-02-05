@@ -80,8 +80,8 @@
 }
 
 .concept-bubble:hover {
-  background: rgba(40, 45, 50, 0.95);
-  border-color: rgba(139, 92, 246, 0.4);
+  background: none;
+  border-color: none;
   transform: translate(-50%, -50%) scale(1.03);
 }
 
@@ -93,7 +93,7 @@
 
 /* Drop target state */
 .concept-bubble.drop-target {
-  border-color: rgba(139, 92, 246, 0.85);
+  border-color: none;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -467,6 +467,58 @@
   border-color: #00c4ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
+/* Clay 🟤 */
+.concept-bubble.concept-clay:hover,
+.concept-bubble.concept-clay.dragging {
+  background: #4c1300;
+  border-color: #ff6300;
+}
+
+.concept-bubble.concept-clay.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.clay.drop-target {
+  background: #4c1300;
+  border-color: #ff6300;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Lava 🌋🔥 */
+.concept-bubble.concept-lava:hover,
+.concept-bubble.concept-lava.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-lava.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.lava.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Humidity 💧 */
+.concept-bubble.concept-humidity:hover,
+.concept-bubble.concept-humidity.dragging {
+  background: #00304e;
+  border-color: #00d9ff;
+}
+
+.concept-bubble.concept-humidity.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.humidity.drop-target {
+  background: #00304e;
+  border-color: #00d9ff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
 
 /* ============================================ */
 /* MEDIA QUERIES - MOBILE OPTIMIZATIONS */

@@ -47,6 +47,9 @@ export const CONCEPTS = {
   dragon: { id: 'dragon', name: 'Dragon', emoji: '🐉' },
   sea: { id: 'sea', name: 'Sea', emoji: '🌊' },
   vapor: { id: 'vapor', name: 'Vapor', emoji: '💨' },
+  clay: { id: 'clay', name: 'Clay', emoji: '🟤' },
+  lava: { id: 'lava', name: 'Lava', emoji: '🌋🔥' },
+  humidity: { id: 'humidity', name: 'Humidity', emoji: '💧' },
 }
 
 // Helper: get concept by id safely
