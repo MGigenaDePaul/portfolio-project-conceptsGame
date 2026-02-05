@@ -8,7 +8,7 @@ const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
   const availableConceptIds = Object.keys(CONCEPTS)
-
+  
   const getRandomConcepts = () => {
     const array = [...availableConceptIds]
     const arraySorted = array.sort(() => Math.random() - 0.5)
