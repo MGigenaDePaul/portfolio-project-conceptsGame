@@ -20,4 +20,12 @@ export const RECIPES = {
   [pairKey('mud', 'air')]: 'dust',
   [pairKey('cloud', 'earth')]: 'atmosphere',
   [pairKey('smoke', 'atmosphere')]: 'smog',
+
+  [pairKey('inferno', 'earth')]: 'volcano',
+
+  [pairKey('atmosphere', 'air')]: 'sky',
+  [pairKey('steam', 'fire')]: 'dragon',
+  [pairKey('oxygen', 'ocean')]: 'sea',
+  [pairKey('steam', 'air')]: 'vapor',
+
 }

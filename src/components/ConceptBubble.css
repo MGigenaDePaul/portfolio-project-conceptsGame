@@ -89,18 +89,12 @@
 .concept-bubble.dragging {
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
   cursor: grabbing;
-  /* 🔧 FIX: z-index controlado por App.jsx via inline styles */
 }
 
-/* Drop target state - BASE (sin z-index) */
+/* Drop target state */
 .concept-bubble.drop-target {
   border-color: rgba(139, 92, 246, 0.85);
-  box-shadow:
-    0 0 0 2px rgba(139, 92, 246, 0.25),
-    0 0 30px rgba(139, 92, 246, 0.35),
-    0 10px 30px rgba(0, 0, 0, 0.35);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
-  /* 🔧 FIX: NO z-index - controlado por App.jsx */
 }
 
 .concept-emoji {
@@ -131,10 +125,6 @@
 .concept-bubble.concept-fire.drop-target {
   background: #4f0b07;
   border-color: #ff4131;
-  box-shadow:
-    0 0 0 2px rgba(255, 65, 49, 0.35),
-    0 0 30px rgba(255, 65, 49, 0.5),
-    0 10px 30px rgba(79, 11, 7, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -152,10 +142,6 @@
 .concept-bubble.concept-earth.drop-target {
   background: #003400;
   border-color: #00e900;
-  box-shadow:
-    0 0 0 2px rgba(0, 233, 0, 0.35),
-    0 0 30px rgba(0, 233, 0, 0.5),
-    0 10px 30px rgba(0, 52, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -173,10 +159,6 @@
 .concept-bubble.concept-water.drop-target {
   background: #0e2459;
   border-color: #55a9ff;
-  box-shadow:
-    0 0 0 2px rgba(85, 169, 255, 0.35),
-    0 0 30px rgba(85, 169, 255, 0.5),
-    0 10px 30px rgba(14, 36, 89, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -194,10 +176,6 @@
 .concept-bubble.concept-air.drop-target {
   background: #2e2e2e;
   border-color: #d3d3d3;
-  box-shadow:
-    0 0 0 2px rgba(211, 211, 211, 0.35),
-    0 0 30px rgba(211, 211, 211, 0.5),
-    0 10px 30px rgba(46, 46, 46, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -215,10 +193,6 @@
 .concept-bubble.concept-atmosphere.drop-target {
   background: #00304e;
   border-color: #00d9ff;
-  box-shadow:
-    0 0 0 2px rgba(0, 217, 255, 0.35),
-    0 0 30px rgba(0, 217, 255, 0.5),
-    0 10px 30px rgba(0, 48, 78, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -236,10 +210,6 @@
 .concept-bubble.concept-smoke.drop-target {
   background: #2e2e2e;
   border-color: #bebebe;
-  box-shadow:
-    0 0 0 2px rgba(190, 190, 190, 0.35),
-    0 0 30px rgba(190, 190, 190, 0.5),
-    0 10px 30px rgba(46, 46, 46, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -257,10 +227,6 @@
 .concept-bubble.concept-mud.drop-target {
   background: #4c1300;
   border-color: #ff6300;
-  box-shadow:
-    0 0 0 2px rgba(255, 99, 0, 0.35),
-    0 0 30px rgba(255, 99, 0, 0.5),
-    0 10px 30px rgba(76, 19, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -278,10 +244,6 @@
 .concept-bubble.concept-volcano.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
-  box-shadow:
-    0 0 0 2px rgba(255, 73, 0, 0.35),
-    0 0 30px rgba(255, 73, 0, 0.5),
-    0 10px 30px rgba(79, 13, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -299,10 +261,6 @@
 .concept-bubble.concept-steam.drop-target {
   background: #002b55;
   border-color: #00c5ff;
-  box-shadow:
-    0 0 0 2px rgba(0, 197, 255, 0.35),
-    0 0 30px rgba(0, 197, 255, 0.5),
-    0 10px 30px rgba(0, 43, 85, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -320,10 +278,6 @@
 .concept-bubble.concept-ocean.drop-target {
   background: #002d52;
   border-color: #00ceff;
-  box-shadow:
-    0 0 0 2px rgba(0, 206, 255, 0.35),
-    0 0 30px rgba(0, 206, 255, 0.5),
-    0 10px 30px rgba(0, 45, 82, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -341,10 +295,6 @@
 .concept-bubble.concept-oxygen.drop-target {
   background: #003442;
   border-color: #00e9ff;
-  box-shadow:
-    0 0 0 2px rgba(0, 233, 255, 0.35),
-    0 0 30px rgba(0, 233, 255, 0.5),
-    0 10px 30px rgba(0, 52, 66, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -362,10 +312,6 @@
 .concept-bubble.concept-inferno.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
-  box-shadow:
-    0 0 0 2px rgba(255, 73, 0, 0.35),
-    0 0 30px rgba(255, 73, 0, 0.5),
-    0 10px 30px rgba(79, 13, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -383,10 +329,6 @@
 .concept-bubble.concept-mountain.drop-target {
   background: #451c00;
   border-color: #ff8c00;
-  box-shadow:
-    0 0 0 2px rgba(255, 140, 0, 0.35),
-    0 0 30px rgba(255, 140, 0, 0.5),
-    0 10px 30px rgba(69, 28, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -404,10 +346,6 @@
 .concept-bubble.concept-cloud.drop-target {
   background: #052659;
   border-color: #27afff;
-  box-shadow:
-    0 0 0 2px rgba(93, 173, 226, 0.35),
-    0 0 30px rgba(93, 173, 226, 0.5),
-    0 10px 30px rgba(26, 58, 82, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -425,10 +363,6 @@
 .concept-bubble.concept-plasma.drop-target {
   background: #36164e;
   border-color: #f173ff;
-  box-shadow:
-    0 0 0 2px rgba(241, 115, 255, 0.35),
-    0 0 30px rgba(241, 115, 255, 0.5),
-    0 10px 30px rgba(54, 22, 78, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -446,10 +380,6 @@
 .concept-bubble.concept-smog.drop-target {
   background: #451c00;
   border-color: #ff8c00;
-  box-shadow:
-    0 0 0 2px rgba(255, 140, 0, 0.35),
-    0 0 30px rgba(255, 140, 0, 0.5),
-    0 10px 30px rgba(69, 28, 0, 0.4);
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -467,10 +397,74 @@
 .concept-bubble.concept-dust.drop-target {
   background: #441d00;
   border-color: #ff8f00;
-  box-shadow:
-    0 0 0 2px rgba(255, 143, 0, 0.35),
-    0 0 30px rgba(255, 143, 0, 0.5),
-    0 10px 30px rgba(68, 29, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Sky ☁️ */
+.concept-bubble.concept-sky:hover,
+.concept-bubble.concept-sky.dragging {
+  background: #00304e;
+  border-color: #00d9ff;
+}
+
+.concept-bubble.concept-sky.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-dust.sky.drop-target {
+  background: #00304e;
+  border-color: #00d9ff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Dragon 🐉 */
+.concept-bubble.concept-dragon:hover,
+.concept-bubble.concept-dragon.dragging {
+  background: #4f0b07;
+  border-color: #ff4131;
+}
+
+.concept-bubble.concept-dragon.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept-dragon.drop-target {
+  background: #4f0b07;
+  border-color: #ff4131;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Sea 🌊 */
+.concept-bubble.concept-sea:hover,
+.concept-bubble.concept-sea.dragging {
+  background: #002a56;
+  border-color: #00c2ff;
+}
+
+.concept-bubble.concept-sea.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.sea.drop-target {
+  background: #002a56;
+  border-color: #00c2ff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+
+/* Vapor 💨 */
+.concept-bubble.concept-vapor:hover,
+.concept-bubble.concept-vapor.dragging {
+  background: #002b56;
+  border-color: #00c4ff;
+}
+
+.concept-bubble.concept-vapor.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.vapor.drop-target {
+  background: #002b56;
+  border-color: #00c4ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
