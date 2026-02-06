@@ -198,25 +198,23 @@
   max-width: 400px;
 }
 
-/* FIXED: Removed transition from base class to prevent drag lag */
+/* CRITICAL FIX: Remove ALL transitions from base .demo-concept */
 .demo-concept {
   position: absolute;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 18px;
-  background: #2a2d32;
-  border: 2px solid #befc73;
   border-radius: 10px;
   z-index: 5;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  /* NO transition here - this was causing the lag! */
+  /* NO transitions - they cause lag during drag */
+  /* Border will come from concept-bubble classes */
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Only transition the hover effects, not position */
 .demo-concept:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(190, 252, 115, 0.3);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -225,10 +223,8 @@
 /* Disable ALL transitions while dragging for instant response */
 .demo-concept.dragging {
   transform: scale(1.1);
-  box-shadow: 0 8px 24px rgba(190, 252, 115, 0.5);
   border-color: #9aff6b;
   z-index: 100;
-  transition: none !important;
 }
 
 .demo-emoji {

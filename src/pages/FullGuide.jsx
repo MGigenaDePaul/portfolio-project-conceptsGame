@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CONCEPTS, generateInstanceId } from '../game/concepts'
 import { combine } from '../game/combine'
-import '../components/ConceptBubble.css' 
+import '../components/ConceptBubble.css'
 
 import './FullGuide.css'
 
@@ -10,7 +10,7 @@ const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
-  
+
   // Audio refs for sound effects
   const clickSoundRef = useRef(null)
   const preCombineSoundRef = useRef(null)
@@ -188,7 +188,7 @@ const FullGuide = () => {
 
               // Play combine success sound
               play(combineSoundRef)
-            }, 500) 
+            }, 500)
           } else {
             // FAIL: No recipe exists for this combination
             console.log(
@@ -283,7 +283,7 @@ const FullGuide = () => {
                 {demoConcepts.map((concept) => (
                   <div
                     key={concept.id}
-                    className={`demo-concept ${
+                    className={`demo-concept concept-bubble concept-${concept.conceptId} ${
                       draggingId === concept.id ? 'dragging' : ''
                     }`}
                     style={{
