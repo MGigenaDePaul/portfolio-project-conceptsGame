@@ -10,6 +10,11 @@ const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
+  
+  // Audio refs for sound effects
+  const clickSoundRef = useRef(null)
+  const preCombineSoundRef = useRef(null)
+  const combineSoundRef = useRef(null)
 
   // Only show these common elements in the demo
   const DEMO_CONCEPT_IDS = [
@@ -44,6 +49,24 @@ const FullGuide = () => {
   const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
   const [draggingId, setDraggingId] = useState(null)
 
+  useEffect(() => {
+    const clickAudio = new Audio('/sounds/pressBubble.mp3')
+    clickAudio.volume = 0.5
+    clickAudio.preload = 'auto'
+
+    const preCombineAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    preCombineAudio.volume = 0.4
+    preCombineAudio.preload = 'auto'
+
+    const combineAudio = new Audio('/sounds/success.mp3')
+    combineAudio.volume = 0.6
+    combineAudio.preload = 'auto'
+
+    clickSoundRef.current = clickAudio
+    preCombineSoundRef.current = preCombineAudio
+    combineSoundRef.current = combineAudio
+  }, [])
+
   const getActiveTab = () => {
     const path = location.pathname
     if (path === '/faq') return 'faq'
@@ -53,6 +76,14 @@ const FullGuide = () => {
   }
 
   const activeTab = getActiveTab()
+
+  // Play sound helper function like in App.jsx
+  const play = (ref) => {
+    const a = ref.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
 
   // FIXED: onPointerDown with proper offset calculation
   const onPointerDownConcept = (conceptId) => (e) => {
@@ -72,6 +103,9 @@ const FullGuide = () => {
     const offsetY = e.clientY - rect.top - concept.position.y
 
     setDraggingId(conceptId)
+
+    // Play click sound
+    play(clickSoundRef)
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
@@ -132,20 +166,29 @@ const FullGuide = () => {
           const newConceptId = combine(concept1.conceptId, concept2.conceptId)
 
           if (newConceptId) {
+            // Play pre-combine sound
+            play(preCombineSoundRef)
+
             // SUCCESS: Valid combination found
             const midPos = {
               x: (concept1.position.x + concept2.position.x) / 2,
               y: (concept1.position.y + concept2.position.y) / 2,
             }
 
-            // Replace the two concepts with the new one
-            setDemoConcepts([
-              {
-                id: generateInstanceId(),
-                conceptId: newConceptId,
-                position: midPos,
-              },
-            ])
+            // Wait a bit for pre-combine sound, then combine
+            setTimeout(() => {
+              // Replace the two concepts with the new one
+              setDemoConcepts([
+                {
+                  id: generateInstanceId(),
+                  conceptId: newConceptId,
+                  position: midPos,
+                },
+              ])
+
+              // Play combine success sound
+              play(combineSoundRef)
+            }, 500) 
           } else {
             // FAIL: No recipe exists for this combination
             console.log(
