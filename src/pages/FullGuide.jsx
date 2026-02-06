@@ -2,13 +2,32 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CONCEPTS, generateInstanceId } from '../game/concepts'
 import { combine } from '../game/combine'
+import '../components/ConceptBubble.css' 
+
 import './FullGuide.css'
 
 const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
-  const availableConceptIds = Object.keys(CONCEPTS)
+
+  // Only show these common elements in the demo
+  const DEMO_CONCEPT_IDS = [
+    'fire',
+    'water',
+    'air',
+    'earth',
+    'cloud',
+    'steam',
+    'oxygen',
+    'ocean',
+    'inferno',
+    'mountain',
+    'atmosphere',
+    'smoke',
+  ]
+
+  const availableConceptIds = DEMO_CONCEPT_IDS
 
   const getRandomConcepts = () => {
     const array = [...availableConceptIds]
@@ -23,7 +42,6 @@ const FullGuide = () => {
   }
 
   const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
-  const [demoResult, setDemoResult] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
 
   const getActiveTab = () => {
@@ -48,13 +66,12 @@ const FullGuide = () => {
     if (!container) return
 
     const rect = container.getBoundingClientRect()
-    
+
     // Calculate where exactly the user clicked within the element
     const offsetX = e.clientX - rect.left - concept.position.x
     const offsetY = e.clientY - rect.top - concept.position.y
 
     setDraggingId(conceptId)
-    setDemoResult(null)
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
@@ -84,7 +101,7 @@ const FullGuide = () => {
       y = Math.max(10, Math.min(y, rect.height - elementHeight - 10))
 
       setDemoConcepts((prev) =>
-        prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c))
+        prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c)),
       )
     }
 
@@ -107,7 +124,7 @@ const FullGuide = () => {
         const centerY2 = concept2.position.y + 25
 
         const distance = Math.sqrt(
-          Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2)
+          Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2),
         )
 
         // Check if close enough to combine
@@ -117,21 +134,23 @@ const FullGuide = () => {
           if (newConceptId) {
             // SUCCESS: Valid combination found
             const midPos = {
-              x: (concept1.position.x + concept2.position.x) / 2 + 75,
-              y: (concept1.position.y + concept2.position.y) / 2 + 25,
+              x: (concept1.position.x + concept2.position.x) / 2,
+              y: (concept1.position.y + concept2.position.y) / 2,
             }
 
-            // Clear the old concepts immediately
-            setDemoConcepts([])
-            
-            // Show the result with animation
-            setDemoResult({
-              conceptId: newConceptId,
-              position: midPos,
-            })
+            // Replace the two concepts with the new one
+            setDemoConcepts([
+              {
+                id: generateInstanceId(),
+                conceptId: newConceptId,
+                position: midPos,
+              },
+            ])
           } else {
             // FAIL: No recipe exists for this combination
-            console.log(`No recipe for ${concept1.conceptId} + ${concept2.conceptId}`)
+            console.log(
+              `No recipe for ${concept1.conceptId} + ${concept2.conceptId}`,
+            )
             // Concepts stay on screen, just not combined
           }
         }
@@ -149,7 +168,6 @@ const FullGuide = () => {
 
   const handleDemoReset = () => {
     setDemoConcepts(getRandomConcepts())
-    setDemoResult(null)
     setDraggingId(null)
   }
 
@@ -198,7 +216,9 @@ const FullGuide = () => {
                 <strong>Concepts</strong> is a game about combining pairs of
                 concepts to create new, derived concepts.
               </p>
-              <p className='section-text'>Try combining the two concepts below:</p>
+              <p className='section-text'>
+                Try combining the two concepts below:
+              </p>
 
               <div
                 ref={demoContainerRef}
@@ -208,7 +228,7 @@ const FullGuide = () => {
                   🔄 Reset
                 </button>
 
-                {!demoResult && (
+                {demoConcepts.length === 2 && (
                   <div className='demo-instructions'>
                     <p>
                       CONCEPTS IS STILL IN DEVELOPMENT. DISCOVERED CONCEPTS WILL
@@ -238,25 +258,6 @@ const FullGuide = () => {
                     </span>
                   </div>
                 ))}
-
-                {demoResult && (
-                  <div
-                    className='demo-result'
-                    style={{
-                      left: `${demoResult.position.x}px`,
-                      top: `${demoResult.position.y}px`,
-                    }}
-                  >
-                    <div className='result-sparkle'>✨</div>
-                    <span className='demo-emoji'>
-                      {CONCEPTS[demoResult.conceptId]?.emoji}
-                    </span>
-                    <span className='demo-name'>
-                      {CONCEPTS[demoResult.conceptId]?.name}
-                    </span>
-                    <div className='result-label'>New Discovery!</div>
-                  </div>
-                )}
               </div>
 
               <p className='section-text'>
@@ -352,7 +353,9 @@ const FullGuide = () => {
                   <div className='diagram-node node-beach'>
                     <span className='node-emoji'>🏖️</span>
                     <span className='node-name'>Beach</span>
-                    <span className='node-complexity complexity-yellow'>15</span>
+                    <span className='node-complexity complexity-yellow'>
+                      15
+                    </span>
                   </div>
 
                   <svg
@@ -371,7 +374,9 @@ const FullGuide = () => {
                   <div className='diagram-node node-sun'>
                     <span className='node-emoji'>☀️</span>
                     <span className='node-name'>Sun</span>
-                    <span className='node-complexity complexity-yellow'>14</span>
+                    <span className='node-complexity complexity-yellow'>
+                      14
+                    </span>
                   </div>
                 </div>
               </div>
@@ -384,7 +389,9 @@ const FullGuide = () => {
               </p>
 
               <div className='cascade-subsection'>
-                <h3 className='subsection-title'>✨ Cascade effect improvements</h3>
+                <h3 className='subsection-title'>
+                  ✨ Cascade effect improvements
+                </h3>
 
                 <p className='section-text'>
                   When you discover a better recipe (with lower complexity) for
@@ -656,7 +663,9 @@ const FullGuide = () => {
                 </tbody>
               </table>
 
-              <p className='section-text'>Go get the lowest total complexity!</p>
+              <p className='section-text'>
+                Go get the lowest total complexity!
+              </p>
             </section>
 
             {/* Multiplayer Section */}

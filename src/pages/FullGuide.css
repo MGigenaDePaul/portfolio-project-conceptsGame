@@ -217,7 +217,9 @@
 .demo-concept:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(190, 252, 115, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 /* Disable ALL transitions while dragging for instant response */
