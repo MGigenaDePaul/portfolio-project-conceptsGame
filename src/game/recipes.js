@@ -20,6 +20,7 @@ export const RECIPES = {
   [pairKey('mud', 'atmosphere')]: 'smog',
   [pairKey('mud', 'air')]: 'dust',
   [pairKey('cloud', 'earth')]: 'atmosphere',
+  [pairKey('ocean', 'air')]: 'atmosphere',
   [pairKey('smoke', 'atmosphere')]: 'smog',
 
   [pairKey('inferno', 'earth')]: 'volcano',
@@ -28,9 +29,11 @@ export const RECIPES = {
   [pairKey('atmosphere', 'air')]: 'sky',
   [pairKey('steam', 'fire')]: 'dragon',
   [pairKey('oxygen', 'ocean')]: 'sea',
+  [pairKey('ocean', 'water')]: 'sea',
   [pairKey('steam', 'air')]: 'vapor',
   [pairKey('mud', 'earth')]: 'clay',
   [pairKey('mud', 'fire')]: 'lava',
+  [pairKey('ocean', 'fire')]: 'lava',
   [pairKey('fire', 'volcano')]: 'lava',
   [pairKey('atmosphere', 'water')]: 'humidity',
   [pairKey('humidity', 'plasma')]: 'steam',
@@ -57,4 +60,10 @@ export const RECIPES = {
   [pairKey('atmosphere', 'clay')]: 'terra cotta',
   [pairKey('fire', 'inferno')]: 'blaze',
   [pairKey('steam', 'earth')]: 'geothermal',
+
+  [pairKey('mountain', 'air')]: 'altitude',
+  [pairKey('inferno', 'oxygen')]: 'combustion',
+  [pairKey('cloud', 'fire')]: 'pyrocumulus',
+  [pairKey('atmosphere', 'mountain')]: 'stratosphere',
+
 }
