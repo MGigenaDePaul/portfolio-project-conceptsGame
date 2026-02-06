@@ -100,6 +100,7 @@ const FullGuide = () => {
       if (demoConcepts.length === 2) {
         const [concept1, concept2] = demoConcepts
 
+        // Calculate centers of both concepts
         const centerX1 = concept1.position.x + 75
         const centerY1 = concept1.position.y + 25
         const centerX2 = concept2.position.x + 75
@@ -109,23 +110,29 @@ const FullGuide = () => {
           Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2)
         )
 
+        // Check if close enough to combine
         if (distance < 180) {
           const newConceptId = combine(concept1.conceptId, concept2.conceptId)
 
           if (newConceptId) {
+            // SUCCESS: Valid combination found
             const midPos = {
               x: (concept1.position.x + concept2.position.x) / 2 + 75,
               y: (concept1.position.y + concept2.position.y) / 2 + 25,
             }
 
+            // Clear the old concepts immediately
+            setDemoConcepts([])
+            
+            // Show the result with animation
             setDemoResult({
               conceptId: newConceptId,
               position: midPos,
             })
-
-            setTimeout(() => {
-              setDemoConcepts([])
-            }, 100)
+          } else {
+            // FAIL: No recipe exists for this combination
+            console.log(`No recipe for ${concept1.conceptId} + ${concept2.conceptId}`)
+            // Concepts stay on screen, just not combined
           }
         }
       }
