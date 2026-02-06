@@ -519,6 +519,246 @@
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
+/* Sun ☀️*/
+.concept-bubble.concept-sun:hover,
+.concept-bubble.concept-sun.dragging {
+  background: #382600;
+  border-color: #fab200;
+}
+
+.concept-bubble.concept-sun.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.sun.drop-target {
+  background: #382600;
+  border-color: #fab200;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Wildfire 🔥🌲 */
+.concept-bubble.concept-wildfire:hover,
+.concept-bubble.concept-wildfire.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-wildfire.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.wildfire.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Ash Cloud ☁️🌫️ */
+.concept-bubble.concept-ashCloud:hover,
+.concept-bubble.concept-ashCloud.dragging {
+  background: #2e2e2e;
+  border-color: #bebebe;
+}
+
+.concept-bubble.concept-ashCloud.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.ashCloud.drop-target {
+  background: #2e2e2e;
+  border-color: #bebebe;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Magma 🌋 */
+.concept-bubble.concept-magma:hover,
+.concept-bubble.concept-magma.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-magma.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.magma.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Mist 🌫️*/
+.concept-bubble.concept-mist:hover,
+.concept-bubble.concept-mist.dragging {
+  background: #002758;
+  border-color: #00b5ff;
+}
+
+.concept-bubble.concept-mist.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.mist.drop-target {
+  background: #002758;
+  border-color: #00b5ff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Bioluminescense 💧✨ */
+.concept-bubble.concept-bioluminescense:hover,
+.concept-bubble.concept-bioluminescense.dragging {
+  background: #00360c;
+  border-color: #00ef4b;
+}
+
+.concept-bubble.concept-bioluminescense.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.bioluminescense.drop-target {
+  background: #00304e;
+  border-color: #00ef4b;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Dystopia 🔥 */
+.concept-bubble.concept-dystopia:hover,
+.concept-bubble.concept-dystopia.dragging {
+  background: #2e2e2e;
+  border-color: #bebebe;
+}
+
+.concept-bubble.concept-dystopia.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.dystopia.drop-target {
+  background: #2e2e2e;
+  border-color: #bebebe;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Lava Ocean 🌋🌊 */
+.concept-bubble.concept-lavaOcean:hover,
+.concept-bubble.concept-lavaOcean.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-lavaOcean.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.lavaOcean.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Cumulus ☁️*/
+.concept-bubble.concept-cumulus:hover,
+.concept-bubble.concept-cumulus.dragging {
+  background: #002c54;
+  border-color: #00c9ff;
+}
+
+.concept-bubble.concept-cumulus.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.cumulus.drop-target {
+  background: #002c54;
+  border-color: #00c9ff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Pollution ☣️*/
+.concept-bubble.concept-pollution:hover,
+.concept-bubble.concept-pollution.dragging {
+  background: #00372a;
+  border-color: #00f4c3;
+}
+
+.concept-bubble.concept-pollution.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.pollution.drop-target {
+  background: #00372a;
+  border-color: #00f4c3;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Eruption 🌋*/
+.concept-bubble.concept-eruption:hover,
+.concept-bubble.concept-eruption.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-eruption.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.eruption.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Water Vapor 💨 */
+.concept-bubble.concept-waterVapor:hover,
+.concept-bubble.concept-waterVapor.dragging {
+  background: #002957;
+  border-color: #00bcff;
+}
+
+.concept-bubble.concept-waterVapor.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.waterVapor.drop-target {
+  background: #002957;
+  border-color: #00bcff;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Terra Cotta 🏺 */
+.concept-bubble.concept-terraCotta:hover,
+.concept-bubble.concept-terraCotta.dragging {
+  background: #4f0c02;
+  border-color: #ff4600;
+}
+
+.concept-bubble.concept-terraCotta.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.terraCotta.drop-target {
+  background: #4f0c02;
+  border-color: #ff4600;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Blaze 🔥*/
+.concept-bubble.concept-blaze:hover,
+.concept-bubble.concept-blaze.dragging {
+  background: #4f0d00;
+  border-color: #ff4900;
+}
+
+.concept-bubble.concept-blaze.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.blaze.drop-target {
+  background: #4f0d00;
+  border-color: #ff4900;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
+/* Geothermal 🔥 */
+.concept-bubble.concept-geothermal:hover,
+.concept-bubble.concept-geothermal.dragging {
+  background: #4a1600;
+  border-color: #ff7100;
+}
+
+.concept-bubble.concept-geothermal.dragging {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
+}
+
+.concept-bubble.concept.geothermal.drop-target {
+  background: #4a1600;
+  border-color: #ff7100;
+  transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
+}
 
 /* ============================================ */
 /* MEDIA QUERIES - MOBILE OPTIMIZATIONS */

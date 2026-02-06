@@ -50,6 +50,26 @@ export const CONCEPTS = {
   clay: { id: 'clay', name: 'Clay', emoji: '🟤' },
   lava: { id: 'lava', name: 'Lava', emoji: '🌋🔥' },
   humidity: { id: 'humidity', name: 'Humidity', emoji: '💧' },
+
+  sun: { id: 'sun', name: 'Sun', emoji: '☀️' },
+  wildfire: { id: 'wildfire', name: 'Wildfire', emoji: '🔥🌲' },
+  ashCloud: { id: 'ash cloud', name: 'Ash Cloud', emoji: '☁️🌫️' },
+  magma: { id: 'magma', name: 'Magma', emoji: '🌋' },
+  mist: { id: 'mist', name: 'Mist', emoji: '🌫️' },
+  bioluminescense: {
+    id: 'bioluminescense',
+    name: 'Bioluminescense',
+    emoji: '💧✨',
+  },
+  dystopia: { id: 'dystopia', name: 'Dystopia', emoji: '🔥' },
+  lavaOcean: { id: 'lava ocean', name: 'Lava Ocean', emoji: '🌋🌊' },
+  cumulus: { id: 'cumulus', name: 'Cumulus', emoji: '☁️' },
+  pollution: { id: 'pollution', name: 'Pollution', emoji: '☣️' },
+  eruption: { id: 'eruption', name: 'Eruption', emoji: '🌋' },
+  waterVapor: { id: 'water vapor', name: 'Water Vapor', emoji: '💨' },
+  terraCotta: { id: 'terra cotta', name: 'Terra Cotta', emoji: '🏺' },
+  blaze: { id: 'blaze', name: 'Blaze', emoji: '🔥' },
+  geothermal: { id: 'geothermal', name: 'Geothermal', emoji: '🔥' },
 }
 
 // Helper: get concept by id safely

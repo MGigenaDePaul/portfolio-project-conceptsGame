@@ -1,32 +1,73 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CONCEPTS, generateInstanceId } from '../game/concepts'
 import { combine } from '../game/combine'
+import '../components/ConceptBubble.css' 
+
 import './FullGuide.css'
 
 const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
-  const availableConceptIds = Object.keys(CONCEPTS)
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
   
+  // Audio refs for sound effects
+  const clickSoundRef = useRef(null)
+  const preCombineSoundRef = useRef(null)
+  const combineSoundRef = useRef(null)
+
+  // Only show these common elements in the demo
+  const DEMO_CONCEPT_IDS = [
+    'fire',
+    'water',
+    'air',
+    'earth',
+    'cloud',
+    'steam',
+    'oxygen',
+    'ocean',
+    'inferno',
+    'mountain',
+    'atmosphere',
+    'smoke',
+  ]
+
+  const availableConceptIds = DEMO_CONCEPT_IDS
+
   const getRandomConcepts = () => {
     const array = [...availableConceptIds]
     const arraySorted = array.sort(() => Math.random() - 0.5)
-
-    const selected = arraySorted.slice(0, 2) // solo 2 ids
+    const selected = arraySorted.slice(0, 2)
 
     return selected.map((conceptId, index) => ({
-      id: generateInstanceId(), // se genera id unico
+      id: generateInstanceId(),
       conceptId,
       position: index === 0 ? { x: 150, y: 140 } : { x: 550, y: 140 },
     }))
   }
 
-  // State for the interactive demo
   const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
-  const [demoResult, setDemoResult] = useState(null)
-  const [isDragging, setIsDragging] = useState(null)
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [draggingId, setDraggingId] = useState(null)
+  const [hoverTargetId, setHoverTargetId] = useState(null)
+
+  // Initialize audio in useEffect like in App.jsx
+  useEffect(() => {
+    const clickAudio = new Audio('/sounds/pressBubble.mp3')
+    clickAudio.volume = 0.5
+    clickAudio.preload = 'auto'
+
+    const preCombineAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    preCombineAudio.volume = 0.4
+    preCombineAudio.preload = 'auto'
+
+    const combineAudio = new Audio('/sounds/success.mp3')
+    combineAudio.volume = 0.6
+    combineAudio.preload = 'auto'
+
+    clickSoundRef.current = clickAudio
+    preCombineSoundRef.current = preCombineAudio
+    combineSoundRef.current = combineAudio
+  }, [])
 
   const getActiveTab = () => {
     const path = location.pathname
@@ -38,111 +79,176 @@ const FullGuide = () => {
 
   const activeTab = getActiveTab()
 
-  // Drag handlers for demo - MEJORADO CON POINTER EVENTS
-  const handleDemoPointerDown = (e, conceptId) => {
+  // Play sound helper function like in App.jsx
+  const play = (ref) => {
+    const a = ref.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
+
+  // FIXED: onPointerDown with proper offset calculation
+  const onPointerDownConcept = (conceptId) => (e) => {
     e.preventDefault()
+    e.stopPropagation()
+
     const concept = demoConcepts.find((c) => c.id === conceptId)
     if (!concept) return
 
     const container = demoContainerRef.current
     if (!container) return
 
-    const containerRect = container.getBoundingClientRect()
+    const rect = container.getBoundingClientRect()
 
-    // Capturar el pointer para seguimiento suave
-    e.currentTarget.setPointerCapture(e.pointerId)
+    // Calculate where exactly the user clicked within the element
+    const offsetX = e.clientX - rect.left - concept.position.x
+    const offsetY = e.clientY - rect.top - concept.position.y
 
-    setIsDragging(conceptId)
-    setDragOffset({
-      x: e.clientX - containerRect.left - concept.position.x,
-      y: e.clientY - containerRect.top - concept.position.y,
-    })
-    setDemoResult(null)
+    setDraggingId(conceptId)
+
+    // Play click sound
+    play(clickSoundRef)
+
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+
+    draggingRef.current = {
+      id: conceptId,
+      offsetX,
+      offsetY,
+    }
   }
 
-  const handleDemoPointerMove = (e) => {
-    if (isDragging && demoContainerRef.current) {
-      const container = demoContainerRef.current
-      const rect = container.getBoundingClientRect()
+  // FIXED: Mouse move with proper offset application
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = draggingRef.current
+      if (!d.id || !demoContainerRef.current) return
 
-      let x = e.clientX - rect.left - dragOffset.x
-      let y = e.clientY - rect.top - dragOffset.y
+      const rect = demoContainerRef.current.getBoundingClientRect()
 
-      // Constrain to container bounds
+      // Calculate position: mouse position - container offset - click offset
+      let x = e.clientX - rect.left - d.offsetX
+      let y = e.clientY - rect.top - d.offsetY
+
+      // Bounds checking
       const elementWidth = 150
       const elementHeight = 50
       x = Math.max(10, Math.min(x, rect.width - elementWidth - 10))
       y = Math.max(10, Math.min(y, rect.height - elementHeight - 10))
 
-      setDemoConcepts((prev) =>
-        prev.map((c) =>
-          c.id === isDragging ? { ...c, position: { x, y } } : c,
-        ),
-      )
-    }
-  }
-
-  const handleDemoPointerUp = (e) => {
-    if (isDragging && demoConcepts.length === 2) {
-      const [concept1, concept2] = demoConcepts
-
-      // Calcular distancia entre centros
-      const centerX1 = concept1.position.x + 75
-      const centerY1 = concept1.position.y + 25
-      const centerX2 = concept2.position.x + 75
-      const centerY2 = concept2.position.y + 25
-
-      const distance = Math.sqrt(
-        Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2),
-      )
-
-      // Si están cerca, intentar combinar
-      if (distance < 180) {
-        const newConceptId = combine(concept1.conceptId, concept2.conceptId)
-
-        const midPos = {
-          x: (concept1.position.x + concept2.position.x) / 2 + 75,
-          y: (concept1.position.y + concept2.position.y) / 2 + 25,
+      setDemoConcepts((prev) => {
+        const updated = prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c))
+        
+        // Check if dragging concept is close to any other concept
+        const draggedConcept = updated.find(c => c.id === d.id)
+        if (draggedConcept && updated.length === 2) {
+          const otherConcept = updated.find(c => c.id !== d.id)
+          if (otherConcept) {
+            const centerX1 = draggedConcept.position.x + 75
+            const centerY1 = draggedConcept.position.y + 25
+            const centerX2 = otherConcept.position.x + 75
+            const centerY2 = otherConcept.position.y + 25
+            
+            const distance = Math.sqrt(
+              Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2)
+            )
+            
+            // If close enough, set as hover target
+            if (distance < 120) {
+              setHoverTargetId(otherConcept.id)
+            } else {
+              setHoverTargetId(null)
+            }
+          }
         }
+        
+        return updated
+      })
+    }
 
-        if (newConceptId) {
-          setDemoResult({
-            conceptId: newConceptId,
-            position: midPos,
-          })
+    const onUp = () => {
+      const d = draggingRef.current
+      if (!d.id) return
 
-          // Hacer que los conceptos originales desaparezcan
-          setTimeout(() => {
-            setDemoConcepts([])
-          }, 100)
+      const dragId = d.id
+      draggingRef.current.id = null
+
+      setDraggingId(null)
+      setHoverTargetId(null)
+
+      if (demoConcepts.length === 2) {
+        const [concept1, concept2] = demoConcepts
+
+        // Calculate centers of both concepts
+        const centerX1 = concept1.position.x + 75
+        const centerY1 = concept1.position.y + 25
+        const centerX2 = concept2.position.x + 75
+        const centerY2 = concept2.position.y + 25
+
+        const distance = Math.sqrt(
+          Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2),
+        )
+
+        // Check if close enough to combine
+        if (distance < 100) {
+          const newConceptId = combine(concept1.conceptId, concept2.conceptId)
+
+          if (newConceptId) {
+            // Play pre-combine sound
+            play(preCombineSoundRef)
+
+            // SUCCESS: Valid combination found
+            const midPos = {
+              x: (concept1.position.x + concept2.position.x) / 2,
+              y: (concept1.position.y + concept2.position.y) / 2,
+            }
+
+            // Wait a bit for pre-combine sound, then combine
+            setTimeout(() => {
+              // Replace the two concepts with the new one
+              setDemoConcepts([
+                {
+                  id: generateInstanceId(),
+                  conceptId: newConceptId,
+                  position: midPos,
+                },
+              ])
+
+              play(combineSoundRef)
+            }, 500) 
+          } else {
+            // FAIL: No recipe exists for this combination
+            console.log(
+              `No recipe for ${concept1.conceptId} + ${concept2.conceptId}`,
+            )
+            // Concepts stay on screen, just not combined
+          }
         }
       }
     }
-    
-    // Liberar el pointer capture
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId)
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
     }
-    
-    setIsDragging(null)
-  }
+  }, [demoConcepts])
 
   const handleDemoReset = () => {
     setDemoConcepts(getRandomConcepts())
-    setDemoResult(null)
-    setIsDragging(null)
+    setDraggingId(null)
   }
 
   return (
     <div className='full-guide-container'>
-      {/* Header */}
       <div className='full-guide-header'>
         <Link to='/' className='back-button'>
           ← Go back to the game
         </Link>
         <h1 className='guide-main-title'>Concepts Guide</h1>
 
-        {/* Tabs */}
         <div className='guide-tabs'>
           <Link
             to='/guide'
@@ -171,11 +277,9 @@ const FullGuide = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className='full-guide-content'>
         {activeTab === 'guide' && (
           <>
-            {/* The Game Section */}
             <section className='guide-section'>
               <h2 className='section-title'>The game</h2>
               <p className='section-text'>
@@ -186,7 +290,6 @@ const FullGuide = () => {
                 Try combining the two concepts below:
               </p>
 
-              {/* Interactive Demo Box */}
               <div
                 ref={demoContainerRef}
                 className='complexity-diagram-box interactive-demo'
@@ -195,7 +298,7 @@ const FullGuide = () => {
                   🔄 Reset
                 </button>
 
-                {!demoResult && (
+                {demoConcepts.length === 2 && (
                   <div className='demo-instructions'>
                     <p>
                       CONCEPTS IS STILL IN DEVELOPMENT. DISCOVERED CONCEPTS WILL
@@ -204,21 +307,18 @@ const FullGuide = () => {
                   </div>
                 )}
 
-                {/* Draggable concepts */}
                 {demoConcepts.map((concept) => (
                   <div
                     key={concept.id}
-                    className={`demo-concept ${isDragging === concept.id ? 'dragging' : ''}`}
+                    className={`demo-concept concept-bubble concept-${concept.conceptId} ${
+                      draggingId === concept.id ? 'dragging' : ''
+                    } ${hoverTargetId === concept.id ? 'drop-target' : ''}`}
                     style={{
                       left: `${concept.position.x}px`,
                       top: `${concept.position.y}px`,
-                      cursor: isDragging === concept.id ? 'grabbing' : 'grab',
-                      touchAction: 'none', // Importante para pointer events
+                      cursor: draggingId === concept.id ? 'grabbing' : 'grab',
                     }}
-                    onPointerDown={(e) => handleDemoPointerDown(e, concept.id)}
-                    onPointerMove={handleDemoPointerMove}
-                    onPointerUp={handleDemoPointerUp}
-                    onPointerCancel={handleDemoPointerUp}
+                    onPointerDown={onPointerDownConcept(concept.id)}
                   >
                     <span className='demo-emoji'>
                       {CONCEPTS[concept.conceptId]?.emoji}
@@ -228,26 +328,6 @@ const FullGuide = () => {
                     </span>
                   </div>
                 ))}
-
-                {/* Result */}
-                {demoResult && (
-                  <div
-                    className='demo-result'
-                    style={{
-                      left: `${demoResult.position.x}px`,
-                      top: `${demoResult.position.y}px`,
-                    }}
-                  >
-                    <div className='result-sparkle'>✨</div>
-                    <span className='demo-emoji'>
-                      {CONCEPTS[demoResult.conceptId]?.emoji}
-                    </span>
-                    <span className='demo-name'>
-                      {CONCEPTS[demoResult.conceptId]?.name}
-                    </span>
-                    <div className='result-label'>New Discovery!</div>
-                  </div>
-                )}
               </div>
 
               <p className='section-text'>
@@ -319,17 +399,14 @@ const FullGuide = () => {
                 , for example:
               </p>
 
-              {/* Complexity Diagram - Exact Screenshot Match */}
               <div className='complexity-diagram-box'>
                 <div className='complexity-diagram'>
-                  {/* Sea - Top */}
                   <div className='diagram-node node-sea'>
                     <span className='node-emoji'>🌊</span>
                     <span className='node-name'>Sea</span>
                     <span className='node-complexity complexity-green'>6</span>
                   </div>
 
-                  {/* Connection Line from Sea to Beach */}
                   <svg
                     className='diagram-connector connector-sea'
                     viewBox='0 0 100 100'
@@ -343,7 +420,6 @@ const FullGuide = () => {
                     />
                   </svg>
 
-                  {/* Beach - Right (Result) */}
                   <div className='diagram-node node-beach'>
                     <span className='node-emoji'>🏖️</span>
                     <span className='node-name'>Beach</span>
@@ -352,7 +428,6 @@ const FullGuide = () => {
                     </span>
                   </div>
 
-                  {/* Connection Line from Sun to Beach */}
                   <svg
                     className='diagram-connector connector-sun'
                     viewBox='0 0 100 100'
@@ -366,7 +441,6 @@ const FullGuide = () => {
                     />
                   </svg>
 
-                  {/* Sun - Bottom */}
                   <div className='diagram-node node-sun'>
                     <span className='node-emoji'>☀️</span>
                     <span className='node-name'>Sun</span>
@@ -384,7 +458,6 @@ const FullGuide = () => {
                 complexity!
               </p>
 
-              {/* Cascade Effect */}
               <div className='cascade-subsection'>
                 <h3 className='subsection-title'>
                   ✨ Cascade effect improvements
@@ -403,7 +476,6 @@ const FullGuide = () => {
                   better recipe for Sun:
                 </p>
 
-                {/* Sun Improvement */}
                 <div className='improvement-row'>
                   <div className='improvement-concept sun'>
                     <span className='ic-emoji'>☀️</span>
@@ -423,7 +495,6 @@ const FullGuide = () => {
                   know that <em>Sea + Sun = Beach</em>:
                 </p>
 
-                {/* Beach Improvement */}
                 <div className='improvement-row'>
                   <div className='improvement-concept beach'>
                     <span className='ic-emoji'>🏖️</span>
@@ -462,14 +533,12 @@ const FullGuide = () => {
                 <strong>many</strong> more.
               </p>
 
-              {/* Collection Card */}
               <div className='collection-card'>
                 <div className='collection-header'>
                   <span className='collection-icon'>🍎</span>
                   <h3 className='collection-name'>Fruits (example)</h3>
                 </div>
 
-                {/* Progress Bars */}
                 <div className='tier-progress'>
                   <div className='tier-row'>
                     <div className='tier-info'>
@@ -511,7 +580,6 @@ const FullGuide = () => {
                   </div>
                 </div>
 
-                {/* Concept Lists */}
                 <div className='collection-concepts'>
                   <div className='concept-tier'>
                     <h4 className='tier-label easy'>EASY</h4>
@@ -612,7 +680,6 @@ const FullGuide = () => {
                 </li>
               </ul>
 
-              {/* Leaderboard Table */}
               <table className='leaderboard-table'>
                 <thead>
                   <tr>
@@ -681,7 +748,6 @@ const FullGuide = () => {
                 discover concepts together!
               </p>
 
-              {/* Multiplayer Visual */}
               <div className='multiplayer-box'>
                 <div className='mp-cursor cursor-steve'>
                   <span className='cursor-arrow'>▶</span>
@@ -717,7 +783,6 @@ const FullGuide = () => {
               </a>
             </p>
 
-            {/* General Questions */}
             <section className='faq-section'>
               <h3 className='faq-section-title'>General Questions</h3>
 
@@ -821,7 +886,6 @@ const FullGuide = () => {
               </details>
             </section>
 
-            {/* Game Questions */}
             <section className='faq-section'>
               <h3 className='faq-section-title'>Game Questions</h3>
 
