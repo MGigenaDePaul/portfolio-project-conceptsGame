@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CONCEPTS, generateInstanceId } from '../game/concepts'
 import { combine } from '../game/combine'
-import '../components/ConceptBubble.css'
+import '../components/ConceptBubble.css' 
 
 import './FullGuide.css'
 
@@ -10,7 +10,7 @@ const FullGuide = () => {
   const location = useLocation()
   const demoContainerRef = useRef(null)
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
-
+  
   // Audio refs for sound effects
   const clickSoundRef = useRef(null)
   const preCombineSoundRef = useRef(null)
@@ -48,7 +48,9 @@ const FullGuide = () => {
 
   const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
   const [draggingId, setDraggingId] = useState(null)
+  const [hoverTargetId, setHoverTargetId] = useState(null)
 
+  // Initialize audio in useEffect like in App.jsx
   useEffect(() => {
     const clickAudio = new Audio('/sounds/pressBubble.mp3')
     clickAudio.volume = 0.5
@@ -134,9 +136,34 @@ const FullGuide = () => {
       x = Math.max(10, Math.min(x, rect.width - elementWidth - 10))
       y = Math.max(10, Math.min(y, rect.height - elementHeight - 10))
 
-      setDemoConcepts((prev) =>
-        prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c)),
-      )
+      setDemoConcepts((prev) => {
+        const updated = prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c))
+        
+        // Check if dragging concept is close to any other concept
+        const draggedConcept = updated.find(c => c.id === d.id)
+        if (draggedConcept && updated.length === 2) {
+          const otherConcept = updated.find(c => c.id !== d.id)
+          if (otherConcept) {
+            const centerX1 = draggedConcept.position.x + 75
+            const centerY1 = draggedConcept.position.y + 25
+            const centerX2 = otherConcept.position.x + 75
+            const centerY2 = otherConcept.position.y + 25
+            
+            const distance = Math.sqrt(
+              Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2)
+            )
+            
+            // If close enough, set as hover target
+            if (distance < 120) {
+              setHoverTargetId(otherConcept.id)
+            } else {
+              setHoverTargetId(null)
+            }
+          }
+        }
+        
+        return updated
+      })
     }
 
     const onUp = () => {
@@ -147,6 +174,7 @@ const FullGuide = () => {
       draggingRef.current.id = null
 
       setDraggingId(null)
+      setHoverTargetId(null)
 
       if (demoConcepts.length === 2) {
         const [concept1, concept2] = demoConcepts
@@ -162,7 +190,7 @@ const FullGuide = () => {
         )
 
         // Check if close enough to combine
-        if (distance < 180) {
+        if (distance < 100) {
           const newConceptId = combine(concept1.conceptId, concept2.conceptId)
 
           if (newConceptId) {
@@ -186,9 +214,8 @@ const FullGuide = () => {
                 },
               ])
 
-              // Play combine success sound
               play(combineSoundRef)
-            }, 500)
+            }, 500) 
           } else {
             // FAIL: No recipe exists for this combination
             console.log(
@@ -285,7 +312,7 @@ const FullGuide = () => {
                     key={concept.id}
                     className={`demo-concept concept-bubble concept-${concept.conceptId} ${
                       draggingId === concept.id ? 'dragging' : ''
-                    }`}
+                    } ${hoverTargetId === concept.id ? 'drop-target' : ''}`}
                     style={{
                       left: `${concept.position.x}px`,
                       top: `${concept.position.y}px`,
