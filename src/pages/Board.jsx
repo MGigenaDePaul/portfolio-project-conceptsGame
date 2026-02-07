@@ -175,12 +175,11 @@ const Board = () => {
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
-    // Fix: Calculate offset relative to the element's actual position
-    const rect = e.currentTarget.getBoundingClientRect()
+    // Calculate offset from the element's top-left position
     draggingRef.current = {
       id: instanceId,
-      offsetX: e.clientX - rect.left,
-      offsetY: e.clientY - rect.top,
+      offsetX: e.clientX - p.x,
+      offsetY: e.clientY - p.y,
     }
   }
 
