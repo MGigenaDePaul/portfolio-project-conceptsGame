@@ -127,14 +127,12 @@
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
   user-select: none;
 }
 
 .board-concept:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
 }
 
 .board-concept-emoji {
@@ -286,12 +284,19 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+  user-select: none;
 }
 
 .category-item:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(93, 173, 236, 0.5);
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(93, 173, 236, 0.2);
+}
+
+.category-item:active {
+  transform: translateY(0);
+  background: rgba(93, 173, 236, 0.15);
 }
 
 .category-item-emoji {

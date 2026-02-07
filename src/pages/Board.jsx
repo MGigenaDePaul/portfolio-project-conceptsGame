@@ -21,6 +21,7 @@ const Board = () => {
   const [zIndexes, setZIndexes] = useState({})
   const [hitRadius, setHitRadius] = useState(getHitRadius())
   const [isCombining, setIsCombining] = useState(false)
+  const [searchFilter, setSearchFilter] = useState('')
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
@@ -174,10 +175,12 @@ const Board = () => {
 
     e.currentTarget.setPointerCapture?.(e.pointerId)
 
+    // Fix: Calculate offset relative to the element's actual position
+    const rect = e.currentTarget.getBoundingClientRect()
     draggingRef.current = {
       id: instanceId,
-      offsetX: e.clientX - p.x,
-      offsetY: e.clientY - p.y,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
     }
   }
 
@@ -273,6 +276,11 @@ const Board = () => {
       const concept = CONCEPTS[conceptId]
       if (!concept) return
 
+      // Apply search filter
+      if (searchFilter && !concept.name.toLowerCase().includes(searchFilter.toLowerCase())) {
+        return
+      }
+
       const category = concept.category || 'UNCATEGORIZED'
       if (!categories[category]) {
         categories[category] = []
@@ -285,6 +293,35 @@ const Board = () => {
     })
 
     return categories
+  }
+
+  // Function to add a concept to the board from knowledge panel
+  const addConceptToBoard = (conceptId) => {
+    const instanceId = generateInstanceId()
+    
+    // Position near center of board area
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220
+    const centerY = window.innerHeight / 2
+    
+    // Add some randomness so they don't all stack
+    const randomOffset = () => (Math.random() - 0.5) * 100
+    
+    setInstances((prev) => ({
+      ...prev,
+      [instanceId]: {
+        instanceId,
+        conceptId,
+        isNewlyCombined: false,
+      },
+    }))
+    
+    setPositions((prev) => ({
+      ...prev,
+      [instanceId]: {
+        x: centerX + randomOffset(),
+        y: centerY + randomOffset(),
+      },
+    }))
   }
 
   const categories = organizeByCategory()
@@ -375,8 +412,16 @@ const Board = () => {
             type="text"
             placeholder="Search everything... (Control + F)"
             className="knowledge-search-input"
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
           />
-          <button className="knowledge-filter-btn">☰</button>
+          <button 
+            className="knowledge-filter-btn"
+            onClick={() => setSearchFilter('')}
+            title="Clear filter"
+          >
+            {searchFilter ? '✕' : '☰'}
+          </button>
         </div>
 
         <div className="knowledge-categories">
@@ -389,7 +434,12 @@ const Board = () => {
                 </div>
                 <div className="category-items">
                   {items.map((item, idx) => (
-                    <div key={idx} className="category-item">
+                    <div 
+                      key={idx} 
+                      className="category-item"
+                      onClick={() => addConceptToBoard(item.conceptId)}
+                      title="Click to add to board"
+                    >
                       <span className="category-item-emoji">{item.emoji}</span>
                       <span className="category-item-name">{item.name}</span>
                     </div>
