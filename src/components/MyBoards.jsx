@@ -24,7 +24,7 @@ const MyBoards = ({ discoveredConcepts }) => {
 
       {/* Board sin header */}
       <div className='my-boards-container'>
-        <button onClick={() => navigate('/boards')}className='board-card'>
+        <button onClick={() => navigate('/board')}className='board-card'>
           <div className='board-info'>
             <span className='board-avatar'>M</span>
             <div className='board-details'>
