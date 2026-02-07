@@ -70,6 +70,11 @@ export const CONCEPTS = {
   terraCotta: { id: 'terra cotta', name: 'Terra Cotta', emoji: '🏺' },
   blaze: { id: 'blaze', name: 'Blaze', emoji: '🔥' },
   geothermal: { id: 'geothermal', name: 'Geothermal', emoji: '🔥' },
+
+  altitude: { id: 'altitude', name: 'Altitude', emoji: '' },
+  combustion: { id: 'combustion', name: 'Combustion', emoji: '' },
+  pyrocumulus: { id: 'pyrocumulus', name: 'Pyrocumulus', emoji: '' },
+  stratosphere: { id: 'stratosphere', name: 'Stratosphere', emoji: '' },
 }
 
 // Helper: get concept by id safely

@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import ConceptsGuide from './ConceptsGuide'
+import { useNavigate } from 'react-router-dom'
 import './MyBoards.css'
 
 const MyBoards = ({ discoveredConcepts }) => {
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <>
@@ -22,7 +24,7 @@ const MyBoards = ({ discoveredConcepts }) => {
 
       {/* Board sin header */}
       <div className='my-boards-container'>
-        <div className='board-card'>
+        <button onClick={() => navigate('/boards')}className='board-card'>
           <div className='board-info'>
             <span className='board-avatar'>M</span>
             <div className='board-details'>
@@ -33,7 +35,7 @@ const MyBoards = ({ discoveredConcepts }) => {
               </div>
             </div>
           </div>
-        </div>
+        </button>
 
         <button className='create-board-button'>+ Create new board</button>
       </div>

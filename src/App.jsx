@@ -5,6 +5,8 @@ import { Routes, Route } from 'react-router-dom'
 import HomeScreen from './pages/HomeScreen'
 import Notification from './components/Notification'
 import FullGuide from './pages/FullGuide'
+import Board from './pages/Board'
+
 import './App.css'
 
 const getHitRadius = () => {
@@ -436,6 +438,8 @@ const App = () => {
         <Route path='/faq' element={<FullGuide />} />
         <Route path='/privacy' element={<FullGuide />} />
         <Route path='/terms' element={<FullGuide />} />
+
+        <Route path='/board' element={<Board />} />
       </Routes>
     </>
   )
