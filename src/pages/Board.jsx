@@ -1,108 +1,298 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { CONCEPTS, generateInstanceId } from '../game/concepts'
+import { combine } from '../game/combine'
+import '../components/ConceptBubble.css'
 import './Board.css'
 
-const Board = () => {
-  // Mock data - replace with real data later
-  const [selectedCollection] = useState('States of Matter')
-  
-  const concepts = [
-    // UNCATEGORIZED
-    { id: 1, name: 'Combustion', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 805, y: 100 } },
-    { id: 2, name: 'Eruption', emoji: '🌋', category: 'UNCATEGORIZED', position: { x: 560, y: 113 } },
-    { id: 3, name: 'Bioluminescence', emoji: '💧', category: 'UNCATEGORIZED', position: { x: 368, y: 144 } },
-    { id: 4, name: 'Lava Ocean', emoji: '🌊', category: 'UNCATEGORIZED', position: { x: 212, y: 187 } },
-    { id: 5, name: 'Wildfire', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 410, y: 209 } },
-    { id: 6, name: 'Pyrocumulus', emoji: '☁️', category: 'UNCATEGORIZED', position: { x: 590, y: 187 } },
-    { id: 7, name: 'Ash Cloud', emoji: '☁️', category: 'UNCATEGORIZED', position: { x: 713, y: 163 } },
-    { id: 8, name: 'Sun', emoji: '☀️', category: 'UNCATEGORIZED', position: { x: 581, y: 244 } },
-    { id: 9, name: 'Wildfire', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 711, y: 246 } },
-    { id: 10, name: 'Sun', emoji: '☀️', category: 'UNCATEGORIZED', position: { x: 295, y: 277 } },
-    { id: 11, name: 'Pollution', emoji: '☣️', category: 'UNCATEGORIZED', position: { x: 413, y: 277 } },
-    { id: 12, name: 'Stratosphere', emoji: '🌍', category: 'UNCATEGORIZED', position: { x: 520, y: 294 } },
-    { id: 13, name: 'Lava', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 837, y: 265 } },
-    { id: 14, name: 'Bioluminescence', emoji: '💧', category: 'UNCATEGORIZED', position: { x: 697, y: 343 } },
-    { id: 15, name: 'Dystopia', emoji: '🏙️', category: 'UNCATEGORIZED', position: { x: 384, y: 359 } },
-    { id: 16, name: 'Blaze', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 560, y: 383 } },
-    { id: 17, name: 'Geothermal', emoji: '🌡️', category: 'UNCATEGORIZED', position: { x: 775, y: 394 } },
-    { id: 18, name: 'Ash Cloud', emoji: '☁️', category: 'UNCATEGORIZED', position: { x: 180, y: 391 } },
-    { id: 19, name: 'Altitude', emoji: '⛰️', category: 'UNCATEGORIZED', position: { x: 897, y: 449 } },
-    { id: 20, name: 'Volcano', emoji: '🌋', category: 'UNCATEGORIZED', position: { x: 311, y: 450 } },
-    { id: 21, name: 'Mist', emoji: '🌫️', category: 'UNCATEGORIZED', position: { x: 541, y: 451 } },
-    { id: 22, name: 'Eruption', emoji: '🌋', category: 'UNCATEGORIZED', position: { x: 728, y: 456 } },
-    { id: 23, name: 'Lava', emoji: '🔥', category: 'UNCATEGORIZED', position: { x: 837, y: 508 } },
-    { id: 24, name: 'Sea', emoji: '🌊', category: 'UNCATEGORIZED', position: { x: 618, y: 512 } },
-    { id: 25, name: 'Cumulus', emoji: '☁️', category: 'UNCATEGORIZED', position: { x: 131, y: 524 } },
-    { id: 26, name: 'Terra Cotta', emoji: '🏺', category: 'UNCATEGORIZED', position: { x: 321, y: 529 } },
-    { id: 27, name: 'Water Vapor', emoji: '💨', category: 'UNCATEGORIZED', position: { x: 591, y: 571 } },
-    { id: 28, name: 'Atmosphere', emoji: '🌍', category: 'UNCATEGORIZED', position: { x: 817, y: 600 } },
-    { id: 29, name: 'Magma', emoji: '🌋', category: 'UNCATEGORIZED', position: { x: 207, y: 613 } },
-    { id: 30, name: 'Magma', emoji: '🌋', category: 'UNCATEGORIZED', position: { x: 581, y: 657 } },
-    { id: 31, name: 'Sky', emoji: '☁️', category: 'UNCATEGORIZED', position: { x: 440, y: 692 } },
-  ]
+const getHitRadius = () => {
+  const width = window.innerWidth
+  if (width < 480) return 60
+  if (width < 768) return 75
+  return 100
+}
 
-  const categories = {
-    'UNCATEGORIZED': [
-      { name: 'Combustion', emoji: '🔥' },
-      { name: 'Altitude', emoji: '⛰️' },
-      { name: 'Geothermal', emoji: '🌡️' },
-      { name: 'Blaze', emoji: '🔥' },
-      { name: 'Dystopia', emoji: '🏙️' },
-      { name: 'Bioluminescence', emoji: '💧' },
-      { name: 'Mist', emoji: '🌫️' },
-      { name: 'Ash Cloud', emoji: '☁️' },
-      { name: 'Inferno', emoji: '💥' },
-      { name: 'Sun', emoji: '☀️' },
-      { name: 'Mudpit', emoji: '🟤' },
-      { name: 'Yellowstone', emoji: '🌋' },
-      { name: 'Air', emoji: '🌬️' },
-      { name: 'Earth', emoji: '🌍' },
-      { name: 'Fire', emoji: '🔥' },
-      { name: 'Water', emoji: '💧' },
-    ],
-    'METEOROLOGY': [
-      { name: 'Stratosphere', emoji: '🌍' },
-      { name: 'Pyrocumulus', emoji: '☁️' },
-      { name: 'Cumulus', emoji: '☁️' },
-      { name: 'Humidity', emoji: '💧' },
-    ],
-    'MATERIAL': [
-      { name: 'Terra Cotta', emoji: '🏺' },
-      { name: 'Clay', emoji: '🟤' },
-      { name: 'Sludge', emoji: '🟤' },
-      { name: 'Mud', emoji: '🟤' },
-    ],
-    'GAS': [
-      { name: 'Water Vapor', emoji: '💨' },
-      { name: 'Oxygen', emoji: '🧪' },
-      { name: 'Vapor', emoji: '💨' },
-      { name: 'Steam', emoji: '☁️' },
-      { name: 'Smoke', emoji: '💨' },
-      { name: 'Plasma', emoji: '⚡' },
-    ],
-    'NATURE': [
-      { name: 'Cloud', emoji: '☁️' },
-      { name: 'Mountain', emoji: '⛰️' },
-      { name: 'Ocean', emoji: '🌊' },
-      { name: 'Ash', emoji: '🌫️' },
-      { name: 'Sky', emoji: '☁️' },
-    ],
-    'ENVIRONMENT': [
-      { name: 'Sea', emoji: '🌊' },
-      { name: 'Dust', emoji: '💨' },
-      { name: 'Wildfire', emoji: '🔥' },
-      { name: 'Toxic Waste', emoji: '☣️' },
-      { name: 'Pollution', emoji: '☣️' },
-      { name: 'Smog', emoji: '🌫️' },
-      { name: 'Ecosystem', emoji: '🌿' },
-      { name: 'Biosphere', emoji: '🌍' },
-    ],
+const Board = () => {
+  const [instances, setInstances] = useState({})
+  const [positions, setPositions] = useState({})
+  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set(['fire', 'water', 'air', 'earth']))
+  const [hoverTargetId, setHoverTargetId] = useState(null)
+  const [draggingId, setDraggingId] = useState(null)
+  const [zIndexes, setZIndexes] = useState({})
+  const [hitRadius, setHitRadius] = useState(getHitRadius())
+  const [isCombining, setIsCombining] = useState(false)
+
+  const combineAudioRef = useRef(null)
+  const failAudioRef = useRef(null)
+  const pressBubbleAudioRef = useRef(null)
+  const soundBeforeCombiningAudioRef = useRef(null)
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
+
+  // Initialize audio
+  useEffect(() => {
+    const combineAudio = new Audio('/sounds/success.mp3')
+    combineAudio.volume = 0.6
+    combineAudio.preload = 'auto'
+
+    const failAudio = new Audio('/sounds/fail.mp3')
+    failAudio.volume = 0.4
+    failAudio.preload = 'auto'
+
+    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
+    pressBubbleAudio.volume = 0.5
+    pressBubbleAudio.preload = 'auto'
+
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    soundBeforeCombiningAudio.volume = 0.4
+    soundBeforeCombiningAudio.preload = 'auto'
+
+    combineAudioRef.current = combineAudio
+    failAudioRef.current = failAudio
+    pressBubbleAudioRef.current = pressBubbleAudio
+    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio
+  }, [])
+
+  const play = (ref) => {
+    const a = ref.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
   }
 
+  // Initialize starting instances (4 classical elements)
+  useEffect(() => {
+    const startingConcepts = ['fire', 'water', 'air', 'earth']
+    const newInstances = {}
+    const newPositions = {}
+
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220 // Account for both sidebars
+    const centerY = window.innerHeight / 2
+
+    startingConcepts.forEach((conceptId, index) => {
+      const instanceId = generateInstanceId()
+      newInstances[instanceId] = {
+        instanceId,
+        conceptId,
+        isNewlyCombined: false,
+      }
+
+      // Position in a circle around center
+      const angle = (index / startingConcepts.length) * Math.PI * 2
+      const radius = 150
+      newPositions[instanceId] = {
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius,
+      }
+    })
+
+    setInstances(newInstances)
+    setPositions(newPositions)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => setHitRadius(getHitRadius())
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const getHitTarget = (dragId, currentPositions) => {
+    const p = currentPositions[dragId]
+    if (!p) return null
+
+    let best = null
+    let bestDist = Infinity
+
+    for (const otherId of Object.keys(instances)) {
+      if (otherId === dragId) continue
+      const q = currentPositions[otherId]
+      if (!q) continue
+
+      const dist = Math.hypot(p.x - q.x, p.y - q.y)
+      if (dist < hitRadius && dist < bestDist) {
+        bestDist = dist
+        best = otherId
+      }
+    }
+
+    return best
+  }
+
+  const combineAndReplace = (aInstanceId, bInstanceId, spawnPos) => {
+    const aInstance = instances[aInstanceId]
+    const bInstance = instances[bInstanceId]
+    if (!aInstance || !bInstance) return false
+
+    const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId)
+    if (!resultConceptId) return false
+
+    play(combineAudioRef)
+
+    const resultInstanceId = generateInstanceId()
+
+    // Add to discovered concepts
+    setDiscoveredConcepts((prev) => new Set([...prev, resultConceptId]))
+
+    setInstances((prev) => {
+      const next = { ...prev }
+      delete next[aInstanceId]
+      delete next[bInstanceId]
+      next[resultInstanceId] = {
+        instanceId: resultInstanceId,
+        conceptId: resultConceptId,
+        isNewlyCombined: true,
+      }
+      return next
+    })
+
+    setPositions((prev) => {
+      const next = { ...prev }
+      delete next[aInstanceId]
+      delete next[bInstanceId]
+      next[resultInstanceId] = { x: spawnPos.x, y: spawnPos.y }
+      return next
+    })
+
+    return true
+  }
+
+  const onPointerDownBubble = (instanceId) => (e) => {
+    if (isCombining) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+
+    e.preventDefault()
+    e.stopPropagation()
+    play(pressBubbleAudioRef)
+
+    const p = positions[instanceId]
+    if (!p) return
+
+    setDraggingId(instanceId)
+    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }))
+
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+
+    draggingRef.current = {
+      id: instanceId,
+      offsetX: e.clientX - p.x,
+      offsetY: e.clientY - p.y,
+    }
+  }
+
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = draggingRef.current
+      if (!d.id) return
+
+      const x = e.clientX - d.offsetX
+      const y = e.clientY - d.offsetY
+
+      setPositions((prev) => {
+        const next = { ...prev, [d.id]: { x, y } }
+        const targetId = getHitTarget(d.id, next)
+        setHoverTargetId(targetId)
+
+        if (targetId) {
+          setZIndexes((prevZ) => ({
+            ...prevZ,
+            [targetId]: 100,
+            [d.id]: 9999,
+          }))
+        }
+
+        return next
+      })
+    }
+
+    const onUp = () => {
+      const d = draggingRef.current
+      if (!d.id) return
+
+      const dragId = d.id
+      draggingRef.current.id = null
+
+      setDraggingId(null)
+      setHoverTargetId(null)
+
+      setPositions((prev) => {
+        const targetId = getHitTarget(dragId, prev)
+
+        if (!targetId) {
+          setZIndexes((prevZ) => {
+            const next = { ...prevZ }
+            delete next[dragId]
+            return next
+          })
+          return prev
+        }
+
+        const spawnPos = prev[dragId]
+        if (!spawnPos) return prev
+
+        play(soundBeforeCombiningAudioRef)
+        setIsCombining(true)
+
+        setTimeout(() => {
+          const combined = combineAndReplace(dragId, targetId, spawnPos)
+
+          if (!combined) {
+            play(failAudioRef)
+          }
+
+          setZIndexes((prevZ) => {
+            const next = { ...prevZ }
+            delete next[dragId]
+            delete next[targetId]
+            return next
+          })
+          setIsCombining(false)
+        }, 700)
+
+        return prev
+      })
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+  }, [instances, hitRadius, isCombining])
+
+  // Organize discovered concepts into categories
+  const organizeByCategory = () => {
+    const categories = {
+      UNCATEGORIZED: [],
+    }
+
+    discoveredConcepts.forEach((conceptId) => {
+      const concept = CONCEPTS[conceptId]
+      if (!concept) return
+
+      const category = concept.category || 'UNCATEGORIZED'
+      if (!categories[category]) {
+        categories[category] = []
+      }
+      categories[category].push({
+        name: concept.name,
+        emoji: concept.emoji,
+        conceptId,
+      })
+    })
+
+    return categories
+  }
+
+  const categories = organizeByCategory()
+
   return (
-    <div className="myboards-container">
+    <div className="board-container">
       {/* Sidebar */}
-      <div className="myboards-sidebar">
+      <div className="board-sidebar">
         <div className="sidebar-header">
           <span className="sidebar-icon">📚</span>
           <span className="sidebar-title">MY COLLECTION</span>
@@ -110,7 +300,7 @@ const Board = () => {
         
         <div className="collection-item active">
           <span className="collection-emoji">🧪</span>
-          <span className="collection-name">{selectedCollection}</span>
+          <span className="collection-name">States of Matter</span>
           <span className="collection-indicator">🟢</span>
         </div>
       </div>
@@ -135,23 +325,36 @@ const Board = () => {
           </button>
         </div>
 
-        {/* Concepts scattered on board */}
+        {/* Concepts on board */}
         <div className="board-canvas">
-          {concepts.map((concept) => (
-            <div
-              key={concept.id}
-              className="board-concept"
-              style={{
-                left: `${concept.position.x}px`,
-                top: `${concept.position.y}px`,
-              }}
-            >
-              <span className="board-concept-emoji">{concept.emoji}</span>
-              <span className="board-concept-name">{concept.name}</span>
-            </div>
-          ))}
+          {Object.values(instances).map((instance) => {
+            const position = positions[instance.instanceId]
+            if (!position) return null
 
-          {/* Warning message at bottom */}
+            const concept = CONCEPTS[instance.conceptId]
+            if (!concept) return null
+
+            return (
+              <div
+                key={instance.instanceId}
+                className={`board-concept concept-bubble concept-${instance.conceptId} ${
+                  draggingId === instance.instanceId ? 'dragging' : ''
+                } ${hoverTargetId === instance.instanceId ? 'drop-target' : ''}`}
+                style={{
+                  left: `${position.x}px`,
+                  top: `${position.y}px`,
+                  zIndex: zIndexes[instance.instanceId] || 5,
+                  cursor: draggingId === instance.instanceId ? 'grabbing' : 'grab',
+                }}
+                onPointerDown={onPointerDownBubble(instance.instanceId)}
+              >
+                <span className="board-concept-emoji">{concept.emoji}</span>
+                <span className="board-concept-name">{concept.name}</span>
+              </div>
+            )
+          })}
+
+          {/* Warning message */}
           <div className="board-warning">
             <p>CONCEPTS IS STILL UNDER HEAVY</p>
             <p>DEVELOPMENT. DISCOVERED CONCEPTS</p>
@@ -164,7 +367,7 @@ const Board = () => {
       <div className="knowledge-sidebar">
         <div className="knowledge-header">
           <h2 className="knowledge-title">Knowledge</h2>
-          <p className="knowledge-count">53 concepts</p>
+          <p className="knowledge-count">{discoveredConcepts.size} concepts</p>
         </div>
 
         <div className="knowledge-search">
@@ -178,20 +381,22 @@ const Board = () => {
 
         <div className="knowledge-categories">
           {Object.entries(categories).map(([categoryName, items]) => (
-            <div key={categoryName} className="knowledge-category">
-              <div className="category-header">
-                <span className="category-name">{categoryName}</span>
-                <span className="category-count">{items.length}</span>
+            items.length > 0 && (
+              <div key={categoryName} className="knowledge-category">
+                <div className="category-header">
+                  <span className="category-name">{categoryName}</span>
+                  <span className="category-count">{items.length}</span>
+                </div>
+                <div className="category-items">
+                  {items.map((item, idx) => (
+                    <div key={idx} className="category-item">
+                      <span className="category-item-emoji">{item.emoji}</span>
+                      <span className="category-item-name">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="category-items">
-                {items.map((item, idx) => (
-                  <div key={idx} className="category-item">
-                    <span className="category-item-emoji">{item.emoji}</span>
-                    <span className="category-item-name">{item.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )
           ))}
         </div>
       </div>

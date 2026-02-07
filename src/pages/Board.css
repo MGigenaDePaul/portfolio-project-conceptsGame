@@ -1,5 +1,5 @@
-/* MyBoards Container */
-.myboards-container {
+/* Board Container */
+.board-container {
   display: flex;
   height: 100vh;
   background: #1a1d21;
@@ -11,7 +11,7 @@
 /* LEFT SIDEBAR - MY COLLECTION */
 /* ========================================= */
 
-.myboards-sidebar {
+.board-sidebar {
   width: 220px;
   background: #0d0f12;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -334,7 +334,7 @@
 }
 
 @media (max-width: 992px) {
-  .myboards-sidebar {
+  .board-sidebar {
     width: 180px;
   }
   
@@ -344,14 +344,14 @@
 }
 
 @media (max-width: 768px) {
-  .myboards-sidebar {
+  .board-sidebar {
     position: absolute;
     left: -220px;
     z-index: 200;
     transition: left 0.3s;
   }
   
-  .myboards-sidebar.open {
+  .board-sidebar.open {
     left: 0;
   }
 }
