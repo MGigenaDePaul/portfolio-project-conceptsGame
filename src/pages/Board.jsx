@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { CONCEPTS, generateInstanceId } from '../game/concepts'
 import { combine } from '../game/combine'
+import Notification from '../components/Notification'
 import '../components/ConceptBubble.css'
 import './Board.css'
 
@@ -22,6 +23,11 @@ const Board = () => {
   const [hitRadius, setHitRadius] = useState(getHitRadius())
   const [isCombining, setIsCombining] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    message: '',
+    position: { x: 0, y: 0 },
+  })
 
   const combineAudioRef = useRef(null)
   const failAudioRef = useRef(null)
@@ -58,6 +64,22 @@ const Board = () => {
     if (!a) return
     a.currentTime = 0
     a.play().catch(() => {})
+  }
+
+  const displayNotification = (message, position) => {
+    setNotification({ isVisible: true, message, position })
+  }
+
+  const clearNotification = () => {
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
+  }
+
+  const showNotification = (message, position) => {
+    setNotification({ isVisible: true, message, position })
+  }
+
+  const hideNotification = () => {
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
   }
 
   // Initialize starting instances (4 classical elements)
@@ -242,17 +264,39 @@ const Board = () => {
           return prev
         }
 
-        const spawnPos = prev[dragId]
-        if (!spawnPos) return prev
+        const dragPos = prev[dragId]
+        const targetPos = prev[targetId]
+        if (!dragPos || !targetPos) return prev
+
+        // Calculate the CENTER point between the two bubbles
+        // dragPos and targetPos are top-left corners
+        const bubbleWidth = 150
+        const bubbleHeight = 50
+        
+        // Get center of each bubble
+        const dragCenterX = dragPos.x + bubbleWidth / 2
+        const dragCenterY = dragPos.y + bubbleHeight / 2
+        const targetCenterX = targetPos.x + bubbleWidth / 2
+        const targetCenterY = targetPos.y + bubbleHeight / 2
+        
+        // Calculate midpoint between centers
+        const midX = (dragCenterX + targetCenterX) / 2
+        const midY = (dragCenterY + targetCenterY) / 2
+        const notificationPosition = { x: midX, y: midY }
 
         play(soundBeforeCombiningAudioRef)
         setIsCombining(true)
 
         setTimeout(() => {
-          const combined = combineAndReplace(dragId, targetId, spawnPos)
+          const combined = combineAndReplace(dragId, targetId, dragPos)
 
           if (!combined) {
             play(failAudioRef)
+            displayNotification('No recipe found!', notificationPosition)
+            
+            setTimeout(() => {
+              clearNotification()
+            }, 2000)
           }
 
           setZIndexes((prevZ) => {
@@ -339,6 +383,13 @@ const Board = () => {
 
   return (
     <div className="board-container">
+      {/* Notification */}
+      <Notification
+        message={notification.message}
+        isVisible={notification.isVisible}
+        position={notification.position}
+      />
+
       {/* Sidebar */}
       <div className="board-sidebar">
         <div className="sidebar-header">
