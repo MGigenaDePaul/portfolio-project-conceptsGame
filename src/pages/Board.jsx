@@ -202,6 +202,18 @@ const Board = () => {
             [targetId]: 100,
             [d.id]: 9999,
           }))
+        } else {
+          // Clear target z-index when not hovering
+          setZIndexes((prevZ) => {
+            const next = { ...prevZ, [d.id]: 9999 }
+            // Remove all other elevated z-indexes
+            Object.keys(prevZ).forEach(key => {
+              if (key !== d.id && prevZ[key] === 100) {
+                delete next[key]
+              }
+            })
+            return next
+          })
         }
 
         return next

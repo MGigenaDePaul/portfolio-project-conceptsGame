@@ -135,6 +135,12 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Ensure drop-target state is visible - ConceptBubble.css styles should apply */
+.board-concept.drop-target {
+  /* Let ConceptBubble.css concept-specific styles take priority */
+  z-index: 50 !important;
+}
+
 .board-concept-emoji {
   font-size: 18px;
 }
