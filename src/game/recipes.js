@@ -61,9 +61,9 @@ export const RECIPES = {
   [pairKey('fire', 'inferno')]: 'blaze',
   [pairKey('steam', 'earth')]: 'geothermal',
 
-  [pairKey('mountain', 'air')]: 'altitude',
-  [pairKey('inferno', 'oxygen')]: 'combustion',
-  [pairKey('cloud', 'fire')]: 'pyrocumulus',
-  [pairKey('atmosphere', 'mountain')]: 'stratosphere',
+  // [pairKey('mountain', 'air')]: 'altitude',
+  // [pairKey('inferno', 'oxygen')]: 'combustion',
+  // [pairKey('cloud', 'fire')]: 'pyrocumulus',
+  // [pairKey('atmosphere', 'mountain')]: 'stratosphere',
 
 }
