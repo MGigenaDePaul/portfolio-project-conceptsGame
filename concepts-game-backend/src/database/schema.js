@@ -2,7 +2,7 @@ import pool from './db.js';
 
 export const createTables = async () => {
   try {
-    // 1. Concepts table
+    // "Hey PostgreSQL, make a table called 'concepts' if you don't have one already. Here are the columns:"    
     await pool.query(`
       CREATE TABLE IF NOT EXISTS concepts (
         id VARCHAR(50) PRIMARY KEY,

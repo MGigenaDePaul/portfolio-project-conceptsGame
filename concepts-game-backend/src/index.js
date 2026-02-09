@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createTables } from './database/schema.js';
 import { seedConcepts, seedRecipes } from './database/seed.js';
+import conceptsRoutes from './routes/conceptsRoutes.js'
+import recipesRoutes from './routes/recipesRoutes.js'
 
 dotenv.config();
 
@@ -13,10 +15,13 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Test route
+// Routes
 app.get('/', (req, res) => {
   res.json({ message: 'Concepts Game API is running! 🎮' });
 });
+
+app.use('/api/concepts', conceptsRoutes);
+app.use('/api/recipes', recipesRoutes);
 
 // Initialize database
 const initializeDatabase = async () => {

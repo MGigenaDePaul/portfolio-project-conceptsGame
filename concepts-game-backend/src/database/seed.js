@@ -13,7 +13,7 @@ const ensureConceptExists = async (conceptId) => {
     
     if (existing.rows.length === 0) {
       // Create a default concept (you can improve this later)
-      const name = conceptId.charAt(0).toUpperCase() + conceptId.slice(1);
+      const name = conceptId.charAt(0).toUpperCase() + conceptId.slice(1); // nombres empiezan en mayuscula
       await pool.query(
         `INSERT INTO concepts (id, name, emoji) 
          VALUES (\$1, \$2, \$3)`,
