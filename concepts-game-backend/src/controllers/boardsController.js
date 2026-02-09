@@ -14,31 +14,38 @@ export const createBoard = async (req, res) => {
         
         const board = result.rows[0];
 
-        const startingConcepts = ['fire', 'water', 'earth', 'air'];
+        // Get the actual concept IDs from the database
+        const conceptsResult = await pool.query(`
+            SELECT id FROM concepts WHERE name IN ('fire', 'water', 'earth', 'air')
+        `);
+        
+        const startingConcepts = conceptsResult.rows.map(row => row.id);
 
+        // Loop through concepts and create discoveries + instances
         for (const conceptId of startingConcepts) {
             // Add to discoveries with complexity 1
             await pool.query(
-            `INSERT INTO board_discoveries (board_id, concept_id, complexity)
-             VALUES (\$1, \$2, 1)`,
-             [board.id, conceptId]
+                `INSERT INTO board_discoveries (board_id, concept_id, complexity)
+                 VALUES (\$1, \$2, 1)`,
+                [board.id, conceptId]
             );
-        }
 
-        // create 2 instances of each on the board 
-        for (let i = 0; i < 2; i++) {
-            const instanceId = `instance-${board.id}-${conceptId}-${i}`;
-            await pool.query(`  
-                INSERT INTO board_instances (id, board_id, concept_id, position_x, position_y)
-                VALUES (\$1, \$2, \$3, \$4, \$5)`,
-                [instanceId, board.id, conceptId, Math.random() * 500, Math.random() * 500]
-            );
+            // Create 2 instances of each concept on the board
+            for (let i = 0; i < 2; i++) {
+                const instanceId = `instance-${board.id}-${conceptId}-${i}`;
+                await pool.query(`  
+                    INSERT INTO board_instances (id, board_id, concept_id, position_x, position_y)
+                    VALUES (\$1, \$2, \$3, \$4, \$5)`,
+                    [instanceId, board.id, conceptId, Math.random() * 500, Math.random() * 500]
+                );
+            }
         }
 
         res.status(201).json(board)
     } catch (error) {
-      console.error('Error creating board', error)
-      res.status(500).json({ error: 'Failed to create board' })
+      console.error('Error creating board:', error.message);
+      console.error('Full error:', error); // Log the whole error
+      res.status(500).json({ error: error.message })
     }
 }
 
