@@ -5,6 +5,7 @@ import {
     getBoard,
     deleteBoard
 } from '../controllers/boardsController.js'
+import { combineConcepts } from '../controllers/combineController.js';
 
 const router = express.Router();
 
@@ -19,5 +20,8 @@ router.get('/:id', getBoard)
 
 // DELETE /api/boards/:id - Delete a board
 router.delete('/:id', deleteBoard)
+
+// POST /api/boards/:boardId/combine - Combine two concepts
+router.post('/:boardId/combine', combineConcepts) 
 
 export default router;

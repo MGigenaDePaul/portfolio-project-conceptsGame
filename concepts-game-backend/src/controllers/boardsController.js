@@ -26,7 +26,7 @@ export const createBoard = async (req, res) => {
             // Add to discoveries with complexity 1
             await pool.query(
                 `INSERT INTO board_discoveries (board_id, concept_id, complexity)
-                 VALUES (\$1, \$2, 1)`,
+                 VALUES ($1, $2, 1)`,
                 [board.id, conceptId]
             );
 
@@ -96,7 +96,7 @@ export const getBoard = async (req, res) => {
             FROM board_instances bi
             JOIN concepts c ON bi.concept_id = c.id
             WHERE bi.board_id = \$1
-            `)
+            `,[id])
 
         res.json({
             ...board,
