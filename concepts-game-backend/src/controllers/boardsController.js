@@ -9,7 +9,7 @@ export const createBoard = async (req, res) => {
         }
 
         const result = await pool.query(`
-            INSERT INTO boards (name, owner_id) VALUES (\$1, \$2) RETURNING *
+            INSERT INTO boards (name, owner_id) VALUES ($1, $2) RETURNING *
             `, [name, owner_id]);
         
         const board = result.rows[0];
@@ -35,7 +35,7 @@ export const createBoard = async (req, res) => {
                 const instanceId = `instance-${board.id}-${conceptId}-${i}`;
                 await pool.query(`  
                     INSERT INTO board_instances (id, board_id, concept_id, position_x, position_y)
-                    VALUES (\$1, \$2, \$3, \$4, \$5)`,
+                    VALUES ($1, $2, $3, $4, $5)`,
                     [instanceId, board.id, conceptId, Math.random() * 500, Math.random() * 500]
                 );
             }
@@ -56,7 +56,7 @@ export const getUserBoards = async (req, res) => {
 
         // "Get all boards where the owner is this user, newest first"
         const result = await pool.query(`
-            SELECT * FROM boards WHERE owner_id = \$1 ORDER BY created_at DESC`,
+            SELECT * FROM boards WHERE owner_id = $1 ORDER BY created_at DESC`,
             [userId]
         );
 
@@ -73,7 +73,7 @@ export const getBoard = async (req, res) => {
         const { id } = req.params
 
         // get board info
-        const boardResult = await pool.query(`SELECT * FROM boards WHERE id = \$1`, [id]);
+        const boardResult = await pool.query(`SELECT * FROM boards WHERE id = $1`, [id]);
 
         if (boardResult.rows.length === 0) {
             return res.status(404).json({ error: 'Board not found' });
@@ -86,7 +86,7 @@ export const getBoard = async (req, res) => {
             SELECT bd.*, c.name, c.emoji
             FROM board_discoveries bd
             JOIN concepts c ON bd.concept_id = c.id
-            WHERE bd.board_id = \$1
+            WHERE bd.board_id = $1
             ORDER BY bd.discovered_at DESC
             `, [id])
 
@@ -95,7 +95,7 @@ export const getBoard = async (req, res) => {
             SELECT bi.*, c.name, c.emoji
             FROM board_instances bi
             JOIN concepts c ON bi.concept_id = c.id
-            WHERE bi.board_id = \$1
+            WHERE bi.board_id = $1
             `,[id])
 
         res.json({
@@ -114,7 +114,7 @@ export const deleteBoard = async (req, res) => {
     try {
         const { id } = req.params 
 
-        const result = await pool.query(`DELETE FROM boards WHERE id = \$1 RETURNING *`, [id]);
+        const result = await pool.query(`DELETE FROM boards WHERE id = $1 RETURNING *`, [id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Board not found' });
