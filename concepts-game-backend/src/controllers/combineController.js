@@ -26,7 +26,7 @@ export const combineConcepts = async (req, res) => {
         }
 
         const recipe = recipeResult.rows[0];
-        const resultConceptId = recipe.result_id; // Changed from result_concept_id
+        const resultConceptId = recipe.result_id; 
 
         // Get the result concept details
         const conceptResult = await pool.query(`

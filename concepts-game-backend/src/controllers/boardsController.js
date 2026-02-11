@@ -20,7 +20,10 @@ export const createBoard = async (req, res) => {
         `);
         
         const startingConcepts = conceptsResult.rows.map(row => row.id);
-
+        console.log('starting concepts', startingConcepts)
+        // if (startingConcepts.concepts.length === 0) {
+        //     console.error('⚠️ No starting concepts found!');
+        // }
         // Loop through concepts and create discoveries + instances
         for (const conceptId of startingConcepts) {
             // Add to discoveries with complexity 1
