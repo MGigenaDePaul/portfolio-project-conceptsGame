@@ -10,13 +10,45 @@ export const combineConcepts = async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Check if recipe exists (try both orderings: A+B and B+A)
+        // Check if instances exist FIRST
+        const instancesPos = await pool.query(`
+            SELECT id, concept_id, position_x, position_y
+            FROM board_instances 
+            WHERE id IN ($1, $2) AND board_id = $3
+            `, [instance_a_id, instance_b_id, boardId])
+
+        if (instancesPos.rows.length < 2) {
+            return res.status(400).json({
+                error: 'instances not found',
+                message: 'One or both instance IDs do not exist on this board',
+                provided: { instance_a_id, instance_b_id },
+                found: instancesPos.rows.map(r => r.id)
+            });
+        }
+
+        const instanceA = instancesPos.rows.find(r => r.id === instance_a_id);
+        const instanceB = instancesPos.rows.find(r => r.id === instance_b_id);
+
+        // Verify concepts match instances 
+        if (instanceA.concept_id !== concept_a_id || instanceB.concept_id !== concept_b_id) {
+            return res.status(400).json({
+                error: 'Concept mismatch', 
+                message: 'The concept IDs do not match the instances',
+                expected: {
+                    instance_a: instanceA.concept_id,
+                    instance_b: instanceB.concept_id
+                },
+                received: { concept_a_id, concept_b_id}
+            })
+        }
+
+        // Check if recipe exists
         const recipeResult = await pool.query(`
-            SELECT * FROM recipes 
+            SELECT * FROM recipes
             WHERE (ingredient1_id = $1 AND ingredient2_id = $2)
                OR (ingredient1_id = $2 AND ingredient2_id = $1)
             LIMIT 1
-        `, [concept_a_id, concept_b_id]);
+            `, [concept_a_id, concept_b_id]);
 
         if (recipeResult.rows.length === 0) {
             return res.status(404).json({ 
@@ -74,14 +106,9 @@ export const combineConcepts = async (req, res) => {
         // Create new instance on the board
         const newInstanceId = `instance-${boardId}-${resultConceptId}-${Date.now()}`;
         
-        // Get position (average of the two combined instances)
-        const instancesPos = await pool.query(`
-            SELECT position_x, position_y FROM board_instances
-            WHERE id IN ($1, $2)
-        `, [instance_a_id, instance_b_id]);
-
-        const avgX = (instancesPos.rows[0].position_x + instancesPos.rows[1].position_x) / 2;
-        const avgY = (instancesPos.rows[0].position_y + instancesPos.rows[1].position_y) / 2;
+        // use the instances we already fetched
+        const avgX = (instanceA.position_x + instanceB.position_x) / 2;
+        const avgY = (instanceA.position_y + instanceB.position_y) / 2;
 
         await pool.query(`
             INSERT INTO board_instances (id, board_id, concept_id, position_x, position_y)
@@ -100,7 +127,11 @@ export const combineConcepts = async (req, res) => {
             complexity: newComplexity,
             isNewDiscovery,
             complexityImproved,
-            newInstanceId
+            newInstance: {
+                id: newInstanceId,
+                position_x: avgX,
+                position_y: avgY
+            }
         });
 
     } catch (error) {

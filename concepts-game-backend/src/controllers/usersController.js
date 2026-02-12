@@ -36,8 +36,8 @@ export const getAllUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query(`
-            SELECT id, username, email, created_at FROM users WHERE id = $1`, 
+        const result = await pool.query(
+            'SELECT id, username, email, created_at FROM users WHERE id = $1', 
             [id])
         
         if (result.rows.length === 0) {

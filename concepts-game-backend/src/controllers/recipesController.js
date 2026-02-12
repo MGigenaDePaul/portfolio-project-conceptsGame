@@ -43,8 +43,8 @@ export const findRecipe = async (req, res) => {
                 c.emoji as result_emoji
             FROM recipes r
             JOIN concepts c ON r.result_id = c.id
-            WHERE (r.ingredient1_id = \$1 AND r.ingredient2_id = \$2)
-                OR (r.ingredient1_id = \$2 AND r.ingredient2_id = \$1)
+            WHERE (r.ingredient1_id = $1 AND r.ingredient2_id = $2)
+                OR (r.ingredient1_id = $2 AND r.ingredient2_id = $1)
             `, [ ingredient1, ingredient2 ])
 
         if (result.rows.length === 0) {
