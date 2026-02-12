@@ -7,6 +7,7 @@ import { seedConcepts, seedRecipes } from './database/seed.js';
 import conceptsRoutes from './routes/conceptsRoutes.js'
 import recipesRoutes from './routes/recipesRoutes.js'
 import boardsRoutes from './routes/boardsRoutes.js'
+import usersRoutes from './routes/usersRoutes.js';
 
 dotenv.config();
 
@@ -58,6 +59,8 @@ app.get('/test-board', async (req, res) => {
 app.use('/api/concepts', conceptsRoutes);
 app.use('/api/recipes', recipesRoutes);
 app.use('/api/boards', boardsRoutes);
+app.use('/api/users', usersRoutes);
+
 
 // Initialize database
 const initializeDatabase = async () => {

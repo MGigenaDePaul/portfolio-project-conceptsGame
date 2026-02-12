@@ -16,7 +16,7 @@ export const createBoard = async (req, res) => {
 
         // Get the actual concept IDs from the database
         const conceptsResult = await pool.query(`
-            SELECT id FROM concepts WHERE name IN ('fire', 'water', 'earth', 'air')
+            SELECT id FROM concepts WHERE id IN ('fire', 'water', 'earth', 'air')
         `);
         
         const startingConcepts = conceptsResult.rows.map(row => row.id);
