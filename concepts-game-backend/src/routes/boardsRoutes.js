@@ -1,11 +1,11 @@
 import express from 'express';
 import {
-    createBoard,
-    getUserBoards,
-    getBoard,
-    deleteBoard,
-    spawnInstance,
-} from '../controllers/boardsController.js'
+  createBoard,
+  getUserBoards,
+  getBoard,
+  deleteBoard,
+  spawnInstance,
+} from '../controllers/boardsController.js';
 import { combineConcepts } from '../controllers/combineController.js';
 
 const router = express.Router();

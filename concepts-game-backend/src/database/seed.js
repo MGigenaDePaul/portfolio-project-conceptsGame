@@ -7,7 +7,7 @@ const ensureConceptExists = async (conceptId) => {
   try {
     // Check if concept already exists
     const existing = await pool.query(
-      'SELECT id FROM concepts WHERE id = \$1',
+      'SELECT id FROM concepts WHERE id = $1',
       [conceptId]
     );
     
@@ -16,7 +16,7 @@ const ensureConceptExists = async (conceptId) => {
       const name = conceptId.charAt(0).toUpperCase() + conceptId.slice(1); // nombres empiezan en mayuscula
       await pool.query(
         `INSERT INTO concepts (id, name, emoji) 
-         VALUES (\$1, \$2, \$3)`,
+         VALUES ($1, $2, $3)`,
         [conceptId, name, '❓'] // Default emoji for auto-generated concepts
       );
       console.log(`  ➕ Created concept: ${conceptId}`);
@@ -30,10 +30,10 @@ export const seedConcepts = async () => {
   try {
     console.log('🌱 Seeding concepts...');
     
-    for (const [id, concept] of Object.entries(CONCEPTS)) {
+    for (const concept of Object.entries(CONCEPTS)) {
       await pool.query(
         `INSERT INTO concepts (id, name, emoji) 
-         VALUES (\$1, \$2, \$3) 
+         VALUES ($1, $2, $3) 
          ON CONFLICT (id) DO NOTHING`,
         [concept.id, concept.name, concept.emoji]
       );
@@ -59,7 +59,7 @@ export const seedRecipes = async () => {
       
       await pool.query(
         `INSERT INTO recipes (ingredient1_id, ingredient2_id, result_id) 
-         VALUES (\$1, \$2, \$3) 
+         VALUES ($1, $2, $3) 
          ON CONFLICT (ingredient1_id, ingredient2_id) DO NOTHING`,
         [ingredient1, ingredient2, resultId]
       );
