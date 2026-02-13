@@ -74,14 +74,6 @@ const Board = () => {
     setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
   };
 
-  const showNotification = (message, position) => {
-    setNotification({ isVisible: true, message, position });
-  };
-
-  const hideNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
-  };
-
   // Initialize starting instances (4 classical elements)
   useEffect(() => {
     const startingConcepts = ['fire', 'water', 'air', 'earth'];
