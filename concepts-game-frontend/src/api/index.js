@@ -1,3 +1,3 @@
-export { api } from './client'
-export { boardsApi } from './boards'
-export { usersApi } from './users'
+export { api } from './client';
+export { boardsApi } from './boards';
+export { usersApi } from './users';
