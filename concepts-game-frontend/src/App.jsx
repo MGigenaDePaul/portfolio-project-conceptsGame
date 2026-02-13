@@ -6,7 +6,6 @@ import HomeScreen from './pages/HomeScreen';
 import Notification from './components/Notification';
 import FullGuide from './pages/FullGuide';
 import Board from './pages/Board';
-
 import './App.css';
 
 const getHitRadius = () => {
@@ -439,7 +438,8 @@ const App = () => {
         <Route path='/privacy' element={<FullGuide />} />
         <Route path='/terms' element={<FullGuide />} />
 
-        <Route path='/board' element={<Board />} />
+        {/* ✅ CHANGED: Added :boardId param so Board knows which board to load */}
+        <Route path='/board/:boardId' element={<Board />} />
       </Routes>
     </>
   );
