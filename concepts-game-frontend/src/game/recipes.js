@@ -1,6 +1,6 @@
 export const pairKey = (aId, bId) => {
-  return [aId, bId].sort().join(':')
-}
+  return [aId, bId].sort().join(':');
+};
 
 export const RECIPES = {
   [pairKey('fire', 'water')]: 'steam',
@@ -65,4 +65,4 @@ export const RECIPES = {
   // [pairKey('inferno', 'oxygen')]: 'combustion',
   // [pairKey('cloud', 'fire')]: 'pyrocumulus',
   // [pairKey('atmosphere', 'mountain')]: 'stratosphere',
-}
+};

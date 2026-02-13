@@ -1,6 +1,6 @@
-import ConceptBubble from '../components/ConceptBubble'
-import MyBoards from '../components/MyBoards'
-import { CONCEPTS } from '../game/concepts'
+import ConceptBubble from '../components/ConceptBubble';
+import MyBoards from '../components/MyBoards';
+import { CONCEPTS } from '../game/concepts';
 
 const HomeScreen = ({
   instances,
@@ -22,9 +22,9 @@ const HomeScreen = ({
 
       <div className='concepts-area'>
         {Object.keys(instances).map((instanceId, index) => {
-          const instance = instances[instanceId]
-          const concept = CONCEPTS[instance.conceptId]
-          const position = positions[instanceId] || { x: 0, y: 0 }
+          const instance = instances[instanceId];
+          const concept = CONCEPTS[instance.conceptId];
+          const position = positions[instanceId] || { x: 0, y: 0 };
 
           return (
             <ConceptBubble
@@ -39,7 +39,7 @@ const HomeScreen = ({
               isSpawning={!instance.isNewlyCombined} // No aplicar delay inicial a elementos combinados
               isNewlyCombined={instance.isNewlyCombined}
             />
-          )
+          );
         })}
       </div>
 
@@ -50,7 +50,7 @@ const HomeScreen = ({
         </p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default HomeScreen
+export default HomeScreen;

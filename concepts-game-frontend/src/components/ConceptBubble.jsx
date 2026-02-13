@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import './ConceptBubble.css'
+import { useState, useEffect } from 'react';
+import './ConceptBubble.css';
 
 const ConceptBubble = ({
   concept,
@@ -12,29 +12,29 @@ const ConceptBubble = ({
   isSpawning = false,
   isNewlyCombined = false,
 }) => {
-  const [hasSpawned, setHasSpawned] = useState(!isSpawning)
+  const [hasSpawned, setHasSpawned] = useState(!isSpawning);
 
   useEffect(() => {
     if (isSpawning && spawnDelayMs >= 0) {
       const timer = setTimeout(() => {
-        setHasSpawned(true)
-      }, spawnDelayMs)
-      return () => clearTimeout(timer)
+        setHasSpawned(true);
+      }, spawnDelayMs);
+      return () => clearTimeout(timer);
     }
-  }, [isSpawning, spawnDelayMs])
+  }, [isSpawning, spawnDelayMs]);
 
   useEffect(() => {
     if (isNewlyCombined) {
-      setHasSpawned(true)
+      setHasSpawned(true);
     }
-  }, [isNewlyCombined])
+  }, [isNewlyCombined]);
 
   // 🔥 SOLUCIÓN NUCLEAR: z-index super alto cuando arrastra
   const calculatedZIndex = isDragging
     ? 999999
     : isDropTarget
       ? 100
-      : zIndex || 0
+      : zIndex || 0;
 
   return (
     <div
@@ -59,7 +59,7 @@ const ConceptBubble = ({
       <span className='concept-emoji'>{concept.emoji}</span>
       <span className='concept-name'>{concept.name}</span>
     </div>
-  )
-}
+  );
+};
 
-export default ConceptBubble
+export default ConceptBubble;

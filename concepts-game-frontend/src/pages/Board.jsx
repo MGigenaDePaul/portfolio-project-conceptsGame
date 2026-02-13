@@ -1,365 +1,365 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { CONCEPTS, generateInstanceId } from '../game/concepts'
-import { combine } from '../game/combine'
-import Notification from '../components/Notification'
-import '../components/ConceptBubble.css'
-import './Board.css'
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { CONCEPTS, generateInstanceId } from '../game/concepts';
+import { combine } from '../game/combine';
+import Notification from '../components/Notification';
+import '../components/ConceptBubble.css';
+import './Board.css';
 
 const getHitRadius = () => {
-  const width = window.innerWidth
-  if (width < 480) return 60
-  if (width < 768) return 75
-  return 100
-}
+  const width = window.innerWidth;
+  if (width < 480) return 60;
+  if (width < 768) return 75;
+  return 100;
+};
 
 const Board = () => {
-  const [instances, setInstances] = useState({})
-  const [positions, setPositions] = useState({})
-  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set(['fire', 'water', 'air', 'earth']))
-  const [hoverTargetId, setHoverTargetId] = useState(null)
-  const [draggingId, setDraggingId] = useState(null)
-  const [zIndexes, setZIndexes] = useState({})
-  const [hitRadius, setHitRadius] = useState(getHitRadius())
-  const [isCombining, setIsCombining] = useState(false)
-  const [searchFilter, setSearchFilter] = useState('')
+  const [instances, setInstances] = useState({});
+  const [positions, setPositions] = useState({});
+  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set(['fire', 'water', 'air', 'earth']));
+  const [hoverTargetId, setHoverTargetId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [zIndexes, setZIndexes] = useState({});
+  const [hitRadius, setHitRadius] = useState(getHitRadius());
+  const [isCombining, setIsCombining] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
   const [notification, setNotification] = useState({
     isVisible: false,
     message: '',
     position: { x: 0, y: 0 },
-  })
+  });
 
-  const combineAudioRef = useRef(null)
-  const failAudioRef = useRef(null)
-  const pressBubbleAudioRef = useRef(null)
-  const soundBeforeCombiningAudioRef = useRef(null)
-  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
+  const combineAudioRef = useRef(null);
+  const failAudioRef = useRef(null);
+  const pressBubbleAudioRef = useRef(null);
+  const soundBeforeCombiningAudioRef = useRef(null);
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
 
   // Initialize audio
   useEffect(() => {
-    const combineAudio = new Audio('/sounds/success.mp3')
-    combineAudio.volume = 0.6
-    combineAudio.preload = 'auto'
+    const combineAudio = new Audio('/sounds/success.mp3');
+    combineAudio.volume = 0.6;
+    combineAudio.preload = 'auto';
 
-    const failAudio = new Audio('/sounds/fail.mp3')
-    failAudio.volume = 0.4
-    failAudio.preload = 'auto'
+    const failAudio = new Audio('/sounds/fail.mp3');
+    failAudio.volume = 0.4;
+    failAudio.preload = 'auto';
 
-    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
-    pressBubbleAudio.volume = 0.5
-    pressBubbleAudio.preload = 'auto'
+    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3');
+    pressBubbleAudio.volume = 0.5;
+    pressBubbleAudio.preload = 'auto';
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
-    soundBeforeCombiningAudio.volume = 0.4
-    soundBeforeCombiningAudio.preload = 'auto'
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3');
+    soundBeforeCombiningAudio.volume = 0.4;
+    soundBeforeCombiningAudio.preload = 'auto';
 
-    combineAudioRef.current = combineAudio
-    failAudioRef.current = failAudio
-    pressBubbleAudioRef.current = pressBubbleAudio
-    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio
-  }, [])
+    combineAudioRef.current = combineAudio;
+    failAudioRef.current = failAudio;
+    pressBubbleAudioRef.current = pressBubbleAudio;
+    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio;
+  }, []);
 
   const play = (ref) => {
-    const a = ref.current
-    if (!a) return
-    a.currentTime = 0
-    a.play().catch(() => {})
-  }
+    const a = ref.current;
+    if (!a) return;
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  };
 
   const displayNotification = (message, position) => {
-    setNotification({ isVisible: true, message, position })
-  }
+    setNotification({ isVisible: true, message, position });
+  };
 
   const clearNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
-  }
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
+  };
 
   const showNotification = (message, position) => {
-    setNotification({ isVisible: true, message, position })
-  }
+    setNotification({ isVisible: true, message, position });
+  };
 
   const hideNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
-  }
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
+  };
 
   // Initialize starting instances (4 classical elements)
   useEffect(() => {
-    const startingConcepts = ['fire', 'water', 'air', 'earth']
-    const newInstances = {}
-    const newPositions = {}
+    const startingConcepts = ['fire', 'water', 'air', 'earth'];
+    const newInstances = {};
+    const newPositions = {};
 
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220 // Account for both sidebars
-    const centerY = window.innerHeight / 2
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220; // Account for both sidebars
+    const centerY = window.innerHeight / 2;
 
     startingConcepts.forEach((conceptId, index) => {
-      const instanceId = generateInstanceId()
+      const instanceId = generateInstanceId();
       newInstances[instanceId] = {
         instanceId,
         conceptId,
         isNewlyCombined: false,
-      }
+      };
 
       // Position in a circle around center
-      const angle = (index / startingConcepts.length) * Math.PI * 2
-      const radius = 150
+      const angle = (index / startingConcepts.length) * Math.PI * 2;
+      const radius = 150;
       newPositions[instanceId] = {
         x: centerX + Math.cos(angle) * radius,
         y: centerY + Math.sin(angle) * radius,
-      }
-    })
+      };
+    });
 
-    setInstances(newInstances)
-    setPositions(newPositions)
-  }, [])
+    setInstances(newInstances);
+    setPositions(newPositions);
+  }, []);
 
   useEffect(() => {
-    const handleResize = () => setHitRadius(getHitRadius())
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    const handleResize = () => setHitRadius(getHitRadius());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getHitTarget = (dragId, currentPositions) => {
-    const p = currentPositions[dragId]
-    if (!p) return null
+    const p = currentPositions[dragId];
+    if (!p) return null;
 
-    let best = null
-    let bestDist = Infinity
+    let best = null;
+    let bestDist = Infinity;
 
     for (const otherId of Object.keys(instances)) {
-      if (otherId === dragId) continue
-      const q = currentPositions[otherId]
-      if (!q) continue
+      if (otherId === dragId) continue;
+      const q = currentPositions[otherId];
+      if (!q) continue;
 
-      const dist = Math.hypot(p.x - q.x, p.y - q.y)
+      const dist = Math.hypot(p.x - q.x, p.y - q.y);
       if (dist < hitRadius && dist < bestDist) {
-        bestDist = dist
-        best = otherId
+        bestDist = dist;
+        best = otherId;
       }
     }
 
-    return best
-  }
+    return best;
+  };
 
   const combineAndReplace = (aInstanceId, bInstanceId, spawnPos) => {
-    const aInstance = instances[aInstanceId]
-    const bInstance = instances[bInstanceId]
-    if (!aInstance || !bInstance) return false
+    const aInstance = instances[aInstanceId];
+    const bInstance = instances[bInstanceId];
+    if (!aInstance || !bInstance) return false;
 
-    const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId)
-    if (!resultConceptId) return false
+    const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId);
+    if (!resultConceptId) return false;
 
-    play(combineAudioRef)
+    play(combineAudioRef);
 
-    const resultInstanceId = generateInstanceId()
+    const resultInstanceId = generateInstanceId();
 
     // Add to discovered concepts
-    setDiscoveredConcepts((prev) => new Set([...prev, resultConceptId]))
+    setDiscoveredConcepts((prev) => new Set([...prev, resultConceptId]));
 
     setInstances((prev) => {
-      const next = { ...prev }
-      delete next[aInstanceId]
-      delete next[bInstanceId]
+      const next = { ...prev };
+      delete next[aInstanceId];
+      delete next[bInstanceId];
       next[resultInstanceId] = {
         instanceId: resultInstanceId,
         conceptId: resultConceptId,
         isNewlyCombined: true,
-      }
-      return next
-    })
+      };
+      return next;
+    });
 
     setPositions((prev) => {
-      const next = { ...prev }
-      delete next[aInstanceId]
-      delete next[bInstanceId]
-      next[resultInstanceId] = { x: spawnPos.x, y: spawnPos.y }
-      return next
-    })
+      const next = { ...prev };
+      delete next[aInstanceId];
+      delete next[bInstanceId];
+      next[resultInstanceId] = { x: spawnPos.x, y: spawnPos.y };
+      return next;
+    });
 
-    return true
-  }
+    return true;
+  };
 
   const onPointerDownBubble = (instanceId) => (e) => {
     if (isCombining) {
-      e.preventDefault()
-      e.stopPropagation()
-      return
+      e.preventDefault();
+      e.stopPropagation();
+      return;
     }
 
-    e.preventDefault()
-    e.stopPropagation()
-    play(pressBubbleAudioRef)
+    e.preventDefault();
+    e.stopPropagation();
+    play(pressBubbleAudioRef);
 
-    const p = positions[instanceId]
-    if (!p) return
+    const p = positions[instanceId];
+    if (!p) return;
 
-    setDraggingId(instanceId)
-    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }))
+    setDraggingId(instanceId);
+    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }));
 
-    e.currentTarget.setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId);
 
     // Calculate offset from the element's top-left position
     draggingRef.current = {
       id: instanceId,
       offsetX: e.clientX - p.x,
       offsetY: e.clientY - p.y,
-    }
-  }
+    };
+  };
 
   useEffect(() => {
     const onMove = (e) => {
-      const d = draggingRef.current
-      if (!d.id) return
+      const d = draggingRef.current;
+      if (!d.id) return;
 
-      const x = e.clientX - d.offsetX
-      const y = e.clientY - d.offsetY
+      const x = e.clientX - d.offsetX;
+      const y = e.clientY - d.offsetY;
 
       setPositions((prev) => {
-        const next = { ...prev, [d.id]: { x, y } }
-        const targetId = getHitTarget(d.id, next)
-        setHoverTargetId(targetId)
+        const next = { ...prev, [d.id]: { x, y } };
+        const targetId = getHitTarget(d.id, next);
+        setHoverTargetId(targetId);
 
         if (targetId) {
           setZIndexes((prevZ) => ({
             ...prevZ,
             [targetId]: 100,
             [d.id]: 9999,
-          }))
+          }));
         } else {
           // Clear target z-index when not hovering
           setZIndexes((prevZ) => {
-            const next = { ...prevZ, [d.id]: 9999 }
+            const next = { ...prevZ, [d.id]: 9999 };
             // Remove all other elevated z-indexes
             Object.keys(prevZ).forEach(key => {
               if (key !== d.id && prevZ[key] === 100) {
-                delete next[key]
+                delete next[key];
               }
-            })
-            return next
-          })
+            });
+            return next;
+          });
         }
 
-        return next
-      })
-    }
+        return next;
+      });
+    };
 
     const onUp = () => {
-      const d = draggingRef.current
-      if (!d.id) return
+      const d = draggingRef.current;
+      if (!d.id) return;
 
-      const dragId = d.id
-      draggingRef.current.id = null
+      const dragId = d.id;
+      draggingRef.current.id = null;
 
-      setDraggingId(null)
-      setHoverTargetId(null)
+      setDraggingId(null);
+      setHoverTargetId(null);
 
       setPositions((prev) => {
-        const targetId = getHitTarget(dragId, prev)
+        const targetId = getHitTarget(dragId, prev);
 
         if (!targetId) {
           setZIndexes((prevZ) => {
-            const next = { ...prevZ }
-            delete next[dragId]
-            return next
-          })
-          return prev
+            const next = { ...prevZ };
+            delete next[dragId];
+            return next;
+          });
+          return prev;
         }
 
-        const dragPos = prev[dragId]
-        const targetPos = prev[targetId]
-        if (!dragPos || !targetPos) return prev
+        const dragPos = prev[dragId];
+        const targetPos = prev[targetId];
+        if (!dragPos || !targetPos) return prev;
 
         // Calculate the CENTER point between the two bubbles
         // dragPos and targetPos are top-left corners
-        const bubbleWidth = 150
-        const bubbleHeight = 50
+        const bubbleWidth = 150;
+        const bubbleHeight = 50;
         
         // Get center of each bubble
-        const dragCenterX = dragPos.x + bubbleWidth / 2
-        const dragCenterY = dragPos.y + bubbleHeight / 2
-        const targetCenterX = targetPos.x + bubbleWidth / 2
-        const targetCenterY = targetPos.y + bubbleHeight / 2
+        const dragCenterX = dragPos.x + bubbleWidth / 2;
+        const dragCenterY = dragPos.y + bubbleHeight / 2;
+        const targetCenterX = targetPos.x + bubbleWidth / 2;
+        const targetCenterY = targetPos.y + bubbleHeight / 2;
         
         // Calculate midpoint between centers
-        const midX = (dragCenterX + targetCenterX) / 2
-        const midY = (dragCenterY + targetCenterY) / 2
-        const notificationPosition = { x: midX, y: midY }
+        const midX = (dragCenterX + targetCenterX) / 2;
+        const midY = (dragCenterY + targetCenterY) / 2;
+        const notificationPosition = { x: midX, y: midY };
 
-        play(soundBeforeCombiningAudioRef)
-        setIsCombining(true)
+        play(soundBeforeCombiningAudioRef);
+        setIsCombining(true);
 
         setTimeout(() => {
-          const combined = combineAndReplace(dragId, targetId, dragPos)
+          const combined = combineAndReplace(dragId, targetId, dragPos);
 
           if (!combined) {
-            play(failAudioRef)
-            displayNotification('No recipe found!', notificationPosition)
+            play(failAudioRef);
+            displayNotification('No recipe found!', notificationPosition);
             
             setTimeout(() => {
-              clearNotification()
-            }, 2000)
+              clearNotification();
+            }, 2000);
           }
 
           setZIndexes((prevZ) => {
-            const next = { ...prevZ }
-            delete next[dragId]
-            delete next[targetId]
-            return next
-          })
-          setIsCombining(false)
-        }, 700)
+            const next = { ...prevZ };
+            delete next[dragId];
+            delete next[targetId];
+            return next;
+          });
+          setIsCombining(false);
+        }, 700);
 
-        return prev
-      })
-    }
+        return prev;
+      });
+    };
 
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
 
     return () => {
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onUp)
-    }
-  }, [instances, hitRadius, isCombining])
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [instances, hitRadius, isCombining]);
 
   // Organize discovered concepts into categories
   const organizeByCategory = () => {
     const categories = {
       UNCATEGORIZED: [],
-    }
+    };
 
     discoveredConcepts.forEach((conceptId) => {
-      const concept = CONCEPTS[conceptId]
-      if (!concept) return
+      const concept = CONCEPTS[conceptId];
+      if (!concept) return;
 
       // Apply search filter
       if (searchFilter && !concept.name.toLowerCase().includes(searchFilter.toLowerCase())) {
-        return
+        return;
       }
 
-      const category = concept.category || 'UNCATEGORIZED'
+      const category = concept.category || 'UNCATEGORIZED';
       if (!categories[category]) {
-        categories[category] = []
+        categories[category] = [];
       }
       categories[category].push({
         name: concept.name,
         emoji: concept.emoji,
         conceptId,
-      })
-    })
+      });
+    });
 
-    return categories
-  }
+    return categories;
+  };
 
   // Function to add a concept to the board from knowledge panel
   const addConceptToBoard = (conceptId) => {
-    const instanceId = generateInstanceId()
+    const instanceId = generateInstanceId();
     
     // Position near center of board area
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220
-    const centerY = window.innerHeight / 2
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220;
+    const centerY = window.innerHeight / 2;
     
     // Add some randomness so they don't all stack
-    const randomOffset = () => (Math.random() - 0.5) * 100
+    const randomOffset = () => (Math.random() - 0.5) * 100;
     
     setInstances((prev) => ({
       ...prev,
@@ -368,7 +368,7 @@ const Board = () => {
         conceptId,
         isNewlyCombined: false,
       },
-    }))
+    }));
     
     setPositions((prev) => ({
       ...prev,
@@ -376,10 +376,10 @@ const Board = () => {
         x: centerX + randomOffset(),
         y: centerY + randomOffset(),
       },
-    }))
-  }
+    }));
+  };
 
-  const categories = organizeByCategory()
+  const categories = organizeByCategory();
 
   return (
     <div className="board-container">
@@ -427,11 +427,11 @@ const Board = () => {
         {/* Concepts on board */}
         <div className="board-canvas">
           {Object.values(instances).map((instance) => {
-            const position = positions[instance.instanceId]
-            if (!position) return null
+            const position = positions[instance.instanceId];
+            if (!position) return null;
 
-            const concept = CONCEPTS[instance.conceptId]
-            if (!concept) return null
+            const concept = CONCEPTS[instance.conceptId];
+            if (!concept) return null;
 
             return (
               <div
@@ -450,7 +450,7 @@ const Board = () => {
                 <span className="board-concept-emoji">{concept.emoji}</span>
                 <span className="board-concept-name">{concept.name}</span>
               </div>
-            )
+            );
           })}
 
           {/* Warning message */}
@@ -513,7 +513,7 @@ const Board = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Board
+export default Board;

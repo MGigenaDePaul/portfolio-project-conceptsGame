@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import ConceptsGuide from './ConceptsGuide'
-import { useNavigate } from 'react-router-dom'
-import './MyBoards.css'
+import { useState } from 'react';
+import ConceptsGuide from './ConceptsGuide';
+import { useNavigate } from 'react-router-dom';
+import './MyBoards.css';
 
 const MyBoards = ({ discoveredConcepts }) => {
-  const [isGuideOpen, setIsGuideOpen] = useState(false)
-  const navigate = useNavigate()
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -45,7 +45,7 @@ const MyBoards = ({ discoveredConcepts }) => {
         onClose={() => setIsGuideOpen(false)}
       />
     </>
-  )
-}
+  );
+};
 
-export default MyBoards
+export default MyBoards;
