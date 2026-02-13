@@ -12,6 +12,8 @@ export const createUser = async (req, res) => {
             INSERT INTO users (username, email, password_hash)
             VALUES ($1, $2, $3) RETURNING id, username, email, created_at
             `, [username, email, password_hash])
+        
+        res.status(201).json(result.rows[0])
     } catch(error) {
         if (error.code === '23505') {// unique violation
             return res.status(400).json({ error: 'Username or email already exists' });

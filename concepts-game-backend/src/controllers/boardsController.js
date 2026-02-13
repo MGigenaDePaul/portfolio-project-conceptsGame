@@ -18,12 +18,9 @@ export const createBoard = async (req, res) => {
         const conceptsResult = await pool.query(`
             SELECT id FROM concepts WHERE id IN ('fire', 'water', 'earth', 'air')
         `);
-        
+
         const startingConcepts = conceptsResult.rows.map(row => row.id);
-        console.log('starting concepts', startingConcepts)
-        // if (startingConcepts.concepts.length === 0) {
-        //     console.error('⚠️ No starting concepts found!');
-        // }
+       
         // Loop through concepts and create discoveries + instances
         for (const conceptId of startingConcepts) {
             // Add to discoveries with complexity 1
@@ -55,7 +52,7 @@ export const createBoard = async (req, res) => {
 // Get all boards for a user
 export const getUserBoards = async (req, res) => {
     try {
-        const {userId} = req.params;
+        const { userId } = req.params;
 
         // "Get all boards where the owner is this user, newest first"
         const result = await pool.query(`
@@ -127,5 +124,55 @@ export const deleteBoard = async (req, res) => {
     } catch(error) {
         console.error('Error deleting board', error);
         res.status(500).json({ error: 'Failed to delete board' });
+    }
+}
+
+export const spawnInstance = async (req, res) => {
+    try {
+        const { boardId } = req.params;
+        const { concept_id, position_x = 100, position_y = 100 } = req.body;
+
+        if (!concept_id) {
+            return res.status(400).json({ error: 'concept_id is required' });
+        }
+
+        // check if concept is discovered on this board
+        const discoveryCheck = await pool.query(`
+            SELECT * FROM board_discoveries
+            WHERE board_id = $1 AND concept_id = $2
+            `, [boardId, concept_id]);
+
+        if (discoveryCheck.rows.length === 0) {
+            return res.status(400).json({
+                error: 'Concept not discovered',
+                message: 'You can only spawn concepts you have discovered'
+            })
+        }
+
+        // Create new instance
+        const instanceId = `instance-${boardId}-${concept_id}-${Date.now()}`;
+
+        const result = await pool.query(`
+            INSERT INTO board_instances (id, board_id, concept_id, position_x, position_y)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *
+            `, [instanceId, boardId, concept_id, position_x, position_y]);
+
+        // Get concept details
+        const conceptResult = await pool.query(`
+            SELECT * FROM concepts WHERE id = $1  
+            `, [concept_id]);
+
+        res.status(201).json({
+            success: true,
+            instance: {
+                ...result.rows[0],
+                name: conceptResult.rows[0].name,
+                emoji: conceptResult.rows[0].emoji
+            }
+        });
+    } catch(error) {
+      console.error('Error spawning instance', error)
+      res.status(500).json({ error: error.message })
     }
 }

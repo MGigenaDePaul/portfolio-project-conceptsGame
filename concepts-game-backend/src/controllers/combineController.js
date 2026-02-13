@@ -5,6 +5,14 @@ export const combineConcepts = async (req, res) => {
         const { boardId } = req.params;
         const { concept_a_id, concept_b_id, instance_a_id, instance_b_id } = req.body;
 
+        // 🔍 DEBUG: See what's actually being received
+        console.log('=== COMBINE REQUEST ===');
+        console.log('Board ID:', boardId);
+        console.log('Request body:', req.body);
+        console.log('instance_a_id:', instance_a_id);
+        console.log('instance_b_id:', instance_b_id);
+        console.log('========================');
+        
         // Validation
         if (!concept_a_id || !concept_b_id || !instance_a_id || !instance_b_id) {
             return res.status(400).json({ error: 'Missing required fields' });
@@ -17,6 +25,7 @@ export const combineConcepts = async (req, res) => {
             WHERE id IN ($1, $2) AND board_id = $3
             `, [instance_a_id, instance_b_id, boardId])
 
+            console.log('instancesPos', instancesPos)
         if (instancesPos.rows.length < 2) {
             return res.status(400).json({
                 error: 'instances not found',
