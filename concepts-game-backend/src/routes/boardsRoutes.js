@@ -24,6 +24,7 @@ router.delete('/:id', deleteBoard);
 
 // POST /api/boards/:boardId/combine - Combine two concepts
 router.post('/:boardId/combine', combineConcepts);
+router.post('/:boardId/spawn', spawnInstance)
 
 // POST /api/boards/:boardId/instances
 router.post('/:boardId/instances', spawnInstance);

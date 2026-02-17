@@ -27,9 +27,9 @@
 .my-boards-header-standalone {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 50%;                                                            
   transform: translate(-50%, calc(-50% - 150px)); /* Ajusta según necesites */
-  display: flex;
+  display: flex;                                                                                    
   align-items: center;
   justify-content: space-between;
   width: clamp(200px, 80vw, 256px);

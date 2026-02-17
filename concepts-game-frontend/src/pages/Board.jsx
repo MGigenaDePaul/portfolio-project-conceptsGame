@@ -1,380 +1,523 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { CONCEPTS, generateInstanceId } from '../game/concepts';
-import { combine } from '../game/combine';
-import Notification from '../components/Notification';
-import '../components/ConceptBubble.css';
-import './Board.css';
+// src/pages/Board.jsx
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import { CONCEPTS } from '../game/concepts'
+import { boardsApi } from '../api/boards'
+import Notification from '../components/Notification'
+import '../components/ConceptBubble.css'
+import './Board.css'
 
 const getHitRadius = () => {
-  const width = window.innerWidth;
-  if (width < 480) return 60;
-  if (width < 768) return 75;
-  return 100;
-};
+  const width = window.innerWidth
+  if (width < 480) return 60
+  if (width < 768) return 75
+  return 100
+}
 
 const Board = () => {
-  const [instances, setInstances] = useState({});
-  const [positions, setPositions] = useState({});
-  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set(['fire', 'water', 'air', 'earth']));
-  const [hoverTargetId, setHoverTargetId] = useState(null);
-  const [draggingId, setDraggingId] = useState(null);
-  const [zIndexes, setZIndexes] = useState({});
-  const [hitRadius, setHitRadius] = useState(getHitRadius());
-  const [isCombining, setIsCombining] = useState(false);
-  const [searchFilter, setSearchFilter] = useState('');
+  const { boardId } = useParams()
+  const navigate = useNavigate()
+
+  // Board data from API
+  const [boardData, setBoardData] = useState(null)
+  const [loadingBoard, setLoadingBoard] = useState(true)
+  const [loadError, setLoadError] = useState(null)
+
+  // Game state
+  const [instances, setInstances] = useState({})
+  const [positions, setPositions] = useState({})
+  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set())
+  const [hoverTargetId, setHoverTargetId] = useState(null)
+  const [draggingId, setDraggingId] = useState(null)
+  const [zIndexes, setZIndexes] = useState({})
+  const [hitRadius, setHitRadius] = useState(getHitRadius())
+  const [isCombining, setIsCombining] = useState(false)
+  const [searchFilter, setSearchFilter] = useState('')
   const [notification, setNotification] = useState({
     isVisible: false,
     message: '',
     position: { x: 0, y: 0 },
-  });
+  })
 
-  const combineAudioRef = useRef(null);
-  const failAudioRef = useRef(null);
-  const pressBubbleAudioRef = useRef(null);
-  const soundBeforeCombiningAudioRef = useRef(null);
-  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
+  const combineAudioRef = useRef(null)
+  const failAudioRef = useRef(null)
+  const pressBubbleAudioRef = useRef(null)
+  const soundBeforeCombiningAudioRef = useRef(null)
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
 
-  // Initialize audio
+  // ─── Initialize audio ────────────────────────────────
   useEffect(() => {
-    const combineAudio = new Audio('/sounds/success.mp3');
-    combineAudio.volume = 0.6;
-    combineAudio.preload = 'auto';
+    const combineAudio = new Audio('/sounds/success.mp3')
+    combineAudio.volume = 0.6
+    combineAudio.preload = 'auto'
 
-    const failAudio = new Audio('/sounds/fail.mp3');
-    failAudio.volume = 0.4;
-    failAudio.preload = 'auto';
+    const failAudio = new Audio('/sounds/fail.mp3')
+    failAudio.volume = 0.4
+    failAudio.preload = 'auto'
 
-    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3');
-    pressBubbleAudio.volume = 0.5;
-    pressBubbleAudio.preload = 'auto';
+    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
+    pressBubbleAudio.volume = 0.5
+    pressBubbleAudio.preload = 'auto'
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3');
-    soundBeforeCombiningAudio.volume = 0.4;
-    soundBeforeCombiningAudio.preload = 'auto';
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
+    soundBeforeCombiningAudio.volume = 0.4
+    soundBeforeCombiningAudio.preload = 'auto'
 
-    combineAudioRef.current = combineAudio;
-    failAudioRef.current = failAudio;
-    pressBubbleAudioRef.current = pressBubbleAudio;
-    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio;
-  }, []);
+    combineAudioRef.current = combineAudio
+    failAudioRef.current = failAudio
+    pressBubbleAudioRef.current = pressBubbleAudio
+    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio
+  }, [])
 
   const play = (ref) => {
-    const a = ref.current;
-    if (!a) return;
-    a.currentTime = 0;
-    a.play().catch(() => {});
-  };
+    const a = ref.current
+    if (!a) return
+    a.currentTime = 0
+    a.play().catch(() => {})
+  }
 
   const displayNotification = (message, position) => {
-    setNotification({ isVisible: true, message, position });
-  };
+    setNotification({ isVisible: true, message, position })
+  }
 
   const clearNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
-  };
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
+  }
 
-  // Initialize starting instances (4 classical elements)
+  // ─── Load board from API ─────────────────────────────
   useEffect(() => {
-    const startingConcepts = ['fire', 'water', 'air', 'earth'];
-    const newInstances = {};
-    const newPositions = {};
+    if (!boardId) return
 
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220; // Account for both sidebars
-    const centerY = window.innerHeight / 2;
+    const loadBoard = async () => {
+      setLoadingBoard(true)
+      setLoadError(null)
 
-    startingConcepts.forEach((conceptId, index) => {
-      const instanceId = generateInstanceId();
-      newInstances[instanceId] = {
-        instanceId,
-        conceptId,
-        isNewlyCombined: false,
-      };
+      try {
+        const data = await boardsApi.get(boardId)
+        setBoardData(data)
 
-      // Position in a circle around center
-      const angle = (index / startingConcepts.length) * Math.PI * 2;
-      const radius = 150;
-      newPositions[instanceId] = {
-        x: centerX + Math.cos(angle) * radius,
-        y: centerY + Math.sin(angle) * radius,
-      };
-    });
+        // Build discovered concepts set from API discoveries
+        const discovered = new Set(
+          data.discoveries.map((d) => d.concept_id)
+        )
+        setDiscoveredConcepts(discovered)
 
-    setInstances(newInstances);
-    setPositions(newPositions);
-  }, []);
+        // Build instances and positions from API data
+        const newInstances = {}
+        const newPositions = {}
 
-  useEffect(() => {
-    const handleResize = () => setHitRadius(getHitRadius());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+        data.instances.forEach((inst) => {
+          newInstances[inst.id] = {
+            instanceId: inst.id,
+            conceptId: inst.concept_id,
+            // Concept data comes joined from API
+            name: inst.name,
+            emoji: inst.emoji,
+            isNewlyCombined: false,
+          }
+          newPositions[inst.id] = {
+            x: inst.position_x ?? 200 + Math.random() * 400,
+            y: inst.position_y ?? 200 + Math.random() * 300,
+          }
+        })
 
-  const getHitTarget = (dragId, currentPositions) => {
-    const p = currentPositions[dragId];
-    if (!p) return null;
-
-    let best = null;
-    let bestDist = Infinity;
-
-    for (const otherId of Object.keys(instances)) {
-      if (otherId === dragId) continue;
-      const q = currentPositions[otherId];
-      if (!q) continue;
-
-      const dist = Math.hypot(p.x - q.x, p.y - q.y);
-      if (dist < hitRadius && dist < bestDist) {
-        bestDist = dist;
-        best = otherId;
+        setInstances(newInstances)
+        setPositions(newPositions)
+      } catch (err) {
+        console.error('Failed to load board:', err)
+        setLoadError(err.message)
+      } finally {
+        setLoadingBoard(false)
       }
     }
 
-    return best;
-  };
+    loadBoard()
+  }, [boardId])
 
-  const combineAndReplace = (aInstanceId, bInstanceId, spawnPos) => {
-    const aInstance = instances[aInstanceId];
-    const bInstance = instances[bInstanceId];
-    if (!aInstance || !bInstance) return false;
+  // ─── Resize hit radius ───────────────────────────────
+  useEffect(() => {
+    const handleResize = () => setHitRadius(getHitRadius())
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
-    const resultConceptId = combine(aInstance.conceptId, bInstance.conceptId);
-    if (!resultConceptId) return false;
+  // ─── Helper: get concept info ────────────────────────
+  // Try local CONCEPTS first (for emoji/name), fallback to instance data
+  const getConceptInfo = useCallback(
+    (conceptId, instance) => {
+      const local = CONCEPTS[conceptId]
+      if (local) return local
 
-    play(combineAudioRef);
+      // Concept came from API but isn't in local CONCEPTS object
+      // (e.g., AI-generated concepts in the future)
+      if (instance) {
+        return {
+          id: conceptId,
+          name: instance.name || conceptId,
+          emoji: instance.emoji || '❓',
+        }
+      }
 
-    const resultInstanceId = generateInstanceId();
+      return { id: conceptId, name: conceptId, emoji: '❓' }
+    },
+    [],
+  )
 
-    // Add to discovered concepts
-    setDiscoveredConcepts((prev) => new Set([...prev, resultConceptId]));
+  // ─── Hit detection ───────────────────────────────────
+  const getHitTarget = useCallback(
+    (dragId, currentPositions) => {
+      const p = currentPositions[dragId]
+      if (!p) return null
 
-    setInstances((prev) => {
-      const next = { ...prev };
-      delete next[aInstanceId];
-      delete next[bInstanceId];
-      next[resultInstanceId] = {
-        instanceId: resultInstanceId,
-        conceptId: resultConceptId,
-        isNewlyCombined: true,
-      };
-      return next;
-    });
+      let best = null
+      let bestDist = Infinity
 
-    setPositions((prev) => {
-      const next = { ...prev };
-      delete next[aInstanceId];
-      delete next[bInstanceId];
-      next[resultInstanceId] = { x: spawnPos.x, y: spawnPos.y };
-      return next;
-    });
+      for (const otherId of Object.keys(instances)) {
+        if (otherId === dragId) continue
+        const q = currentPositions[otherId]
+        if (!q) continue
 
-    return true;
-  };
+        const dist = Math.hypot(p.x - q.x, p.y - q.y)
+        if (dist < hitRadius && dist < bestDist) {
+          bestDist = dist
+          best = otherId
+        }
+      }
 
+      return best
+    },
+    [instances, hitRadius],
+  )
+
+  // ─── Combine via API ─────────────────────────────────
+  const combineAndReplace = useCallback(
+    async (aInstanceId, bInstanceId, spawnPos) => {
+      const aInstance = instances[aInstanceId]
+      const bInstance = instances[bInstanceId]
+      if (!aInstance || !bInstance) return false
+
+      try {
+        const result = await boardsApi.combine(boardId, {
+          conceptAId: aInstance.conceptId,
+          conceptBId: bInstance.conceptId,
+          instanceAId: aInstanceId,
+          instanceBId: bInstanceId,
+        })
+
+        if (!result.success) return false
+
+        play(combineAudioRef)
+
+        const newInstanceId = result.newInstance.id
+        const resultConcept = result.concept
+
+        // Update discovered concepts
+        if (result.isNewDiscovery) {
+          setDiscoveredConcepts((prev) => new Set([...prev, resultConcept.id]))
+        }
+
+        // Show notification for improved complexity
+        if (result.complexityImproved) {
+          displayNotification(`⬆️ ${resultConcept.name} complexity improved!`, spawnPos)
+          setTimeout(() => clearNotification(), 2500)
+        }
+
+        // Remove old instances, add new one
+        setInstances((prev) => {
+          const next = { ...prev }
+          delete next[aInstanceId]
+          delete next[bInstanceId]
+          next[newInstanceId] = {
+            instanceId: newInstanceId,
+            conceptId: resultConcept.id,
+            name: resultConcept.name,
+            emoji: resultConcept.emoji,
+            isNewlyCombined: true,
+          }
+          return next
+        })
+
+        setPositions((prev) => {
+          const next = { ...prev }
+          delete next[aInstanceId]
+          delete next[bInstanceId]
+          next[newInstanceId] = {
+            x: result.newInstance.position_x ?? spawnPos.x,
+            y: result.newInstance.position_y ?? spawnPos.y,
+          }
+          return next
+        })
+
+        return true
+      } catch (err) {
+        console.error('Combine API error:', err)
+        // "No recipe found" comes as 404
+        return false
+      }
+    },
+    [instances, boardId],
+  )
+
+  // ─── Pointer down on bubble ──────────────────────────
   const onPointerDownBubble = (instanceId) => (e) => {
     if (isCombining) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
+      e.preventDefault()
+      e.stopPropagation()
+      return
     }
 
-    e.preventDefault();
-    e.stopPropagation();
-    play(pressBubbleAudioRef);
+    e.preventDefault()
+    e.stopPropagation()
+    play(pressBubbleAudioRef)
 
-    const p = positions[instanceId];
-    if (!p) return;
+    const p = positions[instanceId]
+    if (!p) return
 
-    setDraggingId(instanceId);
-    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }));
+    setDraggingId(instanceId)
+    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }))
 
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    e.currentTarget.setPointerCapture?.(e.pointerId)
 
-    // Calculate offset from the element's top-left position
     draggingRef.current = {
       id: instanceId,
       offsetX: e.clientX - p.x,
       offsetY: e.clientY - p.y,
-    };
-  };
+    }
+  }
 
+  // ─── Pointer move + up (drag & combine) ──────────────
   useEffect(() => {
     const onMove = (e) => {
-      const d = draggingRef.current;
-      if (!d.id) return;
+      const d = draggingRef.current
+      if (!d.id) return
 
-      const x = e.clientX - d.offsetX;
-      const y = e.clientY - d.offsetY;
+      const x = e.clientX - d.offsetX
+      const y = e.clientY - d.offsetY
 
       setPositions((prev) => {
-        const next = { ...prev, [d.id]: { x, y } };
-        const targetId = getHitTarget(d.id, next);
-        setHoverTargetId(targetId);
+        const next = { ...prev, [d.id]: { x, y } }
+        const targetId = getHitTarget(d.id, next)
+        setHoverTargetId(targetId)
 
         if (targetId) {
           setZIndexes((prevZ) => ({
             ...prevZ,
             [targetId]: 100,
             [d.id]: 9999,
-          }));
+          }))
         } else {
-          // Clear target z-index when not hovering
           setZIndexes((prevZ) => {
-            const next = { ...prevZ, [d.id]: 9999 };
-            // Remove all other elevated z-indexes
-            Object.keys(prevZ).forEach(key => {
+            const updated = { ...prevZ, [d.id]: 9999 }
+            Object.keys(prevZ).forEach((key) => {
               if (key !== d.id && prevZ[key] === 100) {
-                delete next[key];
+                delete updated[key]
               }
-            });
-            return next;
-          });
+            })
+            return updated
+          })
         }
 
-        return next;
-      });
-    };
+        return next
+      })
+    }
 
     const onUp = () => {
-      const d = draggingRef.current;
-      if (!d.id) return;
+      const d = draggingRef.current
+      if (!d.id) return
 
-      const dragId = d.id;
-      draggingRef.current.id = null;
+      const dragId = d.id
+      draggingRef.current.id = null
 
-      setDraggingId(null);
-      setHoverTargetId(null);
+      setDraggingId(null)
+      setHoverTargetId(null)
 
       setPositions((prev) => {
-        const targetId = getHitTarget(dragId, prev);
+        const targetId = getHitTarget(dragId, prev)
 
         if (!targetId) {
           setZIndexes((prevZ) => {
-            const next = { ...prevZ };
-            delete next[dragId];
-            return next;
-          });
-          return prev;
+            const next = { ...prevZ }
+            delete next[dragId]
+            return next
+          })
+          return prev
         }
 
-        const dragPos = prev[dragId];
-        const targetPos = prev[targetId];
-        if (!dragPos || !targetPos) return prev;
+        const dragPos = prev[dragId]
+        const targetPos = prev[targetId]
+        if (!dragPos || !targetPos) return prev
 
-        // Calculate the CENTER point between the two bubbles
-        // dragPos and targetPos are top-left corners
-        const bubbleWidth = 150;
-        const bubbleHeight = 50;
-        
-        // Get center of each bubble
-        const dragCenterX = dragPos.x + bubbleWidth / 2;
-        const dragCenterY = dragPos.y + bubbleHeight / 2;
-        const targetCenterX = targetPos.x + bubbleWidth / 2;
-        const targetCenterY = targetPos.y + bubbleHeight / 2;
-        
-        // Calculate midpoint between centers
-        const midX = (dragCenterX + targetCenterX) / 2;
-        const midY = (dragCenterY + targetCenterY) / 2;
-        const notificationPosition = { x: midX, y: midY };
+        // Calculate center point between the two bubbles for notification
+        const bubbleWidth = 150
+        const bubbleHeight = 50
+        const dragCenterX = dragPos.x + bubbleWidth / 2
+        const dragCenterY = dragPos.y + bubbleHeight / 2
+        const targetCenterX = targetPos.x + bubbleWidth / 2
+        const targetCenterY = targetPos.y + bubbleHeight / 2
+        const midX = (dragCenterX + targetCenterX) / 2
+        const midY = (dragCenterY + targetCenterY) / 2
+        const notificationPosition = { x: midX, y: midY }
 
-        play(soundBeforeCombiningAudioRef);
-        setIsCombining(true);
+        play(soundBeforeCombiningAudioRef)
+        setIsCombining(true)
 
-        setTimeout(() => {
-          const combined = combineAndReplace(dragId, targetId, dragPos);
+        setTimeout(async () => {
+          const combined = await combineAndReplace(dragId, targetId, dragPos)
 
           if (!combined) {
-            play(failAudioRef);
-            displayNotification('No recipe found!', notificationPosition);
-            
+            play(failAudioRef)
+            displayNotification('No recipe found!', notificationPosition)
+
             setTimeout(() => {
-              clearNotification();
-            }, 2000);
+              clearNotification()
+            }, 2000)
           }
 
           setZIndexes((prevZ) => {
-            const next = { ...prevZ };
-            delete next[dragId];
-            delete next[targetId];
-            return next;
-          });
-          setIsCombining(false);
-        }, 700);
+            const next = { ...prevZ }
+            delete next[dragId]
+            delete next[targetId]
+            return next
+          })
+          setIsCombining(false)
+        }, 700)
 
-        return prev;
-      });
-    };
+        return prev
+      })
+    }
 
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
 
     return () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-  }, [instances, hitRadius, isCombining]);
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+  }, [instances, hitRadius, isCombining, getHitTarget, combineAndReplace])
 
-  // Organize discovered concepts into categories
+  // ─── Spawn instance from knowledge panel via API ─────
+  const addConceptToBoard = async (conceptId) => {
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220
+    const centerY = window.innerHeight / 2
+    const posX = centerX + (Math.random() - 0.5) * 100
+    const posY = centerY + (Math.random() - 0.5) * 100
+
+    try {
+      const result = await boardsApi.spawn(boardId, {
+        conceptId,
+        positionX: posX,
+        positionY: posY,
+      })
+
+      const inst = result.instance
+
+      setInstances((prev) => ({
+        ...prev,
+        [inst.id]: {
+          instanceId: inst.id,
+          conceptId: inst.concept_id,
+          name: inst.name,
+          emoji: inst.emoji,
+          isNewlyCombined: false,
+        },
+      }))
+
+      setPositions((prev) => ({
+        ...prev,
+        [inst.id]: {
+          x: inst.position_x,
+          y: inst.position_y,
+        },
+      }))
+    } catch (err) {
+      console.error('Failed to spawn instance:', err)
+      displayNotification(err.message || 'Failed to spawn concept', {
+        x: posX,
+        y: posY,
+      })
+      setTimeout(() => clearNotification(), 2000)
+    }
+  }
+
+  // ─── Organize discoveries for knowledge panel ────────
   const organizeByCategory = () => {
     const categories = {
       UNCATEGORIZED: [],
-    };
+    }
 
     discoveredConcepts.forEach((conceptId) => {
-      const concept = CONCEPTS[conceptId];
-      if (!concept) return;
+      // Try local CONCEPTS first, fallback to board discovery data
+      const concept = CONCEPTS[conceptId]
+      const discoveryData = boardData?.discoveries?.find(
+        (d) => d.concept_id === conceptId,
+      )
+
+      const name = concept?.name || discoveryData?.name || conceptId
+      const emoji = concept?.emoji || discoveryData?.emoji || '❓'
 
       // Apply search filter
-      if (searchFilter && !concept.name.toLowerCase().includes(searchFilter.toLowerCase())) {
-        return;
+      if (searchFilter && !name.toLowerCase().includes(searchFilter.toLowerCase())) {
+        return
       }
 
-      const category = concept.category || 'UNCATEGORIZED';
+      const category = concept?.category || 'UNCATEGORIZED'
       if (!categories[category]) {
-        categories[category] = [];
+        categories[category] = []
       }
       categories[category].push({
-        name: concept.name,
-        emoji: concept.emoji,
+        name,
+        emoji,
         conceptId,
-      });
-    });
+      })
+    })
 
-    return categories;
-  };
+    return categories
+  }
 
-  // Function to add a concept to the board from knowledge panel
-  const addConceptToBoard = (conceptId) => {
-    const instanceId = generateInstanceId();
-    
-    // Position near center of board area
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220;
-    const centerY = window.innerHeight / 2;
-    
-    // Add some randomness so they don't all stack
-    const randomOffset = () => (Math.random() - 0.5) * 100;
-    
-    setInstances((prev) => ({
-      ...prev,
-      [instanceId]: {
-        instanceId,
-        conceptId,
-        isNewlyCombined: false,
-      },
-    }));
-    
-    setPositions((prev) => ({
-      ...prev,
-      [instanceId]: {
-        x: centerX + randomOffset(),
-        y: centerY + randomOffset(),
-      },
-    }));
-  };
+  const categories = organizeByCategory()
 
-  const categories = organizeByCategory();
+  // ─── Loading / error states ──────────────────────────
+  if (loadingBoard) {
+    return (
+      <div className='board-container'>
+        <div className='board-main'>
+          <div className='board-loading'>
+            <p>Loading board...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
+  if (loadError) {
+    return (
+      <div className='board-container'>
+        <div className='board-main'>
+          <div className='board-loading'>
+            <p>⚠️ {loadError}</p>
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                marginTop: '16px',
+                padding: '10px 20px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '8px',
+                color: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Render ──────────────────────────────────────────
   return (
-    <div className="board-container">
+    <div className='board-container'>
       {/* Notification */}
       <Notification
         message={notification.message}
@@ -382,48 +525,47 @@ const Board = () => {
         position={notification.position}
       />
 
-      {/* Sidebar */}
-      <div className="board-sidebar">
-        <div className="sidebar-header">
-          <span className="sidebar-icon">📚</span>
-          <span className="sidebar-title">MY COLLECTION</span>
+      {/* Left Sidebar */}
+      <div className='board-sidebar'>
+        <div className='sidebar-header'>
+          <span className='sidebar-icon'>📚</span>
+          <span className='sidebar-title'>MY COLLECTION</span>
         </div>
-        
-        <div className="collection-item active">
-          <span className="collection-emoji">🧪</span>
-          <span className="collection-name">States of Matter</span>
-          <span className="collection-indicator">🟢</span>
+
+        <div className='collection-item active'>
+          <span className='collection-emoji'>🧪</span>
+          <span className='collection-name'>States of Matter</span>
+          <span className='collection-indicator'>🟢</span>
         </div>
       </div>
 
       {/* Main board area */}
-      <div className="board-main">
+      <div className='board-main'>
         {/* Top toolbar */}
-        <div className="board-toolbar">
-          <button className="toolbar-btn" title="Undo">
+        <div className='board-toolbar'>
+          <button className='toolbar-btn' title='Undo'>
             <span>↶</span>
           </button>
-          <button className="toolbar-btn" title="Collections">
+          <button className='toolbar-btn' title='Collections'>
             <span>📊</span>
           </button>
-          <button className="toolbar-btn" title="Home">
-            <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+          <button className='toolbar-btn' title='Home'>
+            <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
               <span>🏠</span>
             </Link>
           </button>
-          <button className="toolbar-btn" title="Settings">
+          <button className='toolbar-btn' title='Settings'>
             <span>⚙️</span>
           </button>
         </div>
 
-        {/* Concepts on board */}
-        <div className="board-canvas">
+        {/* Board canvas with draggable concepts */}
+        <div className='board-canvas'>
           {Object.values(instances).map((instance) => {
-            const position = positions[instance.instanceId];
-            if (!position) return null;
+            const position = positions[instance.instanceId]
+            if (!position) return null
 
-            const concept = CONCEPTS[instance.conceptId];
-            if (!concept) return null;
+            const concept = getConceptInfo(instance.conceptId, instance)
 
             return (
               <div
@@ -435,77 +577,80 @@ const Board = () => {
                   left: `${position.x}px`,
                   top: `${position.y}px`,
                   zIndex: zIndexes[instance.instanceId] || 5,
-                  cursor: draggingId === instance.instanceId ? 'grabbing' : 'grab',
+                  cursor:
+                    draggingId === instance.instanceId ? 'grabbing' : 'grab',
                 }}
                 onPointerDown={onPointerDownBubble(instance.instanceId)}
               >
-                <span className="board-concept-emoji">{concept.emoji}</span>
-                <span className="board-concept-name">{concept.name}</span>
+                <span className='board-concept-emoji'>{concept.emoji}</span>
+                <span className='board-concept-name'>{concept.name}</span>
               </div>
-            );
+            )
           })}
 
-          {/* Warning message */}
-          <div className="board-warning">
-            <p>CONCEPTS IS STILL UNDER HEAVY</p>
-            <p>DEVELOPMENT. DISCOVERED CONCEPTS</p>
-            <p>WILL BE LOST</p>
+          {/* Board name + info */}
+          <div className='board-warning'>
+            <p>{boardData?.name || 'Board'}</p>
+            <p>{discoveredConcepts.size} discoveries</p>
           </div>
         </div>
       </div>
 
-      {/* Knowledge sidebar */}
-      <div className="knowledge-sidebar">
-        <div className="knowledge-header">
-          <h2 className="knowledge-title">Knowledge</h2>
-          <p className="knowledge-count">{discoveredConcepts.size} concepts</p>
+      {/* Right sidebar - Knowledge */}
+      <div className='knowledge-sidebar'>
+        <div className='knowledge-header'>
+          <h2 className='knowledge-title'>Knowledge</h2>
+          <p className='knowledge-count'>{discoveredConcepts.size} concepts</p>
         </div>
 
-        <div className="knowledge-search">
+        <div className='knowledge-search'>
           <input
-            type="text"
-            placeholder="Search everything... (Control + F)"
-            className="knowledge-search-input"
+            type='text'
+            placeholder='Search everything... (Control + F)'
+            className='knowledge-search-input'
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
           />
-          <button 
-            className="knowledge-filter-btn"
+          <button
+            className='knowledge-filter-btn'
             onClick={() => setSearchFilter('')}
-            title="Clear filter"
+            title='Clear filter'
           >
             {searchFilter ? '✕' : '☰'}
           </button>
         </div>
 
-        <div className="knowledge-categories">
-          {Object.entries(categories).map(([categoryName, items]) => (
-            items.length > 0 && (
-              <div key={categoryName} className="knowledge-category">
-                <div className="category-header">
-                  <span className="category-name">{categoryName}</span>
-                  <span className="category-count">{items.length}</span>
+        <div className='knowledge-categories'>
+          {Object.entries(categories).map(
+            ([categoryName, items]) =>
+              items.length > 0 && (
+                <div key={categoryName} className='knowledge-category'>
+                  <div className='category-header'>
+                    <span className='category-name'>{categoryName}</span>
+                    <span className='category-count'>{items.length}</span>
+                  </div>
+                  <div className='category-items'>
+                    {items.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className='category-item'
+                        onClick={() => addConceptToBoard(item.conceptId)}
+                        title='Click to add to board'
+                      >
+                        <span className='category-item-emoji'>
+                          {item.emoji}
+                        </span>
+                        <span className='category-item-name'>{item.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="category-items">
-                  {items.map((item, idx) => (
-                    <div 
-                      key={idx} 
-                      className="category-item"
-                      onClick={() => addConceptToBoard(item.conceptId)}
-                      title="Click to add to board"
-                    >
-                      <span className="category-item-emoji">{item.emoji}</span>
-                      <span className="category-item-name">{item.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          ))}
+              ),
+          )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Board;
+export default Board
