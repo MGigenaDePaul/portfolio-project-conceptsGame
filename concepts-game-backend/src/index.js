@@ -8,6 +8,8 @@ import conceptsRoutes from './routes/conceptsRoutes.js'
 import recipesRoutes from './routes/recipesRoutes.js'
 import boardsRoutes from './routes/boardsRoutes.js'
 import usersRoutes from './routes/usersRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import authenticate from './middleware/auth.js';
 
 dotenv.config();
 
@@ -23,43 +25,14 @@ app.get('/', (req, res) => {
   res.json({ message: 'Concepts Game API is running! 🎮' });
 });
 
-/// Temporary test route - IMPROVED
-app.get('/test-board', async (req, res) => {
-  try {
-    // Create a test user
-    const userResult = await pool.query(
-      'INSERT INTO users (username, email, password_hash) VALUES (\$1, \$2, \$3) RETURNING *',
-      ['testuser' + Date.now(), 'test' + Date.now() + '@example.com', 'dummy_hash']
-    );
-    
-    const userId = userResult.rows[0].id;
-    
-    // Create a board directly by calling the controller
-    const mockReq = { body: { name: 'My First Board', owner_id: userId } };
-    const mockRes = {
-      status: (code) => ({
-        json: (data) => ({ code, data })
-      }),
-      json: (data) => data
-    };
-    
-    await boardsController.createBoard(mockReq, mockRes);
-    
-    res.json({ 
-      success: true, 
-      userId, 
-      message: 'Test board created!' 
-    });
-  } catch (error) {
-    console.error('Test route error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
+// Public routes (no token needed)
+app.use('/api/auth', authRoutes);
 app.use('/api/concepts', conceptsRoutes);
+
+// Protected routes (token required)
+app.use('/api/boards', boardsRoutes, authenticate, boardsRoutes);
+app.use('/api/users', authenticate, usersRoutes);
 app.use('/api/recipes', recipesRoutes);
-app.use('/api/boards', boardsRoutes);
-app.use('/api/users', usersRoutes);
 
 
 // Initialize database
