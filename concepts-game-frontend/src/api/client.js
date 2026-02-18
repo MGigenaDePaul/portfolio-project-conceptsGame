@@ -1,18 +1,23 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+const TOKEN_KEY = 'concepts_token';
+
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
+
+  // Grab token and attach it automatically
+  const token = localStorage.getItem(TOKEN_KEY);
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
     ...options
   };
 
   const response = await fetch(url, config);
-
-  // Parse body (might be error or success)
   const body = await response.json().catch(() => null);
 
   if (!response.ok) {
