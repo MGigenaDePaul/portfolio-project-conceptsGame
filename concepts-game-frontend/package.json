@@ -13,8 +13,6 @@
     "lint:fix": "eslint src/**/*.{js,jsx} --fix"
   },
   "dependencies": {
-    "dotenv": "^17.2.4",
-    "pg": "^8.18.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
