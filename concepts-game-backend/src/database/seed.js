@@ -1,6 +1,6 @@
 import pool from './db.js';
-import { CONCEPTS } from '../../../concepts-game-frontend/src/game/concepts.js';
-import { RECIPES } from '../../../concepts-game-frontend/src/game/recipes.js';
+import { CONCEPTS } from './concepts.js';
+import { RECIPES } from './recipes.js';
 
 // Helper to create a concept if it doesn't exist
 const ensureConceptExists = async (conceptId) => {
@@ -30,12 +30,12 @@ export const seedConcepts = async () => {
   try {
     console.log('🌱 Seeding concepts...');
     
-    for (const concept of Object.entries(CONCEPTS)) {
+    for (const [id, concept] of Object.entries(CONCEPTS)) {
       await pool.query(
         `INSERT INTO concepts (id, name, emoji) 
          VALUES ($1, $2, $3) 
          ON CONFLICT (id) DO NOTHING`,
-        [concept.id, concept.name, concept.emoji]
+        [id, concept.name, concept.emoji]
       );
     }
     
