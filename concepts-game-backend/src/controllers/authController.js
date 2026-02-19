@@ -1,4 +1,4 @@
-import pool from '../databaes/db.js'
+import pool from '../database/db.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'
@@ -29,7 +29,7 @@ export const register = async (req, res) => {
         const result = await pool.query(
             `INSERT INTO users (username, email, password_hash)
             VALUES ($1, $2, $3)
-            RETURNIN id, username, email, created_at`,
+            RETURNING id, username, email, created_at`,
             [username, email, password_hash]
         );
         const user = result.rows[0];

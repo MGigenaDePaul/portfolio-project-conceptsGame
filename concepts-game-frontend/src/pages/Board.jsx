@@ -1,110 +1,110 @@
 // src/pages/Board.jsx
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { CONCEPTS } from '../game/concepts'
-import { boardsApi } from '../api/boards'
-import Notification from '../components/Notification'
-import '../components/ConceptBubble.css'
-import './Board.css'
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { CONCEPTS } from '../game/concepts';
+import { boardsApi } from '../api/boards';
+import Notification from '../components/Notification';
+import '../components/ConceptBubble.css';
+import './Board.css';
 
 const getHitRadius = () => {
-  const width = window.innerWidth
-  if (width < 480) return 60
-  if (width < 768) return 75
-  return 100
-}
+  const width = window.innerWidth;
+  if (width < 480) return 60;
+  if (width < 768) return 75;
+  return 100;
+};
 
 const Board = () => {
-  const { boardId } = useParams()
-  const navigate = useNavigate()
+  const { boardId } = useParams();
+  const navigate = useNavigate();
 
   // Board data from API
-  const [boardData, setBoardData] = useState(null)
-  const [loadingBoard, setLoadingBoard] = useState(true)
-  const [loadError, setLoadError] = useState(null)
+  const [boardData, setBoardData] = useState(null);
+  const [loadingBoard, setLoadingBoard] = useState(true);
+  const [loadError, setLoadError] = useState(null);
 
   // Game state
-  const [instances, setInstances] = useState({})
-  const [positions, setPositions] = useState({})
-  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set())
-  const [hoverTargetId, setHoverTargetId] = useState(null)
-  const [draggingId, setDraggingId] = useState(null)
-  const [zIndexes, setZIndexes] = useState({})
-  const [hitRadius, setHitRadius] = useState(getHitRadius())
-  const [isCombining, setIsCombining] = useState(false)
-  const [searchFilter, setSearchFilter] = useState('')
+  const [instances, setInstances] = useState({});
+  const [positions, setPositions] = useState({});
+  const [discoveredConcepts, setDiscoveredConcepts] = useState(new Set());
+  const [hoverTargetId, setHoverTargetId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [zIndexes, setZIndexes] = useState({});
+  const [hitRadius, setHitRadius] = useState(getHitRadius());
+  const [isCombining, setIsCombining] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
   const [notification, setNotification] = useState({
     isVisible: false,
     message: '',
     position: { x: 0, y: 0 },
-  })
+  });
 
-  const combineAudioRef = useRef(null)
-  const failAudioRef = useRef(null)
-  const pressBubbleAudioRef = useRef(null)
-  const soundBeforeCombiningAudioRef = useRef(null)
-  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
+  const combineAudioRef = useRef(null);
+  const failAudioRef = useRef(null);
+  const pressBubbleAudioRef = useRef(null);
+  const soundBeforeCombiningAudioRef = useRef(null);
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
 
   // ─── Initialize audio ────────────────────────────────
   useEffect(() => {
-    const combineAudio = new Audio('/sounds/success.mp3')
-    combineAudio.volume = 0.6
-    combineAudio.preload = 'auto'
+    const combineAudio = new Audio('/sounds/success.mp3');
+    combineAudio.volume = 0.6;
+    combineAudio.preload = 'auto';
 
-    const failAudio = new Audio('/sounds/fail.mp3')
-    failAudio.volume = 0.4
-    failAudio.preload = 'auto'
+    const failAudio = new Audio('/sounds/fail.mp3');
+    failAudio.volume = 0.4;
+    failAudio.preload = 'auto';
 
-    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3')
-    pressBubbleAudio.volume = 0.5
-    pressBubbleAudio.preload = 'auto'
+    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3');
+    pressBubbleAudio.volume = 0.5;
+    pressBubbleAudio.preload = 'auto';
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3')
-    soundBeforeCombiningAudio.volume = 0.4
-    soundBeforeCombiningAudio.preload = 'auto'
+    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3');
+    soundBeforeCombiningAudio.volume = 0.4;
+    soundBeforeCombiningAudio.preload = 'auto';
 
-    combineAudioRef.current = combineAudio
-    failAudioRef.current = failAudio
-    pressBubbleAudioRef.current = pressBubbleAudio
-    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio
-  }, [])
+    combineAudioRef.current = combineAudio;
+    failAudioRef.current = failAudio;
+    pressBubbleAudioRef.current = pressBubbleAudio;
+    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio;
+  }, []);
 
   const play = (ref) => {
-    const a = ref.current
-    if (!a) return
-    a.currentTime = 0
-    a.play().catch(() => {})
-  }
+    const a = ref.current;
+    if (!a) return;
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  };
 
   const displayNotification = (message, position) => {
-    setNotification({ isVisible: true, message, position })
-  }
+    setNotification({ isVisible: true, message, position });
+  };
 
   const clearNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } })
-  }
+    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
+  };
 
   // ─── Load board from API ─────────────────────────────
   useEffect(() => {
-    if (!boardId) return
+    if (!boardId) return;
 
     const loadBoard = async () => {
-      setLoadingBoard(true)
-      setLoadError(null)
+      setLoadingBoard(true);
+      setLoadError(null);
 
       try {
-        const data = await boardsApi.get(boardId)
-        setBoardData(data)
+        const data = await boardsApi.get(boardId);
+        setBoardData(data);
 
         // Build discovered concepts set from API discoveries
         const discovered = new Set(
           data.discoveries.map((d) => d.concept_id)
-        )
-        setDiscoveredConcepts(discovered)
+        );
+        setDiscoveredConcepts(discovered);
 
         // Build instances and positions from API data
-        const newInstances = {}
-        const newPositions = {}
+        const newInstances = {};
+        const newPositions = {};
 
         data.instances.forEach((inst) => {
           newInstances[inst.id] = {
@@ -114,39 +114,39 @@ const Board = () => {
             name: inst.name,
             emoji: inst.emoji,
             isNewlyCombined: false,
-          }
+          };
           newPositions[inst.id] = {
             x: inst.position_x ?? 200 + Math.random() * 400,
             y: inst.position_y ?? 200 + Math.random() * 300,
-          }
-        })
+          };
+        });
 
-        setInstances(newInstances)
-        setPositions(newPositions)
+        setInstances(newInstances);
+        setPositions(newPositions);
       } catch (err) {
-        console.error('Failed to load board:', err)
-        setLoadError(err.message)
+        console.error('Failed to load board:', err);
+        setLoadError(err.message);
       } finally {
-        setLoadingBoard(false)
+        setLoadingBoard(false);
       }
-    }
+    };
 
-    loadBoard()
-  }, [boardId])
+    loadBoard();
+  }, [boardId]);
 
   // ─── Resize hit radius ───────────────────────────────
   useEffect(() => {
-    const handleResize = () => setHitRadius(getHitRadius())
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    const handleResize = () => setHitRadius(getHitRadius());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // ─── Helper: get concept info ────────────────────────
   // Try local CONCEPTS first (for emoji/name), fallback to instance data
   const getConceptInfo = useCallback(
     (conceptId, instance) => {
-      const local = CONCEPTS[conceptId]
-      if (local) return local
+      const local = CONCEPTS[conceptId];
+      if (local) return local;
 
       // Concept came from API but isn't in local CONCEPTS object
       // (e.g., AI-generated concepts in the future)
@@ -155,46 +155,46 @@ const Board = () => {
           id: conceptId,
           name: instance.name || conceptId,
           emoji: instance.emoji || '❓',
-        }
+        };
       }
 
-      return { id: conceptId, name: conceptId, emoji: '❓' }
+      return { id: conceptId, name: conceptId, emoji: '❓' };
     },
     [],
-  )
+  );
 
   // ─── Hit detection ───────────────────────────────────
   const getHitTarget = useCallback(
     (dragId, currentPositions) => {
-      const p = currentPositions[dragId]
-      if (!p) return null
+      const p = currentPositions[dragId];
+      if (!p) return null;
 
-      let best = null
-      let bestDist = Infinity
+      let best = null;
+      let bestDist = Infinity;
 
       for (const otherId of Object.keys(instances)) {
-        if (otherId === dragId) continue
-        const q = currentPositions[otherId]
-        if (!q) continue
+        if (otherId === dragId) continue;
+        const q = currentPositions[otherId];
+        if (!q) continue;
 
-        const dist = Math.hypot(p.x - q.x, p.y - q.y)
+        const dist = Math.hypot(p.x - q.x, p.y - q.y);
         if (dist < hitRadius && dist < bestDist) {
-          bestDist = dist
-          best = otherId
+          bestDist = dist;
+          best = otherId;
         }
       }
 
-      return best
+      return best;
     },
     [instances, hitRadius],
-  )
+  );
 
   // ─── Combine via API ─────────────────────────────────
   const combineAndReplace = useCallback(
     async (aInstanceId, bInstanceId, spawnPos) => {
-      const aInstance = instances[aInstanceId]
-      const bInstance = instances[bInstanceId]
-      if (!aInstance || !bInstance) return false
+      const aInstance = instances[aInstanceId];
+      const bInstance = instances[bInstanceId];
+      if (!aInstance || !bInstance) return false;
 
       try {
         const result = await boardsApi.combine(boardId, {
@@ -202,214 +202,214 @@ const Board = () => {
           conceptBId: bInstance.conceptId,
           instanceAId: aInstanceId,
           instanceBId: bInstanceId,
-        })
+        });
 
-        if (!result.success) return false
+        if (!result.success) return false;
 
-        play(combineAudioRef)
+        play(combineAudioRef);
 
-        const newInstanceId = result.newInstance.id
-        const resultConcept = result.concept
+        const newInstanceId = result.newInstance.id;
+        const resultConcept = result.concept;
 
         // Update discovered concepts
         if (result.isNewDiscovery) {
-          setDiscoveredConcepts((prev) => new Set([...prev, resultConcept.id]))
+          setDiscoveredConcepts((prev) => new Set([...prev, resultConcept.id]));
         }
 
         // Show notification for improved complexity
         if (result.complexityImproved) {
-          displayNotification(`⬆️ ${resultConcept.name} complexity improved!`, spawnPos)
-          setTimeout(() => clearNotification(), 2500)
+          displayNotification(`⬆️ ${resultConcept.name} complexity improved!`, spawnPos);
+          setTimeout(() => clearNotification(), 2500);
         }
 
         // Remove old instances, add new one
         setInstances((prev) => {
-          const next = { ...prev }
-          delete next[aInstanceId]
-          delete next[bInstanceId]
+          const next = { ...prev };
+          delete next[aInstanceId];
+          delete next[bInstanceId];
           next[newInstanceId] = {
             instanceId: newInstanceId,
             conceptId: resultConcept.id,
             name: resultConcept.name,
             emoji: resultConcept.emoji,
             isNewlyCombined: true,
-          }
-          return next
-        })
+          };
+          return next;
+        });
 
         setPositions((prev) => {
-          const next = { ...prev }
-          delete next[aInstanceId]
-          delete next[bInstanceId]
+          const next = { ...prev };
+          delete next[aInstanceId];
+          delete next[bInstanceId];
           next[newInstanceId] = {
             x: result.newInstance.position_x ?? spawnPos.x,
             y: result.newInstance.position_y ?? spawnPos.y,
-          }
-          return next
-        })
+          };
+          return next;
+        });
 
-        return true
+        return true;
       } catch (err) {
-        console.error('Combine API error:', err)
+        console.error('Combine API error:', err);
         // "No recipe found" comes as 404
-        return false
+        return false;
       }
     },
     [instances, boardId],
-  )
+  );
 
   // ─── Pointer down on bubble ──────────────────────────
   const onPointerDownBubble = (instanceId) => (e) => {
     if (isCombining) {
-      e.preventDefault()
-      e.stopPropagation()
-      return
+      e.preventDefault();
+      e.stopPropagation();
+      return;
     }
 
-    e.preventDefault()
-    e.stopPropagation()
-    play(pressBubbleAudioRef)
+    e.preventDefault();
+    e.stopPropagation();
+    play(pressBubbleAudioRef);
 
-    const p = positions[instanceId]
-    if (!p) return
+    const p = positions[instanceId];
+    if (!p) return;
 
-    setDraggingId(instanceId)
-    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }))
+    setDraggingId(instanceId);
+    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }));
 
-    e.currentTarget.setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId);
 
     draggingRef.current = {
       id: instanceId,
       offsetX: e.clientX - p.x,
       offsetY: e.clientY - p.y,
-    }
-  }
+    };
+  };
 
   // ─── Pointer move + up (drag & combine) ──────────────
   useEffect(() => {
     const onMove = (e) => {
-      const d = draggingRef.current
-      if (!d.id) return
+      const d = draggingRef.current;
+      if (!d.id) return;
 
-      const x = e.clientX - d.offsetX
-      const y = e.clientY - d.offsetY
+      const x = e.clientX - d.offsetX;
+      const y = e.clientY - d.offsetY;
 
       setPositions((prev) => {
-        const next = { ...prev, [d.id]: { x, y } }
-        const targetId = getHitTarget(d.id, next)
-        setHoverTargetId(targetId)
+        const next = { ...prev, [d.id]: { x, y } };
+        const targetId = getHitTarget(d.id, next);
+        setHoverTargetId(targetId);
 
         if (targetId) {
           setZIndexes((prevZ) => ({
             ...prevZ,
             [targetId]: 100,
             [d.id]: 9999,
-          }))
+          }));
         } else {
           setZIndexes((prevZ) => {
-            const updated = { ...prevZ, [d.id]: 9999 }
+            const updated = { ...prevZ, [d.id]: 9999 };
             Object.keys(prevZ).forEach((key) => {
               if (key !== d.id && prevZ[key] === 100) {
-                delete updated[key]
+                delete updated[key];
               }
-            })
-            return updated
-          })
+            });
+            return updated;
+          });
         }
 
-        return next
-      })
-    }
+        return next;
+      });
+    };
 
     const onUp = () => {
-      const d = draggingRef.current
-      if (!d.id) return
+      const d = draggingRef.current;
+      if (!d.id) return;
 
-      const dragId = d.id
-      draggingRef.current.id = null
+      const dragId = d.id;
+      draggingRef.current.id = null;
 
-      setDraggingId(null)
-      setHoverTargetId(null)
+      setDraggingId(null);
+      setHoverTargetId(null);
 
       setPositions((prev) => {
-        const targetId = getHitTarget(dragId, prev)
+        const targetId = getHitTarget(dragId, prev);
 
         if (!targetId) {
           setZIndexes((prevZ) => {
-            const next = { ...prevZ }
-            delete next[dragId]
-            return next
-          })
-          return prev
+            const next = { ...prevZ };
+            delete next[dragId];
+            return next;
+          });
+          return prev;
         }
 
-        const dragPos = prev[dragId]
-        const targetPos = prev[targetId]
-        if (!dragPos || !targetPos) return prev
+        const dragPos = prev[dragId];
+        const targetPos = prev[targetId];
+        if (!dragPos || !targetPos) return prev;
 
         // Calculate center point between the two bubbles for notification
-        const bubbleWidth = 150
-        const bubbleHeight = 50
-        const dragCenterX = dragPos.x + bubbleWidth / 2
-        const dragCenterY = dragPos.y + bubbleHeight / 2
-        const targetCenterX = targetPos.x + bubbleWidth / 2
-        const targetCenterY = targetPos.y + bubbleHeight / 2
-        const midX = (dragCenterX + targetCenterX) / 2
-        const midY = (dragCenterY + targetCenterY) / 2
-        const notificationPosition = { x: midX, y: midY }
+        const bubbleWidth = 150;
+        const bubbleHeight = 50;
+        const dragCenterX = dragPos.x + bubbleWidth / 2;
+        const dragCenterY = dragPos.y + bubbleHeight / 2;
+        const targetCenterX = targetPos.x + bubbleWidth / 2;
+        const targetCenterY = targetPos.y + bubbleHeight / 2;
+        const midX = (dragCenterX + targetCenterX) / 2;
+        const midY = (dragCenterY + targetCenterY) / 2;
+        const notificationPosition = { x: midX, y: midY };
 
-        play(soundBeforeCombiningAudioRef)
-        setIsCombining(true)
+        play(soundBeforeCombiningAudioRef);
+        setIsCombining(true);
 
         setTimeout(async () => {
-          const combined = await combineAndReplace(dragId, targetId, dragPos)
+          const combined = await combineAndReplace(dragId, targetId, dragPos);
 
           if (!combined) {
-            play(failAudioRef)
-            displayNotification('No recipe found!', notificationPosition)
+            play(failAudioRef);
+            displayNotification('No recipe found!', notificationPosition);
 
             setTimeout(() => {
-              clearNotification()
-            }, 2000)
+              clearNotification();
+            }, 2000);
           }
 
           setZIndexes((prevZ) => {
-            const next = { ...prevZ }
-            delete next[dragId]
-            delete next[targetId]
-            return next
-          })
-          setIsCombining(false)
-        }, 700)
+            const next = { ...prevZ };
+            delete next[dragId];
+            delete next[targetId];
+            return next;
+          });
+          setIsCombining(false);
+        }, 700);
 
-        return prev
-      })
-    }
+        return prev;
+      });
+    };
 
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
 
     return () => {
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onUp)
-    }
-  }, [instances, hitRadius, isCombining, getHitTarget, combineAndReplace])
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [instances, hitRadius, isCombining, getHitTarget, combineAndReplace]);
 
   // ─── Spawn instance from knowledge panel via API ─────
   const addConceptToBoard = async (conceptId) => {
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220
-    const centerY = window.innerHeight / 2
-    const posX = centerX + (Math.random() - 0.5) * 100
-    const posY = centerY + (Math.random() - 0.5) * 100
+    const centerX = (window.innerWidth - 220 - 320) / 2 + 220;
+    const centerY = window.innerHeight / 2;
+    const posX = centerX + (Math.random() - 0.5) * 100;
+    const posY = centerY + (Math.random() - 0.5) * 100;
 
     try {
       const result = await boardsApi.spawn(boardId, {
         conceptId,
         positionX: posX,
         positionY: posY,
-      })
+      });
 
-      const inst = result.instance
+      const inst = result.instance;
 
       setInstances((prev) => ({
         ...prev,
@@ -420,7 +420,7 @@ const Board = () => {
           emoji: inst.emoji,
           isNewlyCombined: false,
         },
-      }))
+      }));
 
       setPositions((prev) => ({
         ...prev,
@@ -428,53 +428,53 @@ const Board = () => {
           x: inst.position_x,
           y: inst.position_y,
         },
-      }))
+      }));
     } catch (err) {
-      console.error('Failed to spawn instance:', err)
+      console.error('Failed to spawn instance:', err);
       displayNotification(err.message || 'Failed to spawn concept', {
         x: posX,
         y: posY,
-      })
-      setTimeout(() => clearNotification(), 2000)
+      });
+      setTimeout(() => clearNotification(), 2000);
     }
-  }
+  };
 
   // ─── Organize discoveries for knowledge panel ────────
   const organizeByCategory = () => {
     const categories = {
       UNCATEGORIZED: [],
-    }
+    };
 
     discoveredConcepts.forEach((conceptId) => {
       // Try local CONCEPTS first, fallback to board discovery data
-      const concept = CONCEPTS[conceptId]
+      const concept = CONCEPTS[conceptId];
       const discoveryData = boardData?.discoveries?.find(
         (d) => d.concept_id === conceptId,
-      )
+      );
 
-      const name = concept?.name || discoveryData?.name || conceptId
-      const emoji = concept?.emoji || discoveryData?.emoji || '❓'
+      const name = concept?.name || discoveryData?.name || conceptId;
+      const emoji = concept?.emoji || discoveryData?.emoji || '❓';
 
       // Apply search filter
       if (searchFilter && !name.toLowerCase().includes(searchFilter.toLowerCase())) {
-        return
+        return;
       }
 
-      const category = concept?.category || 'UNCATEGORIZED'
+      const category = concept?.category || 'UNCATEGORIZED';
       if (!categories[category]) {
-        categories[category] = []
+        categories[category] = [];
       }
       categories[category].push({
         name,
         emoji,
         conceptId,
-      })
-    })
+      });
+    });
 
-    return categories
-  }
+    return categories;
+  };
 
-  const categories = organizeByCategory()
+  const categories = organizeByCategory();
 
   // ─── Loading / error states ──────────────────────────
   if (loadingBoard) {
@@ -486,7 +486,7 @@ const Board = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (loadError) {
@@ -512,7 +512,7 @@ const Board = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // ─── Render ──────────────────────────────────────────
@@ -562,10 +562,10 @@ const Board = () => {
         {/* Board canvas with draggable concepts */}
         <div className='board-canvas'>
           {Object.values(instances).map((instance) => {
-            const position = positions[instance.instanceId]
-            if (!position) return null
+            const position = positions[instance.instanceId];
+            if (!position) return null;
 
-            const concept = getConceptInfo(instance.conceptId, instance)
+            const concept = getConceptInfo(instance.conceptId, instance);
 
             return (
               <div
@@ -585,7 +585,7 @@ const Board = () => {
                 <span className='board-concept-emoji'>{concept.emoji}</span>
                 <span className='board-concept-name'>{concept.name}</span>
               </div>
-            )
+            );
           })}
 
           {/* Board name + info */}
@@ -650,7 +650,7 @@ const Board = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Board
+export default Board;

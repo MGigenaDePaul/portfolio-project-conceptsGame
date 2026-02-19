@@ -1,8 +1,8 @@
 // src/pages/HomeScreen.jsx
-import ConceptBubble from '../components/ConceptBubble'
-import MyBoards from '../components/MyBoards'
-import { CONCEPTS } from '../game/concepts'
-import { useUser } from '../context/UserContext'
+import ConceptBubble from '../components/ConceptBubble';
+import MyBoards from '../components/MyBoards';
+import { CONCEPTS } from '../game/concepts';
+import { useUser } from '../context/UserContext';
 
 const HomeScreen = ({
   instances,
@@ -12,7 +12,7 @@ const HomeScreen = ({
   draggingId,
   zIndexes,
 }) => {
-  const { user, loading: userLoading } = useUser()
+  const { user, loading: userLoading } = useUser();
 
   return (
     <div className='app-container'>
@@ -43,9 +43,9 @@ const HomeScreen = ({
 
       <div className='concepts-area'>
         {Object.keys(instances).map((instanceId, index) => {
-          const instance = instances[instanceId]
-          const concept = CONCEPTS[instance.conceptId]
-          const position = positions[instanceId] || { x: 0, y: 0 }
+          const instance = instances[instanceId];
+          const concept = CONCEPTS[instance.conceptId];
+          const position = positions[instanceId] || { x: 0, y: 0 };
 
           return (
             <ConceptBubble
@@ -60,7 +60,7 @@ const HomeScreen = ({
               isSpawning={!instance.isNewlyCombined}
               isNewlyCombined={instance.isNewlyCombined}
             />
-          )
+          );
         })}
       </div>
 
@@ -71,7 +71,7 @@ const HomeScreen = ({
         </p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default HomeScreen
+export default HomeScreen;

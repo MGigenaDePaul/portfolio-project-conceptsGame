@@ -1,5 +1,4 @@
 import express from 'express';
-import pool from './database/db.js'
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createTables } from './database/schema.js';

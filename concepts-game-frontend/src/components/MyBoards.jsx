@@ -1,81 +1,93 @@
 // src/components/MyBoards.jsx
-import { useState, useEffect } from 'react'
-import ConceptsGuide from './ConceptsGuide'
-import { useNavigate } from 'react-router-dom'
-import { useUser } from '../context/UserContext'
-import { boardsApi } from '../api/boards'
-import './MyBoards.css'
+import { useState, useEffect } from 'react';
+import ConceptsGuide from './ConceptsGuide';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import { boardsApi } from '../api/boards';
+import './MyBoards.css';
 
 const MyBoards = () => {
-  const [isGuideOpen, setIsGuideOpen] = useState(false)
-  const [board, setBoard] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [creating, setCreating] = useState(false)
-  const [error, setError] = useState(null)
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [board, setBoard] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState(null);
 
-  const navigate = useNavigate()
-  const { user, quickRegister } = useUser()
+  const navigate = useNavigate();
+  const { user, register } = useUser();
 
   // If user exists, load their single board
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     const loadBoard = async () => {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
       try {
-        const boards = await boardsApi.getByUser(user.id)
+        const boards = await boardsApi.getByUser(user.id);
         if (boards.length > 0) {
-          setBoard(boards[0]) // Always use the first (only) board
+          setBoard(boards[0]); // Always use the first (only) board
         }
       } catch (err) {
-        console.error('Failed to load board:', err)
-        setError('Failed to load board')
+        console.error('Failed to load board:', err);
+        setError('Failed to load board');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadBoard()
-  }, [user])
+    loadBoard();
+  }, [user]);
 
   const handlePlay = async () => {
     // If user already has a board, go directly
     if (board) {
-      navigate(`/board/${board.id}`)
-      return
+      navigate(`/board/${board.id}`);
+      return;
     }
 
-    setCreating(true)
-    setError(null)
+    setCreating(true);
+    setError(null);
 
     try {
       // If no user yet, quick-create one
-      let currentUser = user
+      let currentUser = user;
       if (!currentUser) {
-        const name = prompt('Enter your name to start:')
-        if (!name || !name.trim()) {
-          setCreating(false)
-          return
+        // Replace the simple prompt with collecting real credentials
+        const username = prompt('Choose a username:');
+        if (!username || !username.trim()) {
+          setCreating(false);
+          return;
         }
-        currentUser = await quickRegister(name.trim())
+        const email = prompt('Enter your email:');
+        if (!email || !email.trim()) {
+          setCreating(false);
+          return;
+        }
+        const password = prompt('Choose a password:');
+        if (!password || !password.trim()) {
+          setCreating(false);
+          return;
+        }
+
+        currentUser = await register(username.trim(), email.trim(), password);
       }
 
       // Create the single board for this user
       const newBoard = await boardsApi.create(
         `${currentUser.username}'s board`,
         currentUser.id,
-      )
+      );
 
-      setBoard(newBoard)
-      navigate(`/board/${newBoard.id}`)
+      setBoard(newBoard);
+      navigate(`/board/${newBoard.id}`);
     } catch (err) {
-      console.error('Failed to create board:', err)
-      setError(err.message || 'Failed to create board')
+      console.error('Failed to create board:', err);
+      setError(err.message || 'Failed to create board');
     } finally {
-      setCreating(false)
+      setCreating(false);
     }
-  }
+  };
 
   return (
     <>
@@ -162,7 +174,7 @@ const MyBoards = () => {
         onClose={() => setIsGuideOpen(false)}
       />
     </>
-  )
-}
+  );
+};
 
-export default MyBoards
+export default MyBoards;
