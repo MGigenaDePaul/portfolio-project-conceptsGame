@@ -1,68 +1,60 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-
-import { usersApi } from '../api/users';
+import { authApi } from '../api/auth';
 
 const UserContext = createContext(null);
 
 const STORAGE_KEY = 'concepts_user';
+const TOKEN_KEY = 'concepts_token';
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore user from localStorage on mount
+  // Restore user on mount -- verify token is still valid
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        // Verify user still exists in backend
-
-        usersApi.getById(parsed.id)
-          .then((u) => {
-            setUser(u);
-            setLoading(false);
-          })
-          .catch(() => {
-            // User was deleted from backend, clear local
-            localStorage.removeItem(STORAGE_KEY);
-            setLoading(false);
-          });
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-        setLoading(false);
-      }
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      // Call /auth/me to verify token + get fresh user data
+      authApi.me()
+        .then((u) => {
+          setUser(u);
+          setLoading(false);
+        })
+        .catch(() => {
+          // Token expired or invalid -- clean up
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(STORAGE_KEY);
+          setLoading(false);
+        });
     } else {
       setLoading(false);
     }
   }, []);
 
-  const login = useCallback((userData) => {
-    setUser(userData);
+  const register = useCallback(async (username, email, password) => {
+    const { token, user: userData } = await authApi.register(username, email, password);
+    localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    setUser(userData);
+    return userData;
+  }, []);
+
+  const login = useCallback(async (email, password) => {
+    const { token, user: userData } = await authApi.login(email, password);
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    setUser(userData);
+    return userData; 
   }, []);
 
   const logout = useCallback(() => {
-    setUser(null);
+    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(STORAGE_KEY);
+    setUser(null);
   }, []);
-
-  // Quick-create a user (no real auth yet)
-  const quickRegister = useCallback(
-    async (username) => {
-      const timestamp = Date.now();
-      const email = `${username.toLowerCase().replace(/\s+/g, '_')}_${timestamp}@concepts.temp`;
-      const newUser = await usersApi.create({
-        username,
-        email,
-        passwordHash: 'temp_no_auth',
-      });
-      login(newUser);
-      return newUser;
-    }, [login]);
     
   return (
-    <UserContext.Provider value = {{ user, loading, login, logout, quickRegister }}>
+    <UserContext.Provider value = {{ user, loading, login, logout }}>
       { children }
     </UserContext.Provider>
   );
