@@ -1,8 +1,8 @@
-import './ConceptsGuide.css'
-import { Link } from 'react-router-dom'
+import './ConceptsGuide.css';
+import { Link } from 'react-router-dom';
 
 const ConceptsGuide = ({ isOpen, onClose }) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className='concepts-guide-overlay' onClick={onClose}>
@@ -476,7 +476,7 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ConceptsGuide
+export default ConceptsGuide;

@@ -1,20 +1,20 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { CONCEPTS, generateInstanceId } from '../game/concepts'
-import { combine } from '../game/combine'
-import '../components/ConceptBubble.css' 
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { CONCEPTS, generateInstanceId } from '../game/concepts';
+import { combine } from '../game/combine';
+import '../components/ConceptBubble.css'; 
 
-import './FullGuide.css'
+import './FullGuide.css';
 
 const FullGuide = () => {
-  const location = useLocation()
-  const demoContainerRef = useRef(null)
-  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 })
+  const location = useLocation();
+  const demoContainerRef = useRef(null);
+  const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
   
   // Audio refs for sound effects
-  const clickSoundRef = useRef(null)
-  const preCombineSoundRef = useRef(null)
-  const combineSoundRef = useRef(null)
+  const clickSoundRef = useRef(null);
+  const preCombineSoundRef = useRef(null);
+  const combineSoundRef = useRef(null);
 
   // Only show these common elements in the demo
   const DEMO_CONCEPT_IDS = [
@@ -30,178 +30,178 @@ const FullGuide = () => {
     'mountain',
     'atmosphere',
     'smoke',
-  ]
+  ];
 
-  const availableConceptIds = DEMO_CONCEPT_IDS
+  const availableConceptIds = DEMO_CONCEPT_IDS;
 
   const getRandomConcepts = () => {
-    const array = [...availableConceptIds]
-    const arraySorted = array.sort(() => Math.random() - 0.5)
-    const selected = arraySorted.slice(0, 2)
+    const array = [...availableConceptIds];
+    const arraySorted = array.sort(() => Math.random() - 0.5);
+    const selected = arraySorted.slice(0, 2);
 
     return selected.map((conceptId, index) => ({
       id: generateInstanceId(),
       conceptId,
       position: index === 0 ? { x: 150, y: 140 } : { x: 550, y: 140 },
-    }))
-  }
+    }));
+  };
 
-  const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts())
-  const [draggingId, setDraggingId] = useState(null)
-  const [hoverTargetId, setHoverTargetId] = useState(null)
+  const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts());
+  const [draggingId, setDraggingId] = useState(null);
+  const [hoverTargetId, setHoverTargetId] = useState(null);
 
   // Initialize audio in useEffect like in App.jsx
   useEffect(() => {
-    const clickAudio = new Audio('/sounds/pressBubble.mp3')
-    clickAudio.volume = 0.5
-    clickAudio.preload = 'auto'
+    const clickAudio = new Audio('/sounds/pressBubble.mp3');
+    clickAudio.volume = 0.5;
+    clickAudio.preload = 'auto';
 
-    const preCombineAudio = new Audio('/sounds/soundBeforeCombining.mp3')
-    preCombineAudio.volume = 0.4
-    preCombineAudio.preload = 'auto'
+    const preCombineAudio = new Audio('/sounds/soundBeforeCombining.mp3');
+    preCombineAudio.volume = 0.4;
+    preCombineAudio.preload = 'auto';
 
-    const combineAudio = new Audio('/sounds/success.mp3')
-    combineAudio.volume = 0.6
-    combineAudio.preload = 'auto'
+    const combineAudio = new Audio('/sounds/success.mp3');
+    combineAudio.volume = 0.6;
+    combineAudio.preload = 'auto';
 
-    clickSoundRef.current = clickAudio
-    preCombineSoundRef.current = preCombineAudio
-    combineSoundRef.current = combineAudio
-  }, [])
+    clickSoundRef.current = clickAudio;
+    preCombineSoundRef.current = preCombineAudio;
+    combineSoundRef.current = combineAudio;
+  }, []);
 
   const getActiveTab = () => {
-    const path = location.pathname
-    if (path === '/faq') return 'faq'
-    if (path === '/privacy') return 'privacy'
-    if (path === '/terms') return 'terms'
-    return 'guide'
-  }
+    const path = location.pathname;
+    if (path === '/faq') return 'faq';
+    if (path === '/privacy') return 'privacy';
+    if (path === '/terms') return 'terms';
+    return 'guide';
+  };
 
-  const activeTab = getActiveTab()
+  const activeTab = getActiveTab();
 
   // Play sound helper function like in App.jsx
   const play = (ref) => {
-    const a = ref.current
-    if (!a) return
-    a.currentTime = 0
-    a.play().catch(() => {})
-  }
+    const a = ref.current;
+    if (!a) return;
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  };
 
   // FIXED: onPointerDown with proper offset calculation
   const onPointerDownConcept = (conceptId) => (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
-    const concept = demoConcepts.find((c) => c.id === conceptId)
-    if (!concept) return
+    const concept = demoConcepts.find((c) => c.id === conceptId);
+    if (!concept) return;
 
-    const container = demoContainerRef.current
-    if (!container) return
+    const container = demoContainerRef.current;
+    if (!container) return;
 
-    const rect = container.getBoundingClientRect()
+    const rect = container.getBoundingClientRect();
 
     // Calculate where exactly the user clicked within the element
-    const offsetX = e.clientX - rect.left - concept.position.x
-    const offsetY = e.clientY - rect.top - concept.position.y
+    const offsetX = e.clientX - rect.left - concept.position.x;
+    const offsetY = e.clientY - rect.top - concept.position.y;
 
-    setDraggingId(conceptId)
+    setDraggingId(conceptId);
 
     // Play click sound
-    play(clickSoundRef)
+    play(clickSoundRef);
 
-    e.currentTarget.setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId);
 
     draggingRef.current = {
       id: conceptId,
       offsetX,
       offsetY,
-    }
-  }
+    };
+  };
 
   // FIXED: Mouse move with proper offset application
   useEffect(() => {
     const onMove = (e) => {
-      const d = draggingRef.current
-      if (!d.id || !demoContainerRef.current) return
+      const d = draggingRef.current;
+      if (!d.id || !demoContainerRef.current) return;
 
-      const rect = demoContainerRef.current.getBoundingClientRect()
+      const rect = demoContainerRef.current.getBoundingClientRect();
 
       // Calculate position: mouse position - container offset - click offset
-      let x = e.clientX - rect.left - d.offsetX
-      let y = e.clientY - rect.top - d.offsetY
+      let x = e.clientX - rect.left - d.offsetX;
+      let y = e.clientY - rect.top - d.offsetY;
 
       // Bounds checking
-      const elementWidth = 150
-      const elementHeight = 50
-      x = Math.max(10, Math.min(x, rect.width - elementWidth - 10))
-      y = Math.max(10, Math.min(y, rect.height - elementHeight - 10))
+      const elementWidth = 150;
+      const elementHeight = 50;
+      x = Math.max(10, Math.min(x, rect.width - elementWidth - 10));
+      y = Math.max(10, Math.min(y, rect.height - elementHeight - 10));
 
       setDemoConcepts((prev) => {
-        const updated = prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c))
+        const updated = prev.map((c) => (c.id === d.id ? { ...c, position: { x, y } } : c));
         
         // Check if dragging concept is close to any other concept
-        const draggedConcept = updated.find(c => c.id === d.id)
+        const draggedConcept = updated.find(c => c.id === d.id);
         if (draggedConcept && updated.length === 2) {
-          const otherConcept = updated.find(c => c.id !== d.id)
+          const otherConcept = updated.find(c => c.id !== d.id);
           if (otherConcept) {
-            const centerX1 = draggedConcept.position.x + 75
-            const centerY1 = draggedConcept.position.y + 25
-            const centerX2 = otherConcept.position.x + 75
-            const centerY2 = otherConcept.position.y + 25
+            const centerX1 = draggedConcept.position.x + 75;
+            const centerY1 = draggedConcept.position.y + 25;
+            const centerX2 = otherConcept.position.x + 75;
+            const centerY2 = otherConcept.position.y + 25;
             
             const distance = Math.sqrt(
               Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2)
-            )
+            );
             
             // If close enough, set as hover target
             if (distance < 120) {
-              setHoverTargetId(otherConcept.id)
+              setHoverTargetId(otherConcept.id);
             } else {
-              setHoverTargetId(null)
+              setHoverTargetId(null);
             }
           }
         }
         
-        return updated
-      })
-    }
+        return updated;
+      });
+    };
 
     const onUp = () => {
-      const d = draggingRef.current
-      if (!d.id) return
+      const d = draggingRef.current;
+      if (!d.id) return;
 
-      const dragId = d.id
-      draggingRef.current.id = null
+      const dragId = d.id;
+      draggingRef.current.id = null;
 
-      setDraggingId(null)
-      setHoverTargetId(null)
+      setDraggingId(null);
+      setHoverTargetId(null);
 
       if (demoConcepts.length === 2) {
-        const [concept1, concept2] = demoConcepts
+        const [concept1, concept2] = demoConcepts;
 
         // Calculate centers of both concepts
-        const centerX1 = concept1.position.x + 75
-        const centerY1 = concept1.position.y + 25
-        const centerX2 = concept2.position.x + 75
-        const centerY2 = concept2.position.y + 25
+        const centerX1 = concept1.position.x + 75;
+        const centerY1 = concept1.position.y + 25;
+        const centerX2 = concept2.position.x + 75;
+        const centerY2 = concept2.position.y + 25;
 
         const distance = Math.sqrt(
           Math.pow(centerX1 - centerX2, 2) + Math.pow(centerY1 - centerY2, 2),
-        )
+        );
 
         // Check if close enough to combine
         if (distance < 100) {
-          const newConceptId = combine(concept1.conceptId, concept2.conceptId)
+          const newConceptId = combine(concept1.conceptId, concept2.conceptId);
 
           if (newConceptId) {
             // Play pre-combine sound
-            play(preCombineSoundRef)
+            play(preCombineSoundRef);
 
             // SUCCESS: Valid combination found
             const midPos = {
               x: (concept1.position.x + concept2.position.x) / 2,
               y: (concept1.position.y + concept2.position.y) / 2,
-            }
+            };
 
             // Wait a bit for pre-combine sound, then combine
             setTimeout(() => {
@@ -212,34 +212,34 @@ const FullGuide = () => {
                   conceptId: newConceptId,
                   position: midPos,
                 },
-              ])
+              ]);
 
-              play(combineSoundRef)
-            }, 500) 
+              play(combineSoundRef);
+            }, 500); 
           } else {
             // FAIL: No recipe exists for this combination
             console.log(
               `No recipe for ${concept1.conceptId} + ${concept2.conceptId}`,
-            )
+            );
             // Concepts stay on screen, just not combined
           }
         }
       }
-    }
+    };
 
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
 
     return () => {
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onUp)
-    }
-  }, [demoConcepts])
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [demoConcepts]);
 
   const handleDemoReset = () => {
-    setDemoConcepts(getRandomConcepts())
-    setDraggingId(null)
-  }
+    setDemoConcepts(getRandomConcepts());
+    setDraggingId(null);
+  };
 
   return (
     <div className='full-guide-container'>
@@ -958,7 +958,7 @@ const FullGuide = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FullGuide
+export default FullGuide;

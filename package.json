@@ -7,9 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "start": "serve -s dist -l 3000",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "prettier": "npx prettier --write ."
+    "prettier": "npx prettier --write .",
+    "lint": "eslint src/**/*.{js,jsx}",
+    "lint:fix": "eslint src/**/*.{js,jsx} --fix"
   },
   "dependencies": {
     "dotenv": "^17.2.4",
@@ -25,8 +26,9 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
+    "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^16.5.0",
     "prettier": "3.8.1",
     "vite": "^7.2.4"

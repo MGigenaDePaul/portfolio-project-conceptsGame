@@ -1,7 +1,7 @@
-import './Notification.css'
+import './Notification.css';
 
 const Notification = ({ message, isVisible, position }) => {
-  if (!isVisible) return null
+  if (!isVisible) return null;
 
   return (
     <div
@@ -16,7 +16,7 @@ const Notification = ({ message, isVisible, position }) => {
         <span className='notification-text'>{message}</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Notification
+export default Notification;

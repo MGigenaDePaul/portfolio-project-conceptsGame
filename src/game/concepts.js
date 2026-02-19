@@ -1,25 +1,25 @@
 // Generar IDs únicos para instancias
-let instanceCounter = 0
-export const generateInstanceId = () => `instance-${instanceCounter++}`
+let instanceCounter = 0;
+export const generateInstanceId = () => `instance-${instanceCounter++}`;
 
-export const STARTING_CONCEPT_IDS = ['fire', 'water', 'earth', 'air']
+export const STARTING_CONCEPT_IDS = ['fire', 'water', 'earth', 'air'];
 
 export const createStartingInstances = () => {
-  const instances = {}
+  const instances = {};
 
   STARTING_CONCEPT_IDS.forEach((conceptId) => {
     // Crear 2 instancias de cada elemento
     for (let i = 0; i < 2; i++) {
-      const instanceId = generateInstanceId()
+      const instanceId = generateInstanceId();
       instances[instanceId] = {
         instanceId,
         conceptId, // referencia al concepto original
-      }
+      };
     }
-  })
+  });
 
-  return instances
-}
+  return instances;
+};
 
 export const CONCEPTS = {
   fire: { id: 'fire', name: 'Fire', emoji: '🔥' },
@@ -75,9 +75,9 @@ export const CONCEPTS = {
   // combustion: { id: 'combustion', name: 'Combustion', emoji: '' },
   // pyrocumulus: { id: 'pyrocumulus', name: 'Pyrocumulus', emoji: '' },
   // stratosphere: { id: 'stratosphere', name: 'Stratosphere', emoji: '' },
-}
+};
 
 // Helper: get concept by id safely
 export const getConcept = (id) => {
-  return CONCEPTS[id] || null
-}
+  return CONCEPTS[id] || null;
+};

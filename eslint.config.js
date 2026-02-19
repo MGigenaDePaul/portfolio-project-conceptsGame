@@ -1,29 +1,55 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+// concepts-game-app/eslint.config.js
+import js from '@eslint/js';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefreshPlugin,
+    },
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
       parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        navigator: 'readonly',
+      },
+    },
+    settings: {
+      react: {
+        version: 'detect',
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // React Rules
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      'react-refresh/only-export-components': 'warn',
+      
+      // General Rules
+      'no-unused-vars': 'warn',
+      'no-console': 'warn',
+      'semi': ['error', 'always'],
+      'quotes': ['error', 'single'],
+      'indent': ['error', 2],
     },
   },
-])
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+];
