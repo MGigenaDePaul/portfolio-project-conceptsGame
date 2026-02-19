@@ -29,7 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/concepts', conceptsRoutes);
 
 // Protected routes (token required)
-app.use('/api/boards', boardsRoutes, authenticate, boardsRoutes);
+app.use('/api/boards', authenticate, boardsRoutes);
 app.use('/api/users', authenticate, usersRoutes);
 app.use('/api/recipes', recipesRoutes);
 
