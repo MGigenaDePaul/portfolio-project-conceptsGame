@@ -20,7 +20,8 @@ app.use(cors({
   origin: [
     "http://localhost:5173",              
     "https://concepts-game-frontend.onrender.com" 
-  ]
+  ],
+  credentials: true
 }));
 app.use(express.json());
 
