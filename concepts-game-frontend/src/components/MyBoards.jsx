@@ -14,7 +14,7 @@ const MyBoards = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const { user, register } = useUser();
+  const { user, logout } = useUser();
 
   // If user exists, load their single board
   useEffect(() => {
