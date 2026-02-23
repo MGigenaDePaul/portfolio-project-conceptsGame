@@ -8,10 +8,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(12px, 3vw, 16px); /* responsive gap */
-  min-width: clamp(200px, 80vw, 256px); /* responsive width */
+  gap: clamp(12px, 3vw, 16px);
+  width: clamp(200px, 80vw, 320px);   /* ✅ CHANGED: use width instead of min-width, cap at 320px */
   max-width: 90vw;
-  z-index: 100; /* 🔧 FIX: Debe ser muy bajo, < 9999 */
+  z-index: 100;
   pointer-events: none;
 }
 
@@ -27,12 +27,12 @@
 .my-boards-header-standalone {
   position: relative;
   top: 50%;
-  left: 50%;                                                            
-  transform: translate(-50%, calc(-50% - 150px)); /* Ajusta según necesites */
-  display: flex;                                                                                    
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 150px));
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  width: clamp(200px, 80vw, 256px);
+  width: clamp(200px, 80vw, 320px);   /* ✅ CHANGED: match container width, cap at 320px */
   max-width: 90vw;
   margin-bottom: clamp(4px, 1.5vw, 8px);
   z-index: 100;
@@ -280,7 +280,7 @@
 /* Small mobile (hasta 480px) */
 @media (max-width: 480px) {
   .my-boards-container {
-    min-width: 180px;
+    width: min(280px, 95vw);
     max-width: 95vw;
     gap: 10px;
   }
@@ -334,7 +334,7 @@
 /* Tablets portrait (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
   .my-boards-container {
-    min-width: 220px;
+    min-width: 300px;
     gap: 14px;
   }
 
@@ -376,7 +376,7 @@
 /* Tablets landscape (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .my-boards-container {
-    min-width: 240px;
+    min-width: 310px;
   }
 }
 
@@ -384,7 +384,7 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .my-boards-container {
     gap: 8px;
-    min-width: 160px;
+    width: min(260px, 80vw);
   }
 
   .my-boards-header {
@@ -429,7 +429,7 @@
 /* Desktop grande (más de 1024px) - diseño original */
 @media (min-width: 1025px) {
   .my-boards-container {
-    min-width: 256px;
+    min-width: 320px;
     gap: 16px;
   }
 
