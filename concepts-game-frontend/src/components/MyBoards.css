@@ -1,7 +1,7 @@
 /* MyBoards.css - RESPONSIVE VERSION - Z-INDEX FIXED */
 
 .my-boards-container {
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -11,7 +11,7 @@
   gap: clamp(12px, 3vw, 16px); /* responsive gap */
   min-width: clamp(200px, 80vw, 256px); /* responsive width */
   max-width: 90vw;
-  z-index: 1; /* 🔧 FIX: Debe ser muy bajo, < 9999 */
+  z-index: 100; /* 🔧 FIX: Debe ser muy bajo, < 9999 */
   pointer-events: none;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .my-boards-header-standalone {
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;                                                            
   transform: translate(-50%, calc(-50% - 150px)); /* Ajusta según necesites */
@@ -35,7 +35,7 @@
   width: clamp(200px, 80vw, 256px);
   max-width: 90vw;
   margin-bottom: clamp(4px, 1.5vw, 8px);
-  /* z-index: 50;  */
+  z-index: 100;
   pointer-events: auto;
 }
 
@@ -89,6 +89,8 @@
   backdrop-filter: blur(10px);
   transition: all 0.2s;
   pointer-events: auto;
+  color: #ffff;
+  font-weight: #ffff;
   /* 🔧 FIX: NO z-index aquí */
 }
 
@@ -167,6 +169,9 @@
   align-items: center;
   gap: 1.25rem;
   padding: 2.5rem 1rem;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 .auth-prompt-text {
@@ -178,6 +183,8 @@
 .auth-prompt-buttons {
   display: flex;
   gap: 0.75rem;
+  position: relative;
+  z-index: 101;
 }
 
 .auth-prompt-btn {
@@ -226,6 +233,7 @@
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   white-space: nowrap;
+  pointer-events: auto;
 }
 
 .logout-button:hover {

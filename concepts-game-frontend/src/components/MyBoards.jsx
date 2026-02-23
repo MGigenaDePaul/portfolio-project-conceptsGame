@@ -41,29 +41,29 @@ const MyBoards = () => {
 
   /* ── Create board (user is guaranteed logged-in) ── */
   const handleCreateBoard = async () => {
-    setCreating(true)
-    setError(null)
+    setCreating(true);
+    setError(null);
     try {
       const newBoard = await boardsApi.create(
         `${user.username}'s board`,
         user.id,
-      )
-      setBoard(newBoard)
-      navigate(`/board/${newBoard.id}`)
+      );
+      setBoard(newBoard);
+      navigate(`/board/${newBoard.id}`);
     } catch (err) {
-      console.error('Failed to create board:', err)
-      setError(err.message || 'Failed to create board')
+      console.error('Failed to create board:', err);
+      setError(err.message || 'Failed to create board');
     } finally {
-      setCreating(false)
+      setCreating(false);
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    setBoard(null)
-  }
+    logout();
+    setBoard(null);
+  };
 
-   /* ── Logged-out state ── */
+  /* ── Logged-out state ── */
   if (!user) {
     return (
       <>
@@ -91,7 +91,10 @@ const MyBoards = () => {
               </button>
               <button
                 className="auth-prompt-btn auth-prompt-register"
-                onClick={() => navigate('/register')}
+                onClick={() =>  {
+                  console.log('CLICK FIRED');
+                  navigate('/register');
+                }}
               >
                 Create Account
               </button>
@@ -104,7 +107,7 @@ const MyBoards = () => {
           onClose={() => setIsGuideOpen(false)}
         />
       </>
-    )
+    );
   }
 
   /* ── Logged-in state ── */
@@ -161,7 +164,7 @@ const MyBoards = () => {
         onClose={() => setIsGuideOpen(false)}
       />
     </>
-  )
-}
+  );
+};
 
-export default MyBoards
+export default MyBoards;
