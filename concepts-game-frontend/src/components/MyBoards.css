@@ -1,17 +1,17 @@
 /* MyBoards.css - RESPONSIVE VERSION - Z-INDEX FIXED */
 
 .my-boards-container {
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(12px, 3vw, 16px); /* responsive gap */
-  min-width: clamp(200px, 80vw, 256px); /* responsive width */
+  gap: clamp(12px, 3vw, 16px);
+  width: clamp(200px, 80vw, 320px);   /* ✅ CHANGED: use width instead of min-width, cap at 320px */
   max-width: 90vw;
-  z-index: 1; /* 🔧 FIX: Debe ser muy bajo, < 9999 */
+  z-index: 100;
   pointer-events: none;
 }
 
@@ -25,17 +25,17 @@
 }
 
 .my-boards-header-standalone {
-  position: absolute;
+  position: relative;
   top: 50%;
-  left: 50%;                                                            
-  transform: translate(-50%, calc(-50% - 150px)); /* Ajusta según necesites */
-  display: flex;                                                                                    
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 150px));
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  width: clamp(200px, 80vw, 256px);
+  width: clamp(200px, 80vw, 320px);   /* ✅ CHANGED: match container width, cap at 320px */
   max-width: 90vw;
   margin-bottom: clamp(4px, 1.5vw, 8px);
-  /* z-index: 50;  */
+  z-index: 100;
   pointer-events: auto;
 }
 
@@ -89,6 +89,8 @@
   backdrop-filter: blur(10px);
   transition: all 0.2s;
   pointer-events: auto;
+  color: #ffff;
+  font-weight: #ffff;
   /* 🔧 FIX: NO z-index aquí */
 }
 
@@ -160,6 +162,117 @@
   color: rgba(200, 209, 219, 0.8);
 }
 
+/* ── Auth prompt (logged-out state) ── */
+.auth-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2.5rem 1rem;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.auth-prompt-text {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.auth-prompt-buttons {
+  display: flex;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 101;
+}
+
+.auth-prompt-btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.auth-prompt-btn:active {
+  transform: scale(0.97);
+}
+
+.auth-prompt-login {
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.auth-prompt-login:hover {
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.35);
+}
+
+.auth-prompt-register {
+  color: #c8b6ff;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-prompt-register:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 12px rgba(200, 182, 255, 0.12);
+}
+
+/* ── Logout button ── */
+.logout-button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.logout-button:hover {
+  color: #ff8a8a;
+  border-color: rgba(255, 80, 80, 0.3);
+}
+
+/* ── Misc helpers ── */
+.my-boards-error {
+  color: #ff8a8a;
+  font-size: 0.8125rem;
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.my-boards-loading {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.board-card-name {
+  flex: 1;
+  text-align: left;
+}
+
+.board-card-arrow {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.board-card:hover .board-card-arrow {
+  opacity: 1;
+}
+
 /* ============================================ */
 /* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
 /* ============================================ */
@@ -167,7 +280,7 @@
 /* Small mobile (hasta 480px) */
 @media (max-width: 480px) {
   .my-boards-container {
-    min-width: 180px;
+    width: min(280px, 95vw);
     max-width: 95vw;
     gap: 10px;
   }
@@ -221,7 +334,7 @@
 /* Tablets portrait (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
   .my-boards-container {
-    min-width: 220px;
+    min-width: 300px;
     gap: 14px;
   }
 
@@ -263,7 +376,7 @@
 /* Tablets landscape (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .my-boards-container {
-    min-width: 240px;
+    min-width: 310px;
   }
 }
 
@@ -271,7 +384,7 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .my-boards-container {
     gap: 8px;
-    min-width: 160px;
+    width: min(260px, 80vw);
   }
 
   .my-boards-header {
@@ -316,7 +429,7 @@
 /* Desktop grande (más de 1024px) - diseño original */
 @media (min-width: 1025px) {
   .my-boards-container {
-    min-width: 256px;
+    min-width: 320px;
     gap: 16px;
   }
 
