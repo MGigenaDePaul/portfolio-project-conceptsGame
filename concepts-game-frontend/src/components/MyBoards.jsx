@@ -39,132 +39,119 @@ const MyBoards = () => {
     loadBoard();
   }, [user]);
 
-  const handlePlay = async () => {
-    // If user already has a board, go directly
-    if (board) {
-      navigate(`/board/${board.id}`);
-      return;
-    }
-
-    setCreating(true);
-    setError(null);
-
+  /* ── Create board (user is guaranteed logged-in) ── */
+  const handleCreateBoard = async () => {
+    setCreating(true)
+    setError(null)
     try {
-      // If no user yet, quick-create one
-      let currentUser = user;
-      if (!currentUser) {
-        // Replace the simple prompt with collecting real credentials
-        const username = prompt('Choose a username:');
-        if (!username || !username.trim()) {
-          setCreating(false);
-          return;
-        }
-        const email = prompt('Enter your email:');
-        if (!email || !email.trim()) {
-          setCreating(false);
-          return;
-        }
-        const password = prompt('Choose a password:');
-        if (!password || !password.trim()) {
-          setCreating(false);
-          return;
-        }
-
-        currentUser = await register(username.trim(), email.trim(), password);
-      }
-
-      // Create the single board for this user
       const newBoard = await boardsApi.create(
-        `${currentUser.username}'s board`,
-        currentUser.id,
-      );
-
-      setBoard(newBoard);
-      navigate(`/board/${newBoard.id}`);
+        `${user.username}'s board`,
+        user.id,
+      )
+      setBoard(newBoard)
+      navigate(`/board/${newBoard.id}`)
     } catch (err) {
-      console.error('Failed to create board:', err);
-      setError(err.message || 'Failed to create board');
+      console.error('Failed to create board:', err)
+      setError(err.message || 'Failed to create board')
     } finally {
-      setCreating(false);
+      setCreating(false)
     }
-  };
+  }
 
+  const handleLogout = () => {
+    logout()
+    setBoard(null)
+  }
+
+   /* ── Logged-out state ── */
+  if (!user) {
+    return (
+      <>
+        <div className="my-boards-header-standalone">
+          <button
+            className="help-button"
+            onClick={() => setIsGuideOpen(true)}
+            title="Open guide"
+          >
+            ?
+          </button>
+          <h2 className="my-boards-title">MY BOARDS</h2>
+          <div style={{ width: 32 }} /> {/* spacer for alignment */}
+        </div>
+
+        <div className="my-boards-container">
+          <div className="auth-prompt">
+            <p className="auth-prompt-text">Sign in to start combining</p>
+            <div className="auth-prompt-buttons">
+              <button
+                className="auth-prompt-btn auth-prompt-login"
+                onClick={() => navigate('/login')}
+              >
+                Sign In
+              </button>
+              <button
+                className="auth-prompt-btn auth-prompt-register"
+                onClick={() => navigate('/register')}
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ConceptsGuide
+          isOpen={isGuideOpen}
+          onClose={() => setIsGuideOpen(false)}
+        />
+      </>
+    )
+  }
+
+  /* ── Logged-in state ── */
   return (
     <>
-      {/* Header buttons */}
-      <div className='my-boards-header-standalone'>
+      <div className="my-boards-header-standalone">
         <button
-          className='help-button'
+          className="help-button"
           onClick={() => setIsGuideOpen(true)}
-          title='Open guide'
+          title="Open guide"
         >
           ?
         </button>
-        <h2 className='my-boards-title'>MY BOARDS</h2>
-        <button className='settings-button'>⚙️</button>
+        <h2 className="my-boards-title">MY BOARDS</h2>
+        <button
+          className="logout-button"
+          onClick={handleLogout}
+          title="Log out"
+        >
+          ↪ Out
+        </button>
       </div>
 
-      {/* Single board */}
-      <div className='my-boards-container'>
+      <div className="my-boards-container">
         {error && (
-          <div
-            style={{
-              padding: '8px 12px',
-              background: 'rgba(255, 90, 90, 0.15)',
-              border: '1px solid rgba(255, 90, 90, 0.3)',
-              borderRadius: '5px',
-              fontSize: '12px',
-              color: 'rgba(255, 90, 90, 0.9)',
-              pointerEvents: 'auto',
-            }}
-          >
-            ⚠️ {error}
-          </div>
+          <div className="my-boards-error">⚠️ {error}</div>
         )}
 
-        {loading && (
-          <div
-            style={{
-              padding: '12px',
-              fontSize: '13px',
-              color: 'rgba(200, 209, 219, 0.6)',
-              pointerEvents: 'auto',
-            }}
-          >
-            Loading...
-          </div>
-        )}
+        {loading && <div className="my-boards-loading">Loading…</div>}
 
-        {/* Show existing board if user has one */}
         {!loading && board && (
           <button
             onClick={() => navigate(`/board/${board.id}`)}
-            className='board-card'
+            className="board-card"
           >
-            <div className='board-info'>
-              <span className='board-avatar'>
-                {board.name?.charAt(0)?.toUpperCase() || 'B'}
-              </span>
-              <div className='board-details'>
-                <h3 className='board-name'>{board.name}</h3>
-                <div className='board-stats'>
-                  <span>
-                    {new Date(board.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <span className="board-card-name">{board.name}</span>
+            <span className="board-card-arrow">→</span>
           </button>
         )}
 
-        {/* Show play/create button if no board yet */}
         {!loading && !board && (
           <button
-            className='create-board-button'
-            onClick={handlePlay}
+            className="create-board-button"
+            onClick={handleCreateBoard}
             disabled={creating}
           >
-            {creating ? 'Creating...' : '▶ Play'}
+            {creating ? 'Creating…' : '▶ Play'}
           </button>
         )}
       </div>
@@ -174,7 +161,7 @@ const MyBoards = () => {
         onClose={() => setIsGuideOpen(false)}
       />
     </>
-  );
-};
+  )
+}
 
-export default MyBoards;
+export default MyBoards
