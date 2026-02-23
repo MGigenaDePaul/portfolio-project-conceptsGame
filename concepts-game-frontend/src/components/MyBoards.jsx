@@ -1,9 +1,9 @@
-// src/components/MyBoards.jsx
 import { useState, useEffect } from 'react';
 import ConceptsGuide from './ConceptsGuide';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { boardsApi } from '../api/boards';
+import GoogleSignInButton from './GoogleSignInButton';
 import './MyBoards.css';
 
 const MyBoards = () => {
@@ -16,7 +16,6 @@ const MyBoards = () => {
   const navigate = useNavigate();
   const { user, logout } = useUser();
 
-  // If user exists, load their single board
   useEffect(() => {
     if (!user) return;
 
@@ -26,7 +25,7 @@ const MyBoards = () => {
       try {
         const boards = await boardsApi.getByUser(user.id);
         if (boards.length > 0) {
-          setBoard(boards[0]); // Always use the first (only) board
+          setBoard(boards[0]);
         }
       } catch (err) {
         console.error('Failed to load board:', err);
@@ -39,7 +38,6 @@ const MyBoards = () => {
     loadBoard();
   }, [user]);
 
-  /* ── Create board (user is guaranteed logged-in) ── */
   const handleCreateBoard = async () => {
     setCreating(true);
     setError(null);
@@ -76,29 +74,13 @@ const MyBoards = () => {
             ?
           </button>
           <h2 className="my-boards-title">MY BOARDS</h2>
-          <div style={{ width: 32 }} /> {/* spacer for alignment */}
+          <div style={{ width: 32 }} />
         </div>
 
         <div className="my-boards-container">
           <div className="auth-prompt">
             <p className="auth-prompt-text">Sign in to start combining</p>
-            <div className="auth-prompt-buttons">
-              <button
-                className="auth-prompt-btn auth-prompt-login"
-                onClick={() => navigate('/login')}
-              >
-                Sign In
-              </button>
-              <button
-                className="auth-prompt-btn auth-prompt-register"
-                onClick={() =>  {
-                  console.log('CLICK FIRED');
-                  navigate('/register');
-                }}
-              >
-                Create Account
-              </button>
-            </div>
+            <GoogleSignInButton />
           </div>
         </div>
 
