@@ -1,0 +1,7 @@
+.register-submit {
+  background: linear-gradient(135deg, #6d28d9, #4f46e5);
+}
+
+.register-submit:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.35);
+}
