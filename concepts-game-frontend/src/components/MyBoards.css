@@ -160,6 +160,111 @@
   color: rgba(200, 209, 219, 0.8);
 }
 
+/* ── Auth prompt (logged-out state) ── */
+.auth-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2.5rem 1rem;
+}
+
+.auth-prompt-text {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.auth-prompt-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.auth-prompt-btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.auth-prompt-btn:active {
+  transform: scale(0.97);
+}
+
+.auth-prompt-login {
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.auth-prompt-login:hover {
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.35);
+}
+
+.auth-prompt-register {
+  color: #c8b6ff;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-prompt-register:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 12px rgba(200, 182, 255, 0.12);
+}
+
+/* ── Logout button ── */
+.logout-button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.logout-button:hover {
+  color: #ff8a8a;
+  border-color: rgba(255, 80, 80, 0.3);
+}
+
+/* ── Misc helpers ── */
+.my-boards-error {
+  color: #ff8a8a;
+  font-size: 0.8125rem;
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.my-boards-loading {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.board-card-name {
+  flex: 1;
+  text-align: left;
+}
+
+.board-card-arrow {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.board-card:hover .board-card-arrow {
+  opacity: 1;
+}
+
 /* ============================================ */
 /* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
 /* ============================================ */
