@@ -1,56 +1,56 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'
-import { useUser } from '../context/UserContext'
-import '../pages/Login.css'
-import './Register.css'
+import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import '../pages/Login.css';
+import './Register.css';
 
 const Register = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState(null)
-    const [submitting, setSubmitting] = useState(false)
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-    const { register } = useUser();
-    const navigate = useNavigate();
+  const { register } = useUser();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setError(null)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-        if (!username.trim() || !email.trim() || !password) {
-            setError('Please fill in all fields.');
-            return
-        }
-
-        if (username.trim().length < 2) {
-            setError('Username must be at least 2 characters')
-            return
-        }
-
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters')
-            return
-        }
-
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return
-        }
-
-        setSubmitting(true)
-        try {
-            await register(username.trim(), email.trim(), password)
-            navigate('/')
-        } catch (err) {
-            setError(err.message || 'Registration failed. Please try again.')
-        } finally {
-            setSubmitting(false)
-        }
+    if (!username.trim() || !email.trim() || !password) {
+      setError('Please fill in all fields.');
+      return;
     }
 
-    return (
+    if (username.trim().length < 2) {
+      setError('Username must be at least 2 characters');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await register(username.trim(), email.trim(), password);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
     <div className="auth-page">
       <div className="auth-card">
         <Link to="/" className="auth-logo">
@@ -135,7 +135,7 @@ const Register = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

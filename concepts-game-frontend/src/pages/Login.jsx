@@ -1,38 +1,38 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import './Login.css'
+import './Login.css';
 
 const Login = () => {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState(null)
-    const [submitting, setSubmitting] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-    const { login } = useUser();
-    const navigate = useNavigate()
+  const { login } = useUser();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setError(null)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-        if (!email.trim() || !password) {
-            setError('Please fill in all fields')
-            return
-        }
-
-        setSubmitting(true)
-        try {
-            await login(email.trim(), password)
-            navigate('/')
-        } catch (err) {
-            setError(err.message || 'Login failed. Please try again')
-        } finally {
-            setSubmitting(false)
-        }
+    if (!email.trim() || !password) {
+      setError('Please fill in all fields');
+      return;
     }
 
-    return (
+    setSubmitting(true);
+    try {
+      await login(email.trim(), password);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
     <div className="auth-page">
       <div className="auth-card">
         <Link to="/" className="auth-logo">
@@ -90,7 +90,7 @@ const Login = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
