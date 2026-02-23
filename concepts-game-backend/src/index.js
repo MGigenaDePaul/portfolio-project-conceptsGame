@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({
   origin: [
     "http://localhost:5173",              
-    "https://concepts-game-frontend.onrender.com" 
+    "https://concepts-game.onrender.com" // url frontend
   ],
   credentials: true
 }));
