@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 import './Login.css';
 
 const Login = () => {
@@ -83,6 +84,23 @@ const Login = () => {
             )}
           </button>
         </form>
+
+        {/* Divider */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          margin: '20px 0',
+          width: '100%',
+          maxWidth: '300px'
+        }}>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
+          <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
+        </div>
+
+        <GoogleSignInButton />
+        {/* END NEW */}
 
         <p className="auth-switch">
           Don't have an account?{' '}

@@ -48,7 +48,7 @@ const Board = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-   const isMobileOrTablet = viewportWidth < 1024;
+  const isMobileOrTablet = viewportWidth < 1024;
 
   const togglePanel = useCallback((panel) => {
     setActivePanel((prev) => (prev === panel ? 'none' : panel));
@@ -533,7 +533,7 @@ const Board = () => {
   }
 
   // ─── Render ──────────────────────────────────────────
-   return (
+  return (
     <div className='board-container'>
       {/* Notification */}
       <Notification

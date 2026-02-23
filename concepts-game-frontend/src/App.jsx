@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { createStartingInstances, generateInstanceId } from './game/concepts';
 import { combine } from './game/combine';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomeScreen from './pages/HomeScreen';
 import Notification from './components/Notification';
 import FullGuide from './pages/FullGuide';
 import Board from './pages/Board';
-import Login from './pages/Login';
-import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -440,8 +438,8 @@ const App = () => {
         <Route path='/faq' element={<FullGuide />} />
         <Route path='/privacy' element={<FullGuide />} />
         <Route path='/terms' element={<FullGuide />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/register" element={<Navigate to="/" replace />} />
         <Route path='/board/:boardId' 
           element={
             <ProtectedRoute>

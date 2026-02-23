@@ -1,11 +1,13 @@
 import express from 'express';
 import { register, login, me } from '../controllers/authController.js';
+import { googleLogin } from '../controllers/googleAuthController.js';
 import authenticate from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/register', register); // POST /api/auth/register
-router.post('/login', login);       // POST /api/auth/login
-router.get('/me', authenticate, me);// GET /api/auth/me (protected)
+router.post('/register', register);
+router.post('/login', login);
+router.post('/google', googleLogin);       
+router.get('/me', authenticate, me);
 
 export default router;
