@@ -39,6 +39,21 @@ const Board = () => {
     position: { x: 0, y: 0 },
   });
 
+  const [activePanel, setActivePanel] = useState('none'); // 'none' | 'collection' | 'knowledge'
+  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+   const isMobileOrTablet = viewportWidth < 1024;
+
+  const togglePanel = useCallback((panel) => {
+    setActivePanel((prev) => (prev === panel ? 'none' : panel));
+  }, []);
+
   const combineAudioRef = useRef(null);
   const failAudioRef = useRef(null);
   const pressBubbleAudioRef = useRef(null);
@@ -397,7 +412,9 @@ const Board = () => {
 
   // ─── Spawn instance from knowledge panel via API ─────
   const addConceptToBoard = async (conceptId) => {
-    const centerX = (window.innerWidth - 220 - 320) / 2 + 220;
+    const sidebarOffset = isMobileOrTablet ? 0 : 220;
+    const knowledgeOffset = isMobileOrTablet ? 0 : 320;
+    const centerX = (window.innerWidth - sidebarOffset - knowledgeOffset) / 2 + sidebarOffset;
     const centerY = window.innerHeight / 2;
     const posX = centerX + (Math.random() - 0.5) * 100;
     const posY = centerY + (Math.random() - 0.5) * 100;
@@ -516,7 +533,7 @@ const Board = () => {
   }
 
   // ─── Render ──────────────────────────────────────────
-  return (
+   return (
     <div className='board-container'>
       {/* Notification */}
       <Notification
@@ -525,11 +542,34 @@ const Board = () => {
         position={notification.position}
       />
 
+      {/* ✅ NEW: Mobile/Tablet panel toggle bar */}
+      {isMobileOrTablet && (
+        <div className='board-mobile-toolbar'>
+          <button
+            className={`mobile-panel-btn ${activePanel === 'collection' ? 'active' : ''}`}
+            onClick={() => togglePanel('collection')}
+          >
+            📚 Collection
+          </button>
+          <Link to='/' className='mobile-home-btn'>🏠</Link>
+          <button
+            className={`mobile-panel-btn ${activePanel === 'knowledge' ? 'active' : ''}`}
+            onClick={() => togglePanel('knowledge')}
+          >
+            📖 Knowledge
+          </button>
+        </div>
+      )}
+
       {/* Left Sidebar */}
-      <div className='board-sidebar'>
+      <div className={`board-sidebar ${isMobileOrTablet ? 'board-sidebar--overlay' : ''} ${activePanel === 'collection' ? 'board-sidebar--open' : ''}`}>
         <div className='sidebar-header'>
           <span className='sidebar-icon'>📚</span>
           <span className='sidebar-title'>MY COLLECTION</span>
+          {/* ✅ NEW: Close button for mobile */}
+          {isMobileOrTablet && (
+            <button className='panel-close-btn' onClick={() => setActivePanel('none')}>✕</button>
+          )}
         </div>
 
         <div className='collection-item active'>
@@ -541,23 +581,25 @@ const Board = () => {
 
       {/* Main board area */}
       <div className='board-main'>
-        {/* Top toolbar */}
-        <div className='board-toolbar'>
-          <button className='toolbar-btn' title='Undo'>
-            <span>↶</span>
-          </button>
-          <button className='toolbar-btn' title='Collections'>
-            <span>📊</span>
-          </button>
-          <button className='toolbar-btn' title='Home'>
-            <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
-              <span>🏠</span>
-            </Link>
-          </button>
-          <button className='toolbar-btn' title='Settings'>
-            <span>⚙️</span>
-          </button>
-        </div>
+        {/* Top toolbar — only show on desktop */}
+        {!isMobileOrTablet && (
+          <div className='board-toolbar'>
+            <button className='toolbar-btn' title='Undo'>
+              <span>↶</span>
+            </button>
+            <button className='toolbar-btn' title='Collections'>
+              <span>📊</span>
+            </button>
+            <button className='toolbar-btn' title='Home'>
+              <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
+                <span>🏠</span>
+              </Link>
+            </button>
+            <button className='toolbar-btn' title='Settings'>
+              <span>⚙️</span>
+            </button>
+          </div>
+        )}
 
         {/* Board canvas with draggable concepts */}
         <div className='board-canvas'>
@@ -597,16 +639,22 @@ const Board = () => {
       </div>
 
       {/* Right sidebar - Knowledge */}
-      <div className='knowledge-sidebar'>
+      <div className={`knowledge-sidebar ${isMobileOrTablet ? 'knowledge-sidebar--overlay' : ''} ${activePanel === 'knowledge' ? 'knowledge-sidebar--open' : ''}`}>
         <div className='knowledge-header'>
-          <h2 className='knowledge-title'>Knowledge</h2>
+          <div className='knowledge-header-row'>
+            <h2 className='knowledge-title'>Knowledge</h2>
+            {/* ✅ NEW: Close button for mobile */}
+            {isMobileOrTablet && (
+              <button className='panel-close-btn' onClick={() => setActivePanel('none')}>✕</button>
+            )}
+          </div>
           <p className='knowledge-count'>{discoveredConcepts.size} concepts</p>
         </div>
 
         <div className='knowledge-search'>
           <input
             type='text'
-            placeholder='Search everything... (Control + F)'
+            placeholder='Search everything...'
             className='knowledge-search-input'
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
@@ -649,6 +697,11 @@ const Board = () => {
           )}
         </div>
       </div>
+
+      {/* ✅ NEW: Overlay backdrop */}
+      {isMobileOrTablet && activePanel !== 'none' && (
+        <div className='board-overlay-backdrop' onClick={() => setActivePanel('none')} />
+      )}
     </div>
   );
 };
