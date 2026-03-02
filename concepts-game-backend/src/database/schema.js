@@ -82,7 +82,7 @@ export const createTables = async () => {
       );
     `);
     console.log('✅ Board instances table ready');
-    // Add to createTables()
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS rooms (
         id SERIAL PRIMARY KEY,

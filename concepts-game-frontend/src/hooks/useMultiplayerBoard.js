@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useMultiplayerBoard(socket, emit, on, off) {
   const [roomState, setRoomState] = useState(null);
   const [elements, setElements] = useState(new Map());
   const [players, setPlayers] = useState([]);
-  const [cursors, setCursors] = useState(new Map());  // socketId → {x,y}
+  const [cursors, setCursors] = useState(new Map());
   const [status, setStatus] = useState('waiting');
 
   // ─── Room events ────────────────────────────────────
@@ -42,15 +42,19 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
+      // Only handle grabs from OTHER players (we update locally for ourselves)
       'element:grabbed': ({ instanceId, lockedBy }) => {
         setElements(prev => {
           const next = new Map(prev);
           const el = next.get(instanceId);
-          if (el) next.set(instanceId, { ...el, lockedBy });
+          if (el && lockedBy !== socket.current?.id) {
+            next.set(instanceId, { ...el, lockedBy });
+          }
           return next;
         });
       },
 
+      // Only handle moves from OTHER players (we update locally for ourselves)
       'element:moved': ({ instanceId, x, y }) => {
         setElements(prev => {
           const next = new Map(prev);
@@ -60,15 +64,19 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
+      // Only handle releases from OTHER players
       'element:released': ({ instanceId, x, y }) => {
         setElements(prev => {
           const next = new Map(prev);
           const el = next.get(instanceId);
-          if (el) next.set(instanceId, { ...el, x, y, lockedBy: null });
+          if (el && el.lockedBy !== socket.current?.id) {
+            next.set(instanceId, { ...el, x, y, lockedBy: null });
+          }
           return next;
         });
       },
 
+      // Combined — applies to ALL players
       'element:combined': ({ removedIds, newElement }) => {
         setElements(prev => {
           const next = new Map(prev);
@@ -79,7 +87,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
       },
 
       'element:combine-failed': ({ instanceId1, instanceId2 }) => {
-        // Unlock both elements
         setElements(prev => {
           const next = new Map(prev);
           [instanceId1, instanceId2].forEach(id => {
@@ -107,7 +114,16 @@ export function useMultiplayerBoard(socket, emit, on, off) {
       },
 
       'element:grab-rejected': ({ instanceId, reason }) => {
+        // Someone else grabbed it first — revert our optimistic lock
         console.log(`Grab rejected: ${reason}`);
+        setElements(prev => {
+          const next = new Map(prev);
+          const el = next.get(instanceId);
+          if (el && el.lockedBy === socket.current?.id) {
+            next.set(instanceId, { ...el, lockedBy: null });
+          }
+          return next;
+        });
       },
 
       'error': ({ message }) => {
@@ -115,7 +131,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
       },
     };
 
-    // Register all handlers
     Object.entries(handlers).forEach(([event, handler]) => {
       on(event, handler);
     });
@@ -125,9 +140,10 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         off(event, handler);
       });
     };
-  }, [on, off]);
+  }, [on, off, socket]);
 
-  // ─── Actions ─────────────────────────────────────────
+  // ─── Actions (with optimistic local updates) ────────
+
   const joinRoom = useCallback((code, username) => {
     emit('room:join', { code, username });
   }, [emit]);
@@ -137,14 +153,35 @@ export function useMultiplayerBoard(socket, emit, on, off) {
   }, [emit]);
 
   const grabElement = useCallback((instanceId) => {
+    // Optimistic: lock it locally immediately so drag feels instant
+    setElements(prev => {
+      const next = new Map(prev);
+      const el = next.get(instanceId);
+      if (el) next.set(instanceId, { ...el, lockedBy: socket.current?.id });
+      return next;
+    });
     emit('element:grab', { instanceId });
-  }, [emit]);
+  }, [emit, socket]);
 
   const moveElement = useCallback((instanceId, x, y) => {
+    // Update locally immediately so the dragger sees movement
+    setElements(prev => {
+      const next = new Map(prev);
+      const el = next.get(instanceId);
+      if (el) next.set(instanceId, { ...el, x, y });
+      return next;
+    });
     emit('element:move', { instanceId, x, y });
   }, [emit]);
 
   const releaseElement = useCallback((instanceId, x, y) => {
+    // Update locally immediately
+    setElements(prev => {
+      const next = new Map(prev);
+      const el = next.get(instanceId);
+      if (el) next.set(instanceId, { ...el, x, y, lockedBy: null });
+      return next;
+    });
     emit('element:release', { instanceId, x, y });
   }, [emit]);
 
