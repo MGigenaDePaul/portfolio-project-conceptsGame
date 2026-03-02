@@ -3,6 +3,7 @@ import ConceptBubble from '../components/ConceptBubble';
 import MyBoards from '../components/MyBoards';
 import { CONCEPTS } from '../game/concepts';
 import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const HomeScreen = ({
   instances,
@@ -13,7 +14,7 @@ const HomeScreen = ({
   zIndexes,
 }) => {
   const { user, loading: userLoading } = useUser();
-
+  const navigate = useNavigate()
   return (
     <div className='app-container'>
       <header className='app-header'>
@@ -64,7 +65,24 @@ const HomeScreen = ({
         })}
       </div>
 
-      <button onClick={() => navigate('/multiplayer')} >
+      <button
+        onClick={() => navigate('/multiplayer')}
+        style={{
+          position: 'fixed',
+          bottom: '60px',
+          right: '20px',
+          zIndex: 50,
+          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+          color: '#fff',
+          border: 'none',
+          padding: '14px 28px',
+          borderRadius: '14px',
+          fontSize: '1.05rem',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+        }}
+      >
         🎮 Multiplayer
       </button>
 
