@@ -1,5 +1,5 @@
-import { roomManager } from './roomManager';
-import { combine } from '../services/combineService.js';
+import { roomManager } from './roomManager.js';
+import combine from '../services/combineService.js';
 
 const registerSocketHandlers = (io, socket) => {
   const user = socket.user; // { id, email } from JWT

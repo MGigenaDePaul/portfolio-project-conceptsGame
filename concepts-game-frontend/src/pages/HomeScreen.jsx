@@ -64,6 +64,10 @@ const HomeScreen = ({
         })}
       </div>
 
+      <button onClick={() => navigate('/multiplayer')} >
+        🎮 Multiplayer
+      </button>
+
       <footer className='app-footer'>
         <p>
           CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, DISCOVERED CONCEPTS WILL

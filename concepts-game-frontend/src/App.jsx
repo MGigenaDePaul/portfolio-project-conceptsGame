@@ -7,6 +7,8 @@ import Notification from './components/Notification';
 import FullGuide from './pages/FullGuide';
 import Board from './pages/Board';
 import ProtectedRoute from './components/ProtectedRoute';
+import MultiplayerLobby from './pages/MultiplayerLobby';
+import MultiplayerRoom from './pages/MultiplayerRoom';
 import './App.css';
 
 const getHitRadius = () => {
@@ -444,7 +446,25 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Board />
-            </ProtectedRoute>} />
+            </ProtectedRoute>} 
+        />
+        <Route
+          path="/multiplayer"
+          element={
+            <ProtectedRoute>
+              <MultiplayerLobby />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/multiplayer/:code"
+          element={
+            <ProtectedRoute>
+              <MultiplayerRoom />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </>
   );

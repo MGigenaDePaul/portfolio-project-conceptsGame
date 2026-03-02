@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import pool from '../database/db.js';
-import { registerSocketHandlers } from './handlers.js';
+import registerSocketHandlers from './handlers.js';
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
