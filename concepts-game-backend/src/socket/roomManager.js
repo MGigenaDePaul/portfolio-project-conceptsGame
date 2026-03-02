@@ -7,10 +7,10 @@ const PLAYER_COLORS = [
 
 // Starting elements — adjust IDs/names to match your concepts table
 const STARTING_ELEMENTS = [
-  { conceptId: 1, name: 'Fire',  emoji: '🔥' },
-  { conceptId: 2, name: 'Water', emoji: '💧' },
-  { conceptId: 3, name: 'Earth', emoji: '🌍' },
-  { conceptId: 4, name: 'Air',   emoji: '💨' },
+  { conceptId: 'fire',  name: 'Fire',  emoji: '🔥' },
+  { conceptId: 'water', name: 'Water', emoji: '💧' },
+  { conceptId: 'earth', name: 'Earth', emoji: '🌍' },
+  { conceptId: 'air',   name: 'Air',   emoji: '🌬️' },
 ];
 
 class RoomManager {

@@ -11,8 +11,8 @@ const combine = async (conceptId1, conceptId2) => {
     `SELECT c.id, c.name, c.emoji
          FROM recipes r
          JOIN concepts c ON c.id = r.result_id
-         WHERE (r.input1_id = $1 AND r.input2_id = $2)
-            OR (r.input1_id = $2 AND r.input2_id = $1)
+         WHERE (r.ingredient1_id = $1 AND r.ingredient2_id = $2)
+            OR (r.ingredient1_id = $2 AND r.ingredient2_id = $1)
          LIMIT 1`,
     [conceptId1, conceptId2]
   );
