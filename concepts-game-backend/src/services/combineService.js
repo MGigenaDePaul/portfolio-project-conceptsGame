@@ -20,3 +20,5 @@ const combine = async (conceptId1, conceptId2) => {
   if (result.rows.length === 0) return null;
   return result.rows[0]; // { id, name, emoji }
 };
+
+export default combine;
