@@ -82,6 +82,27 @@ export const createTables = async () => {
       );
     `);
     console.log('✅ Board instances table ready');
+    // Add to createTables()
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS rooms (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(8) UNIQUE NOT NULL,
+        host_id INTEGER REFERENCES users(id),
+        status VARCHAR(20) DEFAULT 'waiting',
+        max_players INTEGER DEFAULT 4,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS room_members (
+        id SERIAL PRIMARY KEY,
+        room_id INTEGER REFERENCES rooms(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id),
+        joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(room_id, user_id)
+      );
+    `);
 
     console.log('🎉 All tables created successfully!');
   } catch (error) {
