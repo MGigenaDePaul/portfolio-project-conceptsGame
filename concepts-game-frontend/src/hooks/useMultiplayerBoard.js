@@ -98,10 +98,10 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
-      'cursor:moved': ({ socketId, x, y }) => {
+      'cursor:moved': ({ socketId, username, x, y }) => {
         setCursors(prev => {
           const next = new Map(prev);
-          next.set(socketId, { x, y });
+          next.set(socketId, { x, y, username });
           return next;
         });
       },

@@ -14,7 +14,7 @@ const HomeScreen = ({
   zIndexes,
 }) => {
   const { user, loading: userLoading } = useUser();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <div className='app-container'>
       <header className='app-header'>

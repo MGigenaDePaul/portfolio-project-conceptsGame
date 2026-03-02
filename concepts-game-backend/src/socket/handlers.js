@@ -163,6 +163,7 @@ const registerSocketHandlers = (io, socket) => {
 
     socket.to(code).emit('cursor:moved', {
       socketId: socket.id,
+      username: user.username,
       x,
       y,
     });

@@ -180,7 +180,6 @@ export default function MultiplayerRoom() {
     board.addEventListener('pointerup', handlePointerUp);
     board.addEventListener('pointerleave', handlePointerUp);
 
-    // Touch support
     board.addEventListener('touchmove', handlePointerMove, { passive: false });
     board.addEventListener('touchend', handlePointerUp);
 
@@ -193,7 +192,7 @@ export default function MultiplayerRoom() {
     };
   }, [handlePointerMove, handlePointerUp]);
 
-  // ─── Get player color by socketId ───────────────────
+  // ─── Get player info by socketId ────────────────────
   const getPlayerColor = (socketId) => {
     const player = players.find(p => p.socketId === socketId);
     return player?.color || '#888';
@@ -377,11 +376,11 @@ export default function MultiplayerRoom() {
           );
         })}
 
-        {/* Render other players' cursors */}
+        {/* Render other players' cursors — uses cursor-stored username as fallback */}
         {cursorsArray.map(([socketId, pos]) => {
           if (socketId === getLocalSocketId()) return null;
           const color = getPlayerColor(socketId);
-          const name = getPlayerName(socketId);
+          const name = pos.username || getPlayerName(socketId);
 
           return (
             <div
@@ -441,9 +440,7 @@ export default function MultiplayerRoom() {
   );
 }
 
-// ─── Styles ──────────────────────────────────────────
 const styles = {
-  // === Waiting Screen ===
   waitingContainer: {
     minHeight: '100vh',
     background: '#0a0a0f',
@@ -571,8 +568,6 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.9rem',
   },
-
-  // === Game Screen ===
   gameContainer: {
     width: '100vw',
     height: '100vh',
@@ -629,8 +624,6 @@ const styles = {
     height: '24px',
     borderRadius: '50%',
   },
-
-  // === Notification ===
   notification: {
     position: 'absolute',
     top: '70px',
@@ -642,11 +635,8 @@ const styles = {
     fontSize: '0.95rem',
     zIndex: 200,
     pointerEvents: 'none',
-    animation: 'fadeIn 0.3s ease',
     whiteSpace: 'nowrap',
   },
-
-  // === Board ===
   board: {
     flex: 1,
     position: 'relative',
@@ -658,8 +648,6 @@ const styles = {
     `,
     cursor: 'default',
   },
-
-  // === Element Bubble ===
   element: {
     position: 'absolute',
     display: 'flex',
@@ -696,8 +684,6 @@ const styles = {
     justifyContent: 'center',
     fontSize: '10px',
   },
-
-  // === Remote Cursor ===
   remoteCursor: {
     position: 'absolute',
     pointerEvents: 'none',
@@ -715,8 +701,6 @@ const styles = {
     whiteSpace: 'nowrap',
     fontWeight: 'bold',
   },
-
-  // === Sidebar ===
   sidebar: {
     position: 'absolute',
     right: 0,
