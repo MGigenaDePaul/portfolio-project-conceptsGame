@@ -28,7 +28,7 @@ export function setupSocket(httpServer) {
 
       // Fetch username from DB
       const result = await pool.query(
-        'SELECT id, username, email FROM users WHERE id = \$1',
+        'SELECT id, username, email FROM users WHERE id = $1',
         [decoded.id]
       );
       if (result.rows.length === 0) return next(new Error('User not found'));

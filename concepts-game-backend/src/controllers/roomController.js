@@ -19,24 +19,24 @@ export const createRoom = async (req, res) => {
     // Generate unique code
     do {
       code = generateCode();
-      const exists = await pool.query('SELECT id FROM rooms WHERE code = \$1', [code]);
+      const exists = await pool.query('SELECT id FROM rooms WHERE code = $1', [code]);
       if (exists.rows.length === 0) break;
       attempts++;
     } while (attempts < 10);
 
     // Save to DB
     const result = await pool.query(
-      `INSERT INTO rooms (code, host_id, status) VALUES (\$1, \$2, 'waiting') RETURNING *`,
+      `INSERT INTO rooms (code, host_id, status) VALUES ($1, $2, 'waiting') RETURNING *`,
       [code, userId]
     );
 
     await pool.query(
-      `INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)`,
+      `INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)`,
       [result.rows[0].id, userId]
     );
 
     // Create in-memory state
-    const userResult = await pool.query('SELECT username FROM users WHERE id = \$1', [userId]);
+    const userResult = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
     roomManager.createRoom(code, userId, userResult.rows[0].username);
 
     res.status(201).json({ code, room: result.rows[0] });
@@ -53,7 +53,7 @@ export const joinRoom = async (req, res) => {
 
     // Check room exists in DB
     const roomResult = await pool.query(
-      'SELECT * FROM rooms WHERE code = \$1 AND status != \$2',
+      'SELECT * FROM rooms WHERE code = $1 AND status != $2',
       [code.toUpperCase(), 'closed']
     );
     if (roomResult.rows.length === 0) {
@@ -64,14 +64,14 @@ export const joinRoom = async (req, res) => {
 
     // Check if already a member
     const memberCheck = await pool.query(
-      'SELECT id FROM room_members WHERE room_id = \$1 AND user_id = \$2',
+      'SELECT id FROM room_members WHERE room_id = $1 AND user_id = $2',
       [room.id, userId]
     );
 
     if (memberCheck.rows.length === 0) {
       // Check player count
       const countResult = await pool.query(
-        'SELECT COUNT(*) FROM room_members WHERE room_id = \$1',
+        'SELECT COUNT(*) FROM room_members WHERE room_id = $1',
         [room.id]
       );
       if (parseInt(countResult.rows[0].count) >= room.max_players) {
@@ -79,14 +79,14 @@ export const joinRoom = async (req, res) => {
       }
 
       await pool.query(
-        'INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)',
+        'INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)',
         [room.id, userId]
       );
     }
 
     // Ensure in-memory room exists (if server restarted)
     if (!roomManager.getRoom(code.toUpperCase())) {
-      const hostResult = await pool.query('SELECT username FROM users WHERE id = \$1', [room.host_id]);
+      const hostResult = await pool.query('SELECT username FROM users WHERE id = $1', [room.host_id]);
       roomManager.createRoom(code.toUpperCase(), room.host_id, hostResult.rows[0].username);
     }
 
