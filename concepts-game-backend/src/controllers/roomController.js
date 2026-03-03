@@ -2,7 +2,7 @@ import pool from '../database/db.js';
 import { roomManager } from '../socket/roomManager.js';
 
 function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 6; i++) {
     code += chars[Math.floor(Math.random() * chars.length)];
@@ -16,27 +16,24 @@ export const createRoom = async (req, res) => {
     let code;
     let attempts = 0;
 
-    // Generate unique code
     do {
       code = generateCode();
-      const exists = await pool.query('SELECT id FROM rooms WHERE code = $1', [code]);
+      const exists = await pool.query('SELECT id FROM rooms WHERE code = \$1', [code]);
       if (exists.rows.length === 0) break;
       attempts++;
     } while (attempts < 10);
 
-    // Save to DB
     const result = await pool.query(
-      'INSERT INTO rooms (code, host_id, status) VALUES ($1, $2, \'waiting\') RETURNING *',
+      `INSERT INTO rooms (code, host_id, status) VALUES (\$1, \$2, 'waiting') RETURNING *`,
       [code, userId]
     );
 
     await pool.query(
-      'INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)',
+      `INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)`,
       [result.rows[0].id, userId]
     );
 
-    // Create in-memory state
-    const userResult = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
+    const userResult = await pool.query('SELECT username FROM users WHERE id = \$1', [userId]);
     roomManager.createRoom(code, userId, userResult.rows[0].username);
 
     res.status(201).json({ code, room: result.rows[0] });
@@ -50,11 +47,12 @@ export const joinRoom = async (req, res) => {
   try {
     const { code } = req.body;
     const userId = req.user.id;
+    const upperCode = code.toUpperCase();
 
-    // Check room exists in DB
+    // Check room exists in DB (allow waiting, playing, OR paused)
     const roomResult = await pool.query(
-      'SELECT * FROM rooms WHERE code = $1 AND status != $2',
-      [code.toUpperCase(), 'closed']
+      "SELECT * FROM rooms WHERE code = \$1 AND status != 'closed'",
+      [upperCode]
     );
     if (roomResult.rows.length === 0) {
       return res.status(404).json({ error: 'Room not found or closed' });
@@ -62,16 +60,15 @@ export const joinRoom = async (req, res) => {
 
     const room = roomResult.rows[0];
 
-    // Check if already a member
+    // Add to room_members if not already
     const memberCheck = await pool.query(
-      'SELECT id FROM room_members WHERE room_id = $1 AND user_id = $2',
+      'SELECT id FROM room_members WHERE room_id = \$1 AND user_id = \$2',
       [room.id, userId]
     );
 
     if (memberCheck.rows.length === 0) {
-      // Check player count
       const countResult = await pool.query(
-        'SELECT COUNT(*) FROM room_members WHERE room_id = $1',
+        'SELECT COUNT(*) FROM room_members WHERE room_id = \$1',
         [room.id]
       );
       if (parseInt(countResult.rows[0].count) >= room.max_players) {
@@ -79,18 +76,25 @@ export const joinRoom = async (req, res) => {
       }
 
       await pool.query(
-        'INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)',
+        'INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)',
         [room.id, userId]
       );
     }
 
-    // Ensure in-memory room exists (if server restarted)
-    if (!roomManager.getRoom(code.toUpperCase())) {
-      const hostResult = await pool.query('SELECT username FROM users WHERE id = $1', [room.host_id]);
-      roomManager.createRoom(code.toUpperCase(), room.host_id, hostResult.rows[0].username);
+    // If room is NOT in memory → load from database
+    if (!roomManager.getRoom(upperCode)) {
+      console.log(`📥 Room ${upperCode} not in memory, loading from database...`);
+      const loaded = await roomManager.loadRoom(upperCode);
+
+      if (!loaded) {
+        // Room exists in DB but has no saved state — create fresh
+        const hostResult = await pool.query('SELECT username FROM users WHERE id = \$1', [room.host_id]);
+        roomManager.createRoom(upperCode, room.host_id, hostResult.rows[0].username);
+        console.log(`🆕 Created fresh room ${upperCode} (no saved state found)`);
+      }
     }
 
-    res.json({ code: code.toUpperCase(), room });
+    res.json({ code: upperCode, room });
   } catch (err) {
     console.error('Join room error:', err);
     res.status(500).json({ error: 'Failed to join room' });
@@ -100,10 +104,47 @@ export const joinRoom = async (req, res) => {
 export const getRoomInfo = async (req, res) => {
   try {
     const { code } = req.params;
-    const state = roomManager.serialize(code.toUpperCase());
+    const upperCode = code.toUpperCase();
+
+    // Try in-memory first
+    let state = roomManager.serialize(upperCode);
+
     if (!state) {
-      return res.status(404).json({ error: 'Room not found' });
+      // Check if room exists in DB
+      const roomResult = await pool.query(
+        "SELECT * FROM rooms WHERE code = \$1 AND status != 'closed'",
+        [upperCode]
+      );
+      if (roomResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Room not found' });
+      }
+
+      const room = roomResult.rows[0];
+
+      // Count saved elements
+      const elemCount = await pool.query(
+        'SELECT COUNT(*) FROM room_elements WHERE room_code = \$1',
+        [upperCode]
+      );
+      const discCount = await pool.query(
+        'SELECT COUNT(*) FROM room_discoveries WHERE room_code = \$1',
+        [upperCode]
+      );
+
+      // Return basic info without loading into memory
+      return res.json({
+        code: upperCode,
+        hostId: room.host_id,
+        status: room.status,
+        maxPlayers: room.max_players,
+        players: [],
+        elements: [],
+        elementCount: parseInt(elemCount.rows[0].count),
+        discoveryCount: parseInt(discCount.rows[0].count),
+        isPaused: room.status === 'paused',
+      });
     }
+
     res.json(state);
   } catch (err) {
     console.error('Get room error:', err);
