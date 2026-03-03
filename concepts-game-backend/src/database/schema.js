@@ -108,7 +108,7 @@ export const createTables = async () => {
     `);
     console.log('✅ Room members table ready');
 
-     // 9. Room elements (persist board state)
+    // 9. Room elements (persist board state)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS room_elements (
         id SERIAL PRIMARY KEY,
@@ -135,8 +135,6 @@ export const createTables = async () => {
       );
     `);
     console.log('✅ Room discoveries table ready');
-
-
 
     console.log('🎉 All tables created successfully!');
   } catch (error) {

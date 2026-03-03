@@ -26,12 +26,12 @@ export const createRoom = async (req, res) => {
 
     // Save to DB
     const result = await pool.query(
-      `INSERT INTO rooms (code, host_id, status) VALUES ($1, $2, 'waiting') RETURNING *`,
+      'INSERT INTO rooms (code, host_id, status) VALUES ($1, $2, \'waiting\') RETURNING *',
       [code, userId]
     );
 
     await pool.query(
-      `INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)`,
+      'INSERT INTO room_members (room_id, user_id) VALUES ($1, $2)',
       [result.rows[0].id, userId]
     );
 

@@ -1,4 +1,4 @@
-    import { Server } from 'socket.io';
+import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import pool from '../database/db.js';

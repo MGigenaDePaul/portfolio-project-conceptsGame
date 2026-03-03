@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
+import pool from '../database/db.js';
 
 const PLAYER_COLORS = [
   '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
   '#FFEAA7', '#DDA0DD', '#74B9FF', '#FD79A8'
 ];
 
-// Starting elements — adjust IDs/names to match your concepts table
 const STARTING_ELEMENTS = [
   { conceptId: 'fire',  name: 'Fire',  emoji: '🔥' },
   { conceptId: 'water', name: 'Water', emoji: '💧' },
@@ -15,14 +15,13 @@ const STARTING_ELEMENTS = [
 
 class RoomManager {
   constructor() {
-    // Map<roomCode, RoomState>
     this.rooms = new Map();
   }
 
+  // ─── CREATE (brand new room) ───────────────────────
   createRoom(code, hostId, hostUsername) {
     const elements = new Map();
 
-    // Place starting elements on the board
     STARTING_ELEMENTS.forEach((el, i) => {
       const instanceId = uuidv4();
       elements.set(instanceId, {
@@ -32,22 +31,223 @@ class RoomManager {
         emoji: el.emoji,
         x: 150 + (i % 2) * 250,
         y: 150 + Math.floor(i / 2) * 250,
-        lockedBy: null,     // socketId of player dragging it, or null
+        lockedBy: null,
       });
     });
 
     const room = {
       code,
       hostId,
-      status: 'waiting', // waiting | playing
+      status: 'waiting',
       maxPlayers: 4,
-      players: new Map(), // Map<socketId, PlayerInfo>
+      players: new Map(),
       elements,
-      discoveries: new Set(), // conceptIds discovered this session
+      discoveries: new Set(),
     };
 
     this.rooms.set(code, room);
     return room;
+  }
+
+  // ─── LOAD (restore from database) ──────────────────
+  async loadRoom(code) {
+    try {
+      // Get room info from DB
+      const roomResult = await pool.query(
+        'SELECT * FROM rooms WHERE code = \$1',
+        [code]
+      );
+      if (roomResult.rows.length === 0) return null;
+
+      const dbRoom = roomResult.rows[0];
+
+      // Load saved elements
+      const elementsResult = await pool.query(
+        'SELECT * FROM room_elements WHERE room_code = \$1',
+        [code]
+      );
+
+      // Load saved discoveries
+      const discoveriesResult = await pool.query(
+        'SELECT concept_id FROM room_discoveries WHERE room_code = \$1',
+        [code]
+      );
+
+      const elements = new Map();
+
+      if (elementsResult.rows.length > 0) {
+        // Restore saved elements
+        elementsResult.rows.forEach(row => {
+          elements.set(row.instance_id, {
+            instanceId: row.instance_id,
+            conceptId: row.concept_id,
+            name: row.name,
+            emoji: row.emoji,
+            x: row.x,
+            y: row.y,
+            lockedBy: null, // No one is dragging on load
+          });
+        });
+        console.log(`📦 Loaded ${elements.size} elements for room ${code}`);
+      } else {
+        // No saved elements — start fresh with starting elements
+        STARTING_ELEMENTS.forEach((el, i) => {
+          const instanceId = uuidv4();
+          elements.set(instanceId, {
+            instanceId,
+            conceptId: el.conceptId,
+            name: el.name,
+            emoji: el.emoji,
+            x: 150 + (i % 2) * 250,
+            y: 150 + Math.floor(i / 2) * 250,
+            lockedBy: null,
+          });
+        });
+        console.log(`🆕 No saved elements for room ${code}, using starting elements`);
+      }
+
+      const discoveries = new Set();
+      discoveriesResult.rows.forEach(row => {
+        discoveries.add(row.concept_id);
+      });
+
+      const room = {
+        code,
+        hostId: dbRoom.host_id,
+        status: dbRoom.status === 'paused' ? 'playing' : dbRoom.status,
+        maxPlayers: dbRoom.max_players,
+        players: new Map(),
+        elements,
+        discoveries,
+      };
+
+      this.rooms.set(code, room);
+
+      // Update DB status back to playing
+      await pool.query(
+        'UPDATE rooms SET status = \'playing\' WHERE code = \$1',
+        [code]
+      );
+
+      console.log(`🔄 Room ${code} restored from database (${elements.size} elements, ${discoveries.size} discoveries)`);
+      return room;
+    } catch (err) {
+      console.error(`❌ Failed to load room ${code}:`, err);
+      return null;
+    }
+  }
+
+  // ─── SAVE (persist to database) ────────────────────
+  async saveRoom(code) {
+    const room = this.rooms.get(code);
+    if (!room) return;
+
+    try {
+      // Save elements — delete old, insert current
+      await pool.query(
+        'DELETE FROM room_elements WHERE room_code = \$1',
+        [code]
+      );
+
+      const elements = Array.from(room.elements.values());
+      if (elements.length > 0) {
+        // Build bulk insert
+        const values = [];
+        const params = [];
+        let paramIndex = 1;
+
+        elements.forEach(el => {
+          values.push(
+            `(
+$$
+{paramIndex},
+$$
+{paramIndex + 1}, 
+$$
+{paramIndex + 2},
+$$
+{paramIndex + 3}, 
+$$
+{paramIndex + 4},
+$$
+{paramIndex + 5})`
+          );
+          params.push(code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y);
+          // Oops, that's 7 params per row, let me fix
+          paramIndex += 7;
+        });
+
+        // Actually let's do it correctly with 7 columns
+        const vals = [];
+        const prms = [];
+        let idx = 1;
+
+        elements.forEach(el => {
+          vals.push(
+            `(
+$$
+{idx},
+$$
+{idx + 1}, 
+$$
+{idx + 2},
+$$
+{idx + 3}, 
+$$
+{idx + 4},
+$$
+{idx + 5}, 
+$$
+{idx + 6})`
+          );
+          prms.push(code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y);
+          idx += 7;
+        });
+
+        await pool.query(
+          `INSERT INTO room_elements (room_code, instance_id, concept_id, name, emoji, x, y)
+           VALUES ${vals.join(', ')}`,
+          prms
+        );
+      }
+
+      // Save discoveries — delete old, insert current
+      await pool.query(
+        'DELETE FROM room_discoveries WHERE room_code = $1',
+        [code]
+      );
+
+      const discoveries = Array.from(room.discoveries);
+      if (discoveries.length > 0) {
+        const vals = [];
+        const prms = [];
+        let idx = 1;
+
+        discoveries.forEach(conceptId => {
+          vals.push(`(
+$$
+{idx}, $${idx + 1})`);
+          prms.push(code, conceptId);
+          idx += 2;
+        });
+
+        await pool.query(
+          `INSERT INTO room_discoveries (room_code, concept_id)
+           VALUES ${vals.join(', ')}`,
+          prms
+        );
+      }
+
+      // Update room status to paused
+      await pool.query(
+        'UPDATE rooms SET status = \'paused\' WHERE code = \$1',
+        [code]
+      );
+
+      console.log(`💾 Room ${code} saved (${elements.length} elements, ${discoveries.length} discoveries)`);
+    } catch (err) {
+      console.error(`❌ Failed to save room ${code}:`, err);
+    }
   }
 
   getRoom(code) {
@@ -62,9 +262,7 @@ class RoomManager {
     // Check if user already in room (reconnect)
     for (const [sid, player] of room.players) {
       if (player.userId === userId) {
-        // Remove old socket entry
         room.players.delete(sid);
-        // Unlock any elements locked by old socket
         for (const [, el] of room.elements) {
           if (el.lockedBy === sid) el.lockedBy = null;
         }
@@ -85,7 +283,8 @@ class RoomManager {
     return player;
   }
 
-  removePlayer(code, socketId) {
+  // ─── REMOVE PLAYER (save when room empties) ────────
+  async removePlayer(code, socketId) {
     const room = this.rooms.get(code);
     if (!room) return null;
 
@@ -99,8 +298,10 @@ class RoomManager {
       }
     }
 
-    // If room is empty, clean up
+    // If room is empty → save to DB and remove from memory
     if (room.players.size === 0) {
+      console.log(`📤 Room ${code} is empty, saving state...`);
+      await this.saveRoom(code);
       this.rooms.delete(code);
       return { player, roomDeleted: true };
     }
@@ -121,7 +322,6 @@ class RoomManager {
     const element = room.elements.get(instanceId);
     if (!element) return { success: false, reason: 'Element not found' };
 
-    // Already locked by someone else
     if (element.lockedBy && element.lockedBy !== socketId) {
       return { success: false, reason: 'Element is being dragged by another player' };
     }
@@ -181,7 +381,6 @@ class RoomManager {
     room.elements.delete(instanceId);
   }
 
-  // Serialize room state for sending to clients
   serialize(code) {
     const room = this.rooms.get(code);
     if (!room) return null;
