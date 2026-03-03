@@ -143,102 +143,37 @@ class RoomManager {
     if (!room) return;
 
     try {
-      // Save elements — delete old, insert current
+    // ─── Save elements ─────────────────────────────
       await pool.query(
         'DELETE FROM room_elements WHERE room_code = \$1',
         [code]
       );
 
       const elements = Array.from(room.elements.values());
-      if (elements.length > 0) {
-        // Build bulk insert
-        const values = [];
-        const params = [];
-        let paramIndex = 1;
-
-        elements.forEach(el => {
-          values.push(
-            `(
-$$
-{paramIndex},
-$$
-{paramIndex + 1}, 
-$$
-{paramIndex + 2},
-$$
-{paramIndex + 3}, 
-$$
-{paramIndex + 4},
-$$
-{paramIndex + 5})`
-          );
-          params.push(code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y);
-          // Oops, that's 7 params per row, let me fix
-          paramIndex += 7;
-        });
-
-        // Actually let's do it correctly with 7 columns
-        const vals = [];
-        const prms = [];
-        let idx = 1;
-
-        elements.forEach(el => {
-          vals.push(
-            `(
-$$
-{idx},
-$$
-{idx + 1}, 
-$$
-{idx + 2},
-$$
-{idx + 3}, 
-$$
-{idx + 4},
-$$
-{idx + 5}, 
-$$
-{idx + 6})`
-          );
-          prms.push(code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y);
-          idx += 7;
-        });
-
+      for (const el of elements) {
         await pool.query(
           `INSERT INTO room_elements (room_code, instance_id, concept_id, name, emoji, x, y)
-           VALUES ${vals.join(', ')}`,
-          prms
+         VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)`,
+          [code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y]
         );
       }
 
-      // Save discoveries — delete old, insert current
+      // ─── Save discoveries ──────────────────────────
       await pool.query(
-        'DELETE FROM room_discoveries WHERE room_code = $1',
+        'DELETE FROM room_discoveries WHERE room_code = \$1',
         [code]
       );
 
       const discoveries = Array.from(room.discoveries);
-      if (discoveries.length > 0) {
-        const vals = [];
-        const prms = [];
-        let idx = 1;
-
-        discoveries.forEach(conceptId => {
-          vals.push(`(
-$$
-{idx}, $${idx + 1})`);
-          prms.push(code, conceptId);
-          idx += 2;
-        });
-
+      for (const conceptId of discoveries) {
         await pool.query(
           `INSERT INTO room_discoveries (room_code, concept_id)
-           VALUES ${vals.join(', ')}`,
-          prms
+         VALUES (\$1, \$2)`,
+          [code, conceptId]
         );
       }
 
-      // Update room status to paused
+      // ─── Update room status ────────────────────────
       await pool.query(
         'UPDATE rooms SET status = \'paused\' WHERE code = \$1',
         [code]

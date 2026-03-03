@@ -24,12 +24,12 @@ export const createRoom = async (req, res) => {
     } while (attempts < 10);
 
     const result = await pool.query(
-      `INSERT INTO rooms (code, host_id, status) VALUES (\$1, \$2, 'waiting') RETURNING *`,
+      'INSERT INTO rooms (code, host_id, status) VALUES (\$1, \$2, \'waiting\') RETURNING *',
       [code, userId]
     );
 
     await pool.query(
-      `INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)`,
+      'INSERT INTO room_members (room_id, user_id) VALUES (\$1, \$2)',
       [result.rows[0].id, userId]
     );
 
@@ -51,7 +51,7 @@ export const joinRoom = async (req, res) => {
 
     // Check room exists in DB (allow waiting, playing, OR paused)
     const roomResult = await pool.query(
-      "SELECT * FROM rooms WHERE code = \$1 AND status != 'closed'",
+      'SELECT * FROM rooms WHERE code = \$1 AND status != \'closed\'',
       [upperCode]
     );
     if (roomResult.rows.length === 0) {
@@ -112,7 +112,7 @@ export const getRoomInfo = async (req, res) => {
     if (!state) {
       // Check if room exists in DB
       const roomResult = await pool.query(
-        "SELECT * FROM rooms WHERE code = \$1 AND status != 'closed'",
+        'SELECT * FROM rooms WHERE code = \$1 AND status != \'closed\'',
         [upperCode]
       );
       if (roomResult.rows.length === 0) {

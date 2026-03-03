@@ -1,6 +1,19 @@
 import { roomManager } from './roomManager.js';
 import combine from '../services/combineService.js';
 
+// Debounced save — saves at most once every 30 seconds per room
+const saveTimers = new Map();
+
+function debouncedSave(code) {
+  if (saveTimers.has(code)) return; // Already scheduled
+
+  saveTimers.set(code, setTimeout(async () => {
+    saveTimers.delete(code);
+    await roomManager.saveRoom(code);
+    console.log(`💾 Auto-saved room ${code}`);
+  }, 30000)); // Save 30 seconds after last combine
+}
+
 const registerSocketHandlers = (io, socket) => {
   const user = socket.user; // { id, email } from JWT
 
@@ -141,6 +154,10 @@ const registerSocketHandlers = (io, socket) => {
       });
 
       console.log(`✨ ${el1.name} + ${el2.name} = ${result.name} in room ${code}`);
+
+      // Auto-save after combines (debounced)
+      debouncedSave(code);
+      
     } catch (err) {
       console.error('Combine error:', err);
       socket.emit('error', { message: 'Combine failed' });
@@ -170,11 +187,11 @@ const registerSocketHandlers = (io, socket) => {
   });
 
   // ─── DISCONNECT ────────────────────────────────────────
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     const code = socket.roomCode;
     if (!code) return;
 
-    const result = roomManager.removePlayer(code, socket.id);
+    const result = await roomManager.removePlayer(code, socket.id);
     if (!result) return;
 
     if (!result.roomDeleted) {
