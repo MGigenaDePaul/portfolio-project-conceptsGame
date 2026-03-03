@@ -82,7 +82,8 @@ export const createTables = async () => {
       );
     `);
     console.log('✅ Board instances table ready');
-
+    
+    // 7. Rooms table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS rooms (
         id SERIAL PRIMARY KEY,
@@ -93,7 +94,9 @@ export const createTables = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    console.log('✅ Rooms table ready');
 
+    // 8. Room members
     await pool.query(`
       CREATE TABLE IF NOT EXISTS room_members (
         id SERIAL PRIMARY KEY,
@@ -103,6 +106,37 @@ export const createTables = async () => {
         UNIQUE(room_id, user_id)
       );
     `);
+    console.log('✅ Room members table ready');
+
+     // 9. Room elements (persist board state)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS room_elements (
+        id SERIAL PRIMARY KEY,
+        room_code VARCHAR(8) NOT NULL,
+        instance_id VARCHAR(100) NOT NULL,
+        concept_id VARCHAR(100) NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        emoji VARCHAR(10) NOT NULL,
+        x FLOAT NOT NULL,
+        y FLOAT NOT NULL,
+        UNIQUE(room_code, instance_id)
+      );
+    `);
+    console.log('✅ Room elements table ready');
+
+    // 10. Room discoveries (persist discoveries)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS room_discoveries (
+        id SERIAL PRIMARY KEY,
+        room_code VARCHAR(8) NOT NULL,
+        concept_id VARCHAR(100) NOT NULL,
+        discovered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(room_code, concept_id)
+      );
+    `);
+    console.log('✅ Room discoveries table ready');
+
+
 
     console.log('🎉 All tables created successfully!');
   } catch (error) {
