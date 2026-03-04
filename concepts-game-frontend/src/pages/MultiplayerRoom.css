@@ -1,0 +1,1209 @@
+/* =============================================
+   MultiplayerRoom.css — Polished Multiplayer UI
+   Matches single-player Board.css + ConceptBubble.css
+   ============================================= */
+
+/* ─── Animations ─── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(78, 205, 196, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(78, 205, 196, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(78, 205, 196, 0);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes floatIdle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes notifProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes mpBubbleSpawn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mpBubbleCombine {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-8deg);
+  }
+  60% {
+    transform: scale(1.15) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* =============================================
+   WAITING ROOM / LOBBY
+   ============================================= */
+
+.mp-waiting {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #0a0a12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #c8d1db;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background grid */
+.mp-waiting::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(78, 205, 196, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(124, 58, 237, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.mp-waiting-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 440px;
+  width: 100%;
+  animation: fadeInScale 0.5s ease;
+}
+
+.mp-waiting-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mp-waiting-title-emoji {
+  font-size: 1.5rem;
+  animation: floatIdle 3s ease-in-out infinite;
+}
+
+/* ─── Code share box ─── */
+
+.mp-code-box {
+  text-align: center;
+  animation: fadeInUp 0.5s ease 0.1s both;
+}
+
+.mp-code-label {
+  display: block;
+  color: rgba(200, 209, 219, 0.5);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.3px;
+}
+
+.mp-code-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.mp-code-text {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 10px;
+  color: #4ECDC4;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  text-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+}
+
+.mp-copy-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-copy-btn:hover {
+  background: rgba(78, 205, 196, 0.1);
+  border-color: rgba(78, 205, 196, 0.3);
+  color: #4ECDC4;
+}
+
+.mp-copy-btn.copied {
+  background: rgba(78, 205, 196, 0.15);
+  border-color: rgba(78, 205, 196, 0.4);
+  color: #4ECDC4;
+}
+
+/* ─── Players card ─── */
+
+.mp-players-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  animation: fadeInUp 0.5s ease 0.2s both;
+}
+
+.mp-players-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.mp-players-card-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.mp-players-card-count {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.mp-players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mp-player-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.3s ease both;
+}
+
+.mp-player-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mp-player-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.mp-player-dot.is-self {
+  animation: pulseRing 2s ease infinite;
+}
+
+.mp-player-name {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mp-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.mp-badge-host {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.mp-badge-you {
+  background: rgba(78, 205, 196, 0.15);
+  color: #4ECDC4;
+  border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+/* Waiting player slots */
+.mp-player-slot-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.mp-player-slot-empty-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mp-player-slot-empty-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.2);
+  font-style: italic;
+}
+
+/* ─── Actions ─── */
+
+.mp-start-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  padding: 16px 44px;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease 0.3s both;
+}
+
+.mp-start-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+}
+
+.mp-start-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mp-start-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mp-waiting-msg {
+  color: rgba(200, 209, 219, 0.5);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeInUp 0.5s ease 0.3s both;
+}
+
+.mp-waiting-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.mp-waiting-dots span {
+  width: 5px;
+  height: 5px;
+  background: rgba(200, 209, 219, 0.4);
+  border-radius: 50%;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.mp-waiting-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.mp-waiting-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.mp-connecting-msg {
+  color: #FFD700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeInUp 0.5s ease 0.4s both;
+}
+
+.mp-leave-btn {
+  background: transparent;
+  color: rgba(200, 209, 219, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.5s ease 0.5s both;
+}
+
+.mp-leave-btn:hover {
+  color: rgba(200, 209, 219, 0.7);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* =============================================
+   GAME CONTAINER
+   ============================================= */
+
+.mp-game {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #1a1d21;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Top bar ─── */
+
+.mp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 52px;
+  background: #0d0f12;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.mp-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mp-topbar-leave {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.mp-topbar-leave:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mp-topbar-code {
+  color: #4ECDC4;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.mp-topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mp-topbar-discoveries {
+  color: #FFD700;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mp-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-topbar-player {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: default;
+}
+
+.mp-topbar-player.is-self {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.mp-topbar-player:hover {
+  transform: scale(1.15);
+}
+
+/* Player tooltip */
+.mp-topbar-player-tooltip {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13, 15, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mp-topbar-player:hover .mp-topbar-player-tooltip {
+  opacity: 1;
+}
+
+/* ─── Notifications ─── */
+
+.mp-notifications {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.mp-notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: slideDown 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-notification.exiting {
+  animation: slideOut 0.3s ease forwards;
+}
+
+.mp-notification-success {
+  background: rgba(45, 122, 58, 0.85);
+  border-color: rgba(78, 205, 130, 0.2);
+}
+
+.mp-notification-error {
+  background: rgba(122, 45, 45, 0.85);
+  border-color: rgba(255, 100, 100, 0.2);
+}
+
+.mp-notification-info {
+  background: rgba(45, 74, 122, 0.85);
+  border-color: rgba(100, 160, 255, 0.2);
+}
+
+/* Progress bar under notification */
+.mp-notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transform-origin: left;
+  animation: notifProgress 3s linear forwards;
+}
+
+/* ─── Board ─── */
+
+.mp-board {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  background: #1a1d21;
+}
+
+/* Subtle dot grid */
+.mp-board::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ─── Board elements (matches ConceptBubble.css) ─── */
+
+.mp-element {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1.5vw, 8px);
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+  background: #161a1d;
+  border: 1px solid rgba(200, 209, 219, 0.15);
+  border-radius: 10px;
+  color: #c7d1db;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  min-width: clamp(70px, 15vw, 92px);
+  min-height: clamp(32px, 6vh, 38px);
+  will-change: transform, box-shadow;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.mp-element:hover {
+  transform: scale(1.03);
+  border-color: rgba(200, 209, 219, 0.25);
+}
+
+.mp-element.is-dragging {
+  cursor: grabbing;
+  transform: rotate(-2deg) scale(1.06);
+  z-index: 999999 !important;
+  transition: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.mp-element.is-locked-other {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.mp-element.is-locked-other:hover {
+  transform: none;
+}
+
+/* Player lock glow */
+.mp-element.has-locker {
+  box-shadow: 0 0 16px var(--locker-color, transparent);
+}
+
+.mp-element.is-dragging.has-locker {
+  box-shadow:
+    0 0 20px var(--locker-color, transparent),
+    0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Spawn animation for new board elements */
+.mp-element.is-spawning {
+  animation: mpBubbleSpawn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.mp-element.is-combined {
+  animation: mpBubbleCombine 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.mp-element-emoji {
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.mp-element-name {
+  font-size: clamp(12px, 2.5vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(200, 209, 219, 0.92);
+}
+
+/* ─── OVERRIDE: Remove translate(-50%, -50%) from ConceptBubble.css 
+      Multiplayer uses left/top directly, not centered ─── */
+
+.mp-element.concept-bubble {
+  transform: none;
+}
+
+.mp-element.concept-bubble:hover {
+  transform: scale(1.03);
+}
+
+.mp-element.concept-bubble.is-dragging,
+.mp-element.concept-bubble.dragging {
+  transform: rotate(-2deg) scale(1.06);
+}
+
+.mp-element.concept-bubble.is-locked-other:hover {
+  transform: none;
+}
+
+.mp-element.concept-bubble.is-combined {
+  transform: none;
+  animation: mpBubbleCombine 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.mp-element.concept-bubble.is-spawning {
+  transform: none;
+  animation: mpBubbleSpawn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─── Per-concept hover/drag overrides (no translate) ─── */
+
+.mp-element.concept-bubble[class*="concept-"]:hover {
+  transform: scale(1.03);
+}
+
+.mp-element.concept-bubble[class*="concept-"].dragging,
+.mp-element.concept-bubble[class*="concept-"].is-dragging {
+  transform: rotate(-2deg) scale(1.06);
+}
+
+.mp-element.concept-bubble[class*="concept-"].drop-target {
+  transform: rotate(1deg) scale(1.06);
+}
+
+/* ─── Palette drag ghost (element being dragged from sidebar) ─── */
+
+.mp-palette-drag-ghost {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1.5vw, 8px);
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+  background: #161a1d;
+  border: 1px solid rgba(93, 173, 236, 0.4);
+  border-radius: 10px;
+  color: #c7d1db;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.06);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(93, 173, 236, 0.15);
+  transition: opacity 0.15s ease;
+}
+
+.mp-palette-drag-ghost .mp-element-emoji {
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.mp-palette-drag-ghost .mp-element-name {
+  font-size: clamp(12px, 2.5vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(200, 209, 219, 0.92);
+}
+
+/* Palette item while dragging it */
+.mp-palette-item.is-being-dragged {
+  opacity: 0.3;
+}
+
+/* Board drop zone highlight */
+.mp-board.drag-over {
+  box-shadow: inset 0 0 60px rgba(93, 173, 236, 0.08);
+}
+
+.mp-board.drag-over::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(93, 173, 236, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+  animation: fadeInScale 0.3s ease;
+}
+
+/* Lock indicator */
+.mp-lock-indicator {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  border: 2px solid #161a1d;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Remote cursors ─── */
+
+.mp-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2000;
+  transition: left 0.06s linear, top 0.06s linear;
+}
+
+.mp-cursor-label {
+  position: absolute;
+  top: 20px;
+  left: 14px;
+  font-size: 0.6rem;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Sidebar ─── */
+
+.mp-sidebar {
+  position: absolute;
+  right: 0;
+  top: 52px;
+  bottom: 0;
+  width: 260px;
+  background: rgba(13, 15, 18, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Sidebar sections ─── */
+
+.mp-sidebar-section {
+  padding: 16px 16px 0;
+  flex-shrink: 0;
+}
+
+.mp-sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mp-sidebar-section-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.mp-sidebar-section-toggle {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.mp-sidebar-section-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+.mp-sidebar-section-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.mp-sidebar-section-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* Players list in sidebar */
+.mp-sidebar-players {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mp-sidebar-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.mp-sidebar-player:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mp-sidebar-player-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.mp-sidebar-player-name {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.mp-sidebar-player-you {
+  font-size: 0.65rem;
+  color: rgba(78, 205, 196, 0.6);
+  margin-left: 2px;
+}
+
+/* Divider */
+.mp-sidebar-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 16px;
+  flex-shrink: 0;
+}
+
+/* ─── Palette ─── */
+
+.mp-palette-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 16px 16px 0;
+}
+
+.mp-palette-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mp-palette-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.mp-palette-count {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.mp-palette-hint {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.65rem;
+  margin-bottom: 10px;
+}
+
+.mp-palette-search {
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font-size: 0.8rem;
+  outline: none;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.mp-palette-search::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.mp-palette-search:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(93, 173, 236, 0.4);
+}
+
+.mp-palette-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0 16px;
+  align-content: flex-start;
+}
+
+/* Palette scrollbar */
+.mp-palette-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.mp-palette-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.mp-palette-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.mp-palette-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Palette item (matches single-player category-item style) */
+.mp-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.mp-palette-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(93, 173, 236, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(93, 173, 236, 0.15);
+}
+
+.mp-palette-item:active {
+  transform: translateY(0);
+  background: rgba(93, 173, 236, 0.15);
+}
+
+.mp-palette-item-emoji {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.mp-palette-item-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-palette-empty {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 2rem 1rem;
+  width: 100%;
+}
+
+/* ─── Board count footer ─── */
+
+.mp-sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.mp-sidebar-footer-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+.mp-sidebar-footer-count {
+  color: #4ECDC4;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+
+@media (max-width: 768px) {
+  .mp-sidebar {
+    width: 220px;
+  }
+
+  .mp-code-text {
+    font-size: 2rem;
+    letter-spacing: 8px;
+  }
+
+  .mp-palette-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .mp-palette-item {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .mp-sidebar {
+    width: 200px;
+  }
+
+  .mp-waiting-title {
+    font-size: 1.3rem;
+  }
+
+  .mp-code-text {
+    font-size: 1.75rem;
+    letter-spacing: 6px;
+  }
+
+  .mp-start-btn {
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
+
+  .mp-players-card {
+    padding: 1rem;
+  }
+}
