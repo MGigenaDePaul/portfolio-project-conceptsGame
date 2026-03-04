@@ -6,14 +6,15 @@ export function useMultiplayerBoard(socket, emit, on, off) {
   const [players, setPlayers] = useState([]);
   const [cursors, setCursors] = useState(new Map());
   const [status, setStatus] = useState('waiting');
+  const [availableConcepts, setAvailableConcepts] = useState([]);
 
-  // ─── Room events ────────────────────────────────────
   useEffect(() => {
     const handlers = {
       'room:state': (state) => {
         setRoomState(state);
         setStatus(state.status);
         setPlayers(state.players);
+        setAvailableConcepts(state.availableConcepts || []);
 
         const elMap = new Map();
         state.elements.forEach(el => elMap.set(el.instanceId, el));
@@ -24,6 +25,7 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         setRoomState(state);
         setStatus('playing');
         setPlayers(state.players);
+        setAvailableConcepts(state.availableConcepts || []);
         const elMap = new Map();
         state.elements.forEach(el => elMap.set(el.instanceId, el));
         setElements(elMap);
@@ -42,7 +44,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
-      // Only handle grabs from OTHER players (we update locally for ourselves)
       'element:grabbed': ({ instanceId, lockedBy }) => {
         setElements(prev => {
           const next = new Map(prev);
@@ -54,7 +55,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
-      // Only handle moves from OTHER players (we update locally for ourselves)
       'element:moved': ({ instanceId, x, y }) => {
         setElements(prev => {
           const next = new Map(prev);
@@ -64,7 +64,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
-      // Only handle releases from OTHER players
       'element:released': ({ instanceId, x, y }) => {
         setElements(prev => {
           const next = new Map(prev);
@@ -76,13 +75,23 @@ export function useMultiplayerBoard(socket, emit, on, off) {
         });
       },
 
-      // Combined — applies to ALL players
       'element:combined': ({ removedIds, newElement }) => {
         setElements(prev => {
           const next = new Map(prev);
           removedIds.forEach(id => next.delete(id));
           next.set(newElement.instanceId, newElement);
           return next;
+        });
+
+        // Add to available concepts if it's new
+        setAvailableConcepts(prev => {
+          const exists = prev.some(c => c.conceptId === newElement.conceptId);
+          if (exists) return prev;
+          return [...prev, {
+            conceptId: newElement.conceptId,
+            name: newElement.name,
+            emoji: newElement.emoji,
+          }];
         });
       },
 
@@ -114,7 +123,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
       },
 
       'element:grab-rejected': ({ instanceId, reason }) => {
-        // Someone else grabbed it first — revert our optimistic lock
         console.log(`Grab rejected: ${reason}`);
         setElements(prev => {
           const next = new Map(prev);
@@ -142,8 +150,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
     };
   }, [on, off, socket]);
 
-  // ─── Actions (with optimistic local updates) ────────
-
   const joinRoom = useCallback((code, username) => {
     emit('room:join', { code, username });
   }, [emit]);
@@ -153,7 +159,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
   }, [emit]);
 
   const grabElement = useCallback((instanceId) => {
-    // Optimistic: lock it locally immediately so drag feels instant
     setElements(prev => {
       const next = new Map(prev);
       const el = next.get(instanceId);
@@ -164,7 +169,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
   }, [emit, socket]);
 
   const moveElement = useCallback((instanceId, x, y) => {
-    // Update locally immediately so the dragger sees movement
     setElements(prev => {
       const next = new Map(prev);
       const el = next.get(instanceId);
@@ -175,7 +179,6 @@ export function useMultiplayerBoard(socket, emit, on, off) {
   }, [emit]);
 
   const releaseElement = useCallback((instanceId, x, y) => {
-    // Update locally immediately
     setElements(prev => {
       const next = new Map(prev);
       const el = next.get(instanceId);
@@ -203,6 +206,7 @@ export function useMultiplayerBoard(socket, emit, on, off) {
     players,
     cursors,
     status,
+    availableConcepts,
     joinRoom,
     startGame,
     grabElement,

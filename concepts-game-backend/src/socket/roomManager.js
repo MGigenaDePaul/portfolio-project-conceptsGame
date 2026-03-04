@@ -21,6 +21,7 @@ class RoomManager {
   // ─── CREATE (brand new room) ───────────────────────
   createRoom(code, hostId, hostUsername) {
     const elements = new Map();
+    const availableConcepts = new Map();
 
     STARTING_ELEMENTS.forEach((el, i) => {
       const instanceId = uuidv4();
@@ -33,6 +34,13 @@ class RoomManager {
         y: 150 + Math.floor(i / 2) * 250,
         lockedBy: null,
       });
+
+      // Base elements are always available
+      availableConcepts.set(el.conceptId, {
+        conceptId: el.conceptId,
+        name: el.name,
+        emoji: el.emoji,
+      });
     });
 
     const room = {
@@ -43,6 +51,7 @@ class RoomManager {
       players: new Map(),
       elements,
       discoveries: new Set(),
+      availableConcepts,
     };
 
     this.rooms.set(code, room);
@@ -52,31 +61,37 @@ class RoomManager {
   // ─── LOAD (restore from database) ──────────────────
   async loadRoom(code) {
     try {
-      // Get room info from DB
       const roomResult = await pool.query(
-        'SELECT * FROM rooms WHERE code = \$1',
+        'SELECT * FROM rooms WHERE code = $1',
         [code]
       );
       if (roomResult.rows.length === 0) return null;
 
       const dbRoom = roomResult.rows[0];
 
-      // Load saved elements
       const elementsResult = await pool.query(
-        'SELECT * FROM room_elements WHERE room_code = \$1',
+        'SELECT * FROM room_elements WHERE room_code = $1',
         [code]
       );
 
-      // Load saved discoveries
       const discoveriesResult = await pool.query(
-        'SELECT concept_id FROM room_discoveries WHERE room_code = \$1',
+        'SELECT concept_id FROM room_discoveries WHERE room_code = $1',
         [code]
       );
 
       const elements = new Map();
+      const availableConcepts = new Map();
+
+      // Always add base elements to available
+      STARTING_ELEMENTS.forEach(el => {
+        availableConcepts.set(el.conceptId, {
+          conceptId: el.conceptId,
+          name: el.name,
+          emoji: el.emoji,
+        });
+      });
 
       if (elementsResult.rows.length > 0) {
-        // Restore saved elements
         elementsResult.rows.forEach(row => {
           elements.set(row.instance_id, {
             instanceId: row.instance_id,
@@ -85,12 +100,20 @@ class RoomManager {
             emoji: row.emoji,
             x: row.x,
             y: row.y,
-            lockedBy: null, // No one is dragging on load
+            lockedBy: null,
           });
+
+          // Also add to available concepts
+          if (!availableConcepts.has(row.concept_id)) {
+            availableConcepts.set(row.concept_id, {
+              conceptId: row.concept_id,
+              name: row.name,
+              emoji: row.emoji,
+            });
+          }
         });
         console.log(`📦 Loaded ${elements.size} elements for room ${code}`);
       } else {
-        // No saved elements — start fresh with starting elements
         STARTING_ELEMENTS.forEach((el, i) => {
           const instanceId = uuidv4();
           elements.set(instanceId, {
@@ -111,6 +134,24 @@ class RoomManager {
         discoveries.add(row.concept_id);
       });
 
+      // Load full concept info for discoveries so they appear in palette
+      if (discoveries.size > 0) {
+        const conceptIds = Array.from(discoveries);
+        const conceptsResult = await pool.query(
+          'SELECT id, name, emoji FROM concepts WHERE id = ANY($1)',
+          [conceptIds]
+        );
+        conceptsResult.rows.forEach(row => {
+          if (!availableConcepts.has(row.id)) {
+            availableConcepts.set(row.id, {
+              conceptId: row.id,
+              name: row.name,
+              emoji: row.emoji,
+            });
+          }
+        });
+      }
+
       const room = {
         code,
         hostId: dbRoom.host_id,
@@ -119,17 +160,17 @@ class RoomManager {
         players: new Map(),
         elements,
         discoveries,
+        availableConcepts,
       };
 
       this.rooms.set(code, room);
 
-      // Update DB status back to playing
       await pool.query(
-        'UPDATE rooms SET status = \'playing\' WHERE code = \$1',
+        "UPDATE rooms SET status = 'playing' WHERE code = $1",
         [code]
       );
 
-      console.log(`🔄 Room ${code} restored from database (${elements.size} elements, ${discoveries.size} discoveries)`);
+      console.log(`🔄 Room ${code} restored from database (${elements.size} elements, ${discoveries.size} discoveries, ${availableConcepts.size} available concepts)`);
       return room;
     } catch (err) {
       console.error(`❌ Failed to load room ${code}:`, err);
@@ -143,9 +184,8 @@ class RoomManager {
     if (!room) return;
 
     try {
-    // ─── Save elements ─────────────────────────────
       await pool.query(
-        'DELETE FROM room_elements WHERE room_code = \$1',
+        'DELETE FROM room_elements WHERE room_code = $1',
         [code]
       );
 
@@ -153,14 +193,13 @@ class RoomManager {
       for (const el of elements) {
         await pool.query(
           `INSERT INTO room_elements (room_code, instance_id, concept_id, name, emoji, x, y)
-         VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y]
         );
       }
 
-      // ─── Save discoveries ──────────────────────────
       await pool.query(
-        'DELETE FROM room_discoveries WHERE room_code = \$1',
+        'DELETE FROM room_discoveries WHERE room_code = $1',
         [code]
       );
 
@@ -168,14 +207,13 @@ class RoomManager {
       for (const conceptId of discoveries) {
         await pool.query(
           `INSERT INTO room_discoveries (room_code, concept_id)
-         VALUES (\$1, \$2)`,
+           VALUES ($1, $2)`,
           [code, conceptId]
         );
       }
 
-      // ─── Update room status ────────────────────────
       await pool.query(
-        'UPDATE rooms SET status = \'paused\' WHERE code = \$1',
+        "UPDATE rooms SET status = 'paused' WHERE code = $1",
         [code]
       );
 
@@ -194,7 +232,6 @@ class RoomManager {
     if (!room) return null;
     if (room.players.size >= room.maxPlayers) return null;
 
-    // Check if user already in room (reconnect)
     for (const [sid, player] of room.players) {
       if (player.userId === userId) {
         room.players.delete(sid);
@@ -218,7 +255,6 @@ class RoomManager {
     return player;
   }
 
-  // ─── REMOVE PLAYER (save when room empties) ────────
   async removePlayer(code, socketId) {
     const room = this.rooms.get(code);
     if (!room) return null;
@@ -226,14 +262,12 @@ class RoomManager {
     const player = room.players.get(socketId);
     room.players.delete(socketId);
 
-    // Unlock any elements this player was dragging
     for (const [, el] of room.elements) {
       if (el.lockedBy === socketId) {
         el.lockedBy = null;
       }
     }
 
-    // If room is empty → save to DB and remove from memory
     if (room.players.size === 0) {
       console.log(`📤 Room ${code} is empty, saving state...`);
       await this.saveRoom(code);
@@ -241,7 +275,6 @@ class RoomManager {
       return { player, roomDeleted: true };
     }
 
-    // If host left, transfer to next player
     if (player && player.userId === room.hostId) {
       const nextPlayer = room.players.values().next().value;
       if (nextPlayer) room.hostId = nextPlayer.userId;
@@ -307,6 +340,16 @@ class RoomManager {
 
     room.elements.set(instanceId, element);
     room.discoveries.add(conceptId);
+
+    // Also add to available concepts if new
+    if (!room.availableConcepts.has(conceptId)) {
+      room.availableConcepts.set(conceptId, {
+        conceptId,
+        name,
+        emoji,
+      });
+    }
+
     return element;
   }
 
@@ -330,6 +373,11 @@ class RoomManager {
       elements.push({ ...el });
     }
 
+    const availableConcepts = [];
+    for (const [, concept] of room.availableConcepts) {
+      availableConcepts.push({ ...concept });
+    }
+
     return {
       code: room.code,
       hostId: room.hostId,
@@ -337,6 +385,7 @@ class RoomManager {
       maxPlayers: room.maxPlayers,
       players,
       elements,
+      availableConcepts,
       discoveryCount: room.discoveries.size,
     };
   }
