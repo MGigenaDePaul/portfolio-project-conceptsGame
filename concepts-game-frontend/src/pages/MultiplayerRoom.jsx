@@ -36,6 +36,8 @@ export default function MultiplayerRoom() {
   // { concept, startX, startY, currentX, currentY, isDragging }
   const paletteDragRef = useRef(null);
   const [boardDragOver, setBoardDragOver] = useState(false);
+  const [dropTargetId, setDropTargetId] = useState(null);
+
 
   // ─── Join room ───
   useEffect(() => {
@@ -286,7 +288,28 @@ export default function MultiplayerRoom() {
     const y = clientY - boardRect.top - offsetY;
 
     moveElement(instanceId, x, y);
-  }, [moveElement, moveCursor]);
+
+    // ─── Find drop target ───
+    const draggedEl = elements.get(instanceId);
+    if (!draggedEl) return;
+
+    let closestId = null;
+    let closestDist = Infinity;
+
+    for (const [otherId, otherEl] of elements) {
+      if (otherId === instanceId) continue;
+      const dx = x - otherEl.x;
+      const dy = y - otherEl.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < COMBINE_DISTANCE && dist < closestDist) {
+        closestDist = dist;
+        closestId = otherId;
+      }
+    }
+
+    setDropTargetId(closestId);
+  }, [moveElement, moveCursor, elements]);
 
   const handlePointerUp = useCallback(() => {
     if (!draggingRef.current) return;
@@ -296,6 +319,7 @@ export default function MultiplayerRoom() {
 
     if (!draggedEl) {
       draggingRef.current = null;
+      setDropTargetId(null);
       return;
     }
 
@@ -321,6 +345,7 @@ export default function MultiplayerRoom() {
     }
 
     draggingRef.current = null;
+    setDropTargetId(null);
   }, [elements, combineElements, releaseElement]);
 
   useEffect(() => {
@@ -507,6 +532,7 @@ export default function MultiplayerRoom() {
           const isLockedByOther = el.lockedBy && el.lockedBy !== localSocketId;
           const lockerColor = el.lockedBy ? getPlayerColor(el.lockedBy) : null;
           const isCombined = combinedElements.has(el.instanceId);
+          const isDropTarget = dropTargetId === el.instanceId;
 
           const conceptSlug = el.name?.toLowerCase().replace(/\s+/g, '');
           const classNames = [
@@ -517,6 +543,7 @@ export default function MultiplayerRoom() {
             isLockedByOther ? 'is-locked-other' : '',
             lockerColor ? 'has-locker' : '',
             isCombined ? 'is-combined' : '',
+            isDropTarget ? 'is-drop-target drop-target' : '',
           ].filter(Boolean).join(' ');
 
           return (
@@ -527,7 +554,7 @@ export default function MultiplayerRoom() {
                 left: el.x,
                 top: el.y,
                 '--locker-color': lockerColor || 'transparent',
-                zIndex: isLockedByMe ? 999999 : el.lockedBy ? 999 : 1,
+                zIndex: isLockedByMe ? 999999 : isDropTarget ? 999 : el.lockedBy ? 998 : 1,
               }}
               onPointerDown={(e) => handlePointerDown(e, el.instanceId)}
               onTouchStart={(e) => handlePointerDown(e, el.instanceId)}
@@ -540,7 +567,7 @@ export default function MultiplayerRoom() {
                   style={{ background: lockerColor }}
                   title={`Dragged by ${getPlayerName(el.lockedBy)}`}
                 >
-                  🔒
+          🔒
                 </div>
               )}
             </div>
