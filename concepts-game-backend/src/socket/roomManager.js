@@ -54,7 +54,7 @@ class RoomManager {
     try {
       // Get room info from DB
       const roomResult = await pool.query(
-        'SELECT * FROM rooms WHERE code = \$1',
+        'SELECT * FROM rooms WHERE code = $1',
         [code]
       );
       if (roomResult.rows.length === 0) return null;
@@ -63,13 +63,13 @@ class RoomManager {
 
       // Load saved elements
       const elementsResult = await pool.query(
-        'SELECT * FROM room_elements WHERE room_code = \$1',
+        'SELECT * FROM room_elements WHERE room_code = $1',
         [code]
       );
 
       // Load saved discoveries
       const discoveriesResult = await pool.query(
-        'SELECT concept_id FROM room_discoveries WHERE room_code = \$1',
+        'SELECT concept_id FROM room_discoveries WHERE room_code = $1',
         [code]
       );
 
@@ -145,7 +145,7 @@ class RoomManager {
     try {
     // ─── Save elements ─────────────────────────────
       await pool.query(
-        'DELETE FROM room_elements WHERE room_code = \$1',
+        'DELETE FROM room_elements WHERE room_code = $1',
         [code]
       );
 
@@ -153,14 +153,14 @@ class RoomManager {
       for (const el of elements) {
         await pool.query(
           `INSERT INTO room_elements (room_code, instance_id, concept_id, name, emoji, x, y)
-         VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [code, el.instanceId, el.conceptId, el.name, el.emoji, el.x, el.y]
         );
       }
 
       // ─── Save discoveries ──────────────────────────
       await pool.query(
-        'DELETE FROM room_discoveries WHERE room_code = \$1',
+        'DELETE FROM room_discoveries WHERE room_code = $1',
         [code]
       );
 
@@ -168,7 +168,7 @@ class RoomManager {
       for (const conceptId of discoveries) {
         await pool.query(
           `INSERT INTO room_discoveries (room_code, concept_id)
-         VALUES (\$1, \$2)`,
+         VALUES ($1, $2)`,
           [code, conceptId]
         );
       }
