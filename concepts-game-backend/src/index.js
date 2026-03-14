@@ -19,8 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ─── Create HTTP server & attach Socket.IO ──────────────
-const httpServer = createServer(app);          // ← ADD
-const io = setupSocket(httpServer);            // ← ADD
+const httpServer = createServer(app);          
+const io = setupSocket(httpServer);            
 
 // Middleware
 app.use(cors({
