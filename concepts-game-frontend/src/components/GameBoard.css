@@ -1,0 +1,109 @@
+/* src/components/GameBoard.css
+ *
+ * Styles for the reusable GameBoard component.
+ *
+ * MIGRATION NOTE: Move these selectors OUT of Board.css and 
+ * MultiplayerRoom.css into this file:
+ *   - .board-canvas  → renamed to .game-board
+ *   - .board-concept (positioning + transitions)
+ *   - .board-concept.dragging
+ *   - .board-concept.drop-target
+ *   - .board-concept-emoji, .board-concept-name
+ *   - .board-warning (if used as board overlay)
+ *
+ * ConceptBubble.css keeps: .concept-bubble, .concept-<id> color themes.
+ */
+
+/* ── Board canvas ──────────────────────────────────── */
+
+.game-board {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  /* Preserve your existing board-canvas background here, e.g.: */
+  /* background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 100%); */
+}
+
+/* ── Element bubbles ───────────────────────────────── */
+
+.game-board .board-concept {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.game-board .board-concept.dragging {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: none; /* no transition while actively dragging */
+}
+
+.game-board .board-concept.drop-target {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+  filter: brightness(1.2);
+}
+
+.game-board .board-concept.locked {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.board-concept-emoji {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.board-concept-name {
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+/* ── Remote cursors (multiplayer only) ─────────────── */
+
+.remote-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10000;
+  transition: left 0.08s linear, top 0.08s linear;
+}
+
+.remote-cursor-pointer {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 12px solid currentColor;
+  transform: rotate(-30deg);
+  transform-origin: top left;
+}
+
+.remote-cursor-label {
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: -2px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* ── Board status overlay ──────────────────────────── */
+/* Used when parent passes <div className="board-warning"> as children */
+
+.game-board .board-warning {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 0.4;
+  pointer-events: none;
+  font-size: 0.8rem;
+}

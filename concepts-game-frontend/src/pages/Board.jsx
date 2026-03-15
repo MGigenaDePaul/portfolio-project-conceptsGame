@@ -1,10 +1,10 @@
 // src/pages/Board.jsx
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { CONCEPTS } from '../game/concepts';
 import { boardsApi } from '../api/boards';
+import GameBoard from '../components/GameBoard';
 import Notification from '../components/Notification';
-import '../components/ConceptBubble.css';
 import './Board.css';
 
 const getHitRadius = () => {
@@ -39,7 +39,7 @@ const Board = () => {
     position: { x: 0, y: 0 },
   });
 
-  const [activePanel, setActivePanel] = useState('none'); // 'none' | 'collection' | 'knowledge'
+  const [activePanel, setActivePanel] = useState('none');
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -74,7 +74,9 @@ const Board = () => {
     pressBubbleAudio.volume = 0.5;
     pressBubbleAudio.preload = 'auto';
 
-    const soundBeforeCombiningAudio = new Audio('/sounds/soundBeforeCombining.mp3');
+    const soundBeforeCombiningAudio = new Audio(
+      '/sounds/soundBeforeCombining.mp3',
+    );
     soundBeforeCombiningAudio.volume = 0.4;
     soundBeforeCombiningAudio.preload = 'auto';
 
@@ -96,7 +98,11 @@ const Board = () => {
   };
 
   const clearNotification = () => {
-    setNotification({ isVisible: false, message: '', position: { x: 0, y: 0 } });
+    setNotification({
+      isVisible: false,
+      message: '',
+      position: { x: 0, y: 0 },
+    });
   };
 
   // ─── Load board from API ─────────────────────────────
@@ -111,13 +117,11 @@ const Board = () => {
         const data = await boardsApi.get(boardId);
         setBoardData(data);
 
-        // Build discovered concepts set from API discoveries
         const discovered = new Set(
-          data.discoveries.map((d) => d.concept_id)
+          data.discoveries.map((d) => d.concept_id),
         );
         setDiscoveredConcepts(discovered);
 
-        // Build instances and positions from API data
         const newInstances = {};
         const newPositions = {};
 
@@ -125,7 +129,6 @@ const Board = () => {
           newInstances[inst.id] = {
             instanceId: inst.id,
             conceptId: inst.concept_id,
-            // Concept data comes joined from API
             name: inst.name,
             emoji: inst.emoji,
             isNewlyCombined: false,
@@ -157,26 +160,20 @@ const Board = () => {
   }, []);
 
   // ─── Helper: get concept info ────────────────────────
-  // Try local CONCEPTS first (for emoji/name), fallback to instance data
-  const getConceptInfo = useCallback(
-    (conceptId, instance) => {
-      const local = CONCEPTS[conceptId];
-      if (local) return local;
+  const getConceptInfo = useCallback((conceptId, instance) => {
+    const local = CONCEPTS[conceptId];
+    if (local) return local;
 
-      // Concept came from API but isn't in local CONCEPTS object
-      // (e.g., AI-generated concepts in the future)
-      if (instance) {
-        return {
-          id: conceptId,
-          name: instance.name || conceptId,
-          emoji: instance.emoji || '❓',
-        };
-      }
+    if (instance) {
+      return {
+        id: conceptId,
+        name: instance.name || conceptId,
+        emoji: instance.emoji || '❓',
+      };
+    }
 
-      return { id: conceptId, name: conceptId, emoji: '❓' };
-    },
-    [],
-  );
+    return { id: conceptId, name: conceptId, emoji: '❓' };
+  }, []);
 
   // ─── Hit detection ───────────────────────────────────
   const getHitTarget = useCallback(
@@ -226,18 +223,20 @@ const Board = () => {
         const newInstanceId = result.newInstance.id;
         const resultConcept = result.concept;
 
-        // Update discovered concepts
         if (result.isNewDiscovery) {
-          setDiscoveredConcepts((prev) => new Set([...prev, resultConcept.id]));
+          setDiscoveredConcepts((prev) =>
+            new Set([...prev, resultConcept.id]),
+          );
         }
 
-        // Show notification for improved complexity
         if (result.complexityImproved) {
-          displayNotification(`⬆️ ${resultConcept.name} complexity improved!`, spawnPos);
+          displayNotification(
+            `⬆️ ${resultConcept.name} complexity improved!`,
+            spawnPos,
+          );
           setTimeout(() => clearNotification(), 2500);
         }
 
-        // Remove old instances, add new one
         setInstances((prev) => {
           const next = { ...prev };
           delete next[aInstanceId];
@@ -266,7 +265,6 @@ const Board = () => {
         return true;
       } catch (err) {
         console.error('Combine API error:', err);
-        // "No recipe found" comes as 404
         return false;
       }
     },
@@ -274,31 +272,35 @@ const Board = () => {
   );
 
   // ─── Pointer down on bubble ──────────────────────────
-  const onPointerDownBubble = (instanceId) => (e) => {
-    if (isCombining) {
+  // Adapted signature for GameBoard: (instanceId, event)
+  const handleElementPointerDown = useCallback(
+    (instanceId, e) => {
+      if (isCombining) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       e.preventDefault();
       e.stopPropagation();
-      return;
-    }
+      play(pressBubbleAudioRef);
 
-    e.preventDefault();
-    e.stopPropagation();
-    play(pressBubbleAudioRef);
+      const p = positions[instanceId];
+      if (!p) return;
 
-    const p = positions[instanceId];
-    if (!p) return;
+      setDraggingId(instanceId);
+      setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }));
 
-    setDraggingId(instanceId);
-    setZIndexes((prev) => ({ ...prev, [instanceId]: 9999 }));
+      e.currentTarget.setPointerCapture?.(e.pointerId);
 
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-
-    draggingRef.current = {
-      id: instanceId,
-      offsetX: e.clientX - p.x,
-      offsetY: e.clientY - p.y,
-    };
-  };
+      draggingRef.current = {
+        id: instanceId,
+        offsetX: e.clientX - p.x,
+        offsetY: e.clientY - p.y,
+      };
+    },
+    [isCombining, positions],
+  );
 
   // ─── Pointer move + up (drag & combine) ──────────────
   useEffect(() => {
@@ -362,7 +364,6 @@ const Board = () => {
         const targetPos = prev[targetId];
         if (!dragPos || !targetPos) return prev;
 
-        // Calculate center point between the two bubbles for notification
         const bubbleWidth = 150;
         const bubbleHeight = 50;
         const dragCenterX = dragPos.x + bubbleWidth / 2;
@@ -377,7 +378,11 @@ const Board = () => {
         setIsCombining(true);
 
         setTimeout(async () => {
-          const combined = await combineAndReplace(dragId, targetId, dragPos);
+          const combined = await combineAndReplace(
+            dragId,
+            targetId,
+            dragPos,
+          );
 
           if (!combined) {
             play(failAudioRef);
@@ -410,11 +415,33 @@ const Board = () => {
     };
   }, [instances, hitRadius, isCombining, getHitTarget, combineAndReplace]);
 
+  // ─── Build elements array for GameBoard ──────────────
+  const elements = useMemo(() => {
+    return Object.values(instances).map((instance) => {
+      const position = positions[instance.instanceId];
+      const concept = getConceptInfo(instance.conceptId, instance);
+
+      return {
+        instanceId: instance.instanceId,
+        conceptId: instance.conceptId,
+        x: position?.x ?? 0,
+        y: position?.y ?? 0,
+        emoji: concept.emoji,
+        name: concept.name,
+        zIndex: zIndexes[instance.instanceId] || 5,
+        isLocked: false,
+        lockedBy: null,
+      };
+    }).filter((el) => positions[el.instanceId]);
+  }, [instances, positions, zIndexes, getConceptInfo]);
+
   // ─── Spawn instance from knowledge panel via API ─────
   const addConceptToBoard = async (conceptId) => {
     const sidebarOffset = isMobileOrTablet ? 0 : 220;
     const knowledgeOffset = isMobileOrTablet ? 0 : 320;
-    const centerX = (window.innerWidth - sidebarOffset - knowledgeOffset) / 2 + sidebarOffset;
+    const centerX =
+      (window.innerWidth - sidebarOffset - knowledgeOffset) / 2 +
+      sidebarOffset;
     const centerY = window.innerHeight / 2;
     const posX = centerX + (Math.random() - 0.5) * 100;
     const posY = centerY + (Math.random() - 0.5) * 100;
@@ -463,7 +490,6 @@ const Board = () => {
     };
 
     discoveredConcepts.forEach((conceptId) => {
-      // Try local CONCEPTS first, fallback to board discovery data
       const concept = CONCEPTS[conceptId];
       const discoveryData = boardData?.discoveries?.find(
         (d) => d.concept_id === conceptId,
@@ -472,8 +498,10 @@ const Board = () => {
       const name = concept?.name || discoveryData?.name || conceptId;
       const emoji = concept?.emoji || discoveryData?.emoji || '❓';
 
-      // Apply search filter
-      if (searchFilter && !name.toLowerCase().includes(searchFilter.toLowerCase())) {
+      if (
+        searchFilter &&
+        !name.toLowerCase().includes(searchFilter.toLowerCase())
+      ) {
         return;
       }
 
@@ -496,9 +524,9 @@ const Board = () => {
   // ─── Loading / error states ──────────────────────────
   if (loadingBoard) {
     return (
-      <div className='board-container'>
-        <div className='board-main'>
-          <div className='board-loading'>
+      <div className="board-container">
+        <div className="board-main">
+          <div className="board-loading">
             <p>Loading board...</p>
           </div>
         </div>
@@ -508,9 +536,9 @@ const Board = () => {
 
   if (loadError) {
     return (
-      <div className='board-container'>
-        <div className='board-main'>
-          <div className='board-loading'>
+      <div className="board-container">
+        <div className="board-main">
+          <div className="board-loading">
             <p>⚠️ {loadError}</p>
             <button
               onClick={() => navigate('/')}
@@ -534,7 +562,7 @@ const Board = () => {
 
   // ─── Render ──────────────────────────────────────────
   return (
-    <div className='board-container'>
+    <div className="board-container">
       {/* Notification */}
       <Notification
         message={notification.message}
@@ -542,16 +570,18 @@ const Board = () => {
         position={notification.position}
       />
 
-      {/* ✅ NEW: Mobile/Tablet panel toggle bar */}
+      {/* Mobile/Tablet panel toggle bar */}
       {isMobileOrTablet && (
-        <div className='board-mobile-toolbar'>
+        <div className="board-mobile-toolbar">
           <button
             className={`mobile-panel-btn ${activePanel === 'collection' ? 'active' : ''}`}
             onClick={() => togglePanel('collection')}
           >
             📚 Collection
           </button>
-          <Link to='/' className='mobile-home-btn'>🏠</Link>
+          <Link to="/" className="mobile-home-btn">
+            🏠
+          </Link>
           <button
             className={`mobile-panel-btn ${activePanel === 'knowledge' ? 'active' : ''}`}
             onClick={() => togglePanel('knowledge')}
@@ -562,133 +592,131 @@ const Board = () => {
       )}
 
       {/* Left Sidebar */}
-      <div className={`board-sidebar ${isMobileOrTablet ? 'board-sidebar--overlay' : ''} ${activePanel === 'collection' ? 'board-sidebar--open' : ''}`}>
-        <div className='sidebar-header'>
-          <span className='sidebar-icon'>📚</span>
-          <span className='sidebar-title'>MY COLLECTION</span>
-          {/* ✅ NEW: Close button for mobile */}
+      <div
+        className={`board-sidebar ${isMobileOrTablet ? 'board-sidebar--overlay' : ''} ${activePanel === 'collection' ? 'board-sidebar--open' : ''}`}
+      >
+        <div className="sidebar-header">
+          <span className="sidebar-icon">📚</span>
+          <span className="sidebar-title">MY COLLECTION</span>
           {isMobileOrTablet && (
-            <button className='panel-close-btn' onClick={() => setActivePanel('none')}>✕</button>
+            <button
+              className="panel-close-btn"
+              onClick={() => setActivePanel('none')}
+            >
+              ✕
+            </button>
           )}
         </div>
 
-        <div className='collection-item active'>
-          <span className='collection-emoji'>🧪</span>
-          <span className='collection-name'>States of Matter</span>
-          <span className='collection-indicator'>🟢</span>
+        <div className="collection-item active">
+          <span className="collection-emoji">🧪</span>
+          <span className="collection-name">States of Matter</span>
+          <span className="collection-indicator">🟢</span>
         </div>
       </div>
 
       {/* Main board area */}
-      <div className='board-main'>
+      <div className="board-main">
         {/* Top toolbar — only show on desktop */}
         {!isMobileOrTablet && (
-          <div className='board-toolbar'>
-            <button className='toolbar-btn' title='Undo'>
+          <div className="board-toolbar">
+            <button className="toolbar-btn" title="Undo">
               <span>↶</span>
             </button>
-            <button className='toolbar-btn' title='Collections'>
+            <button className="toolbar-btn" title="Collections">
               <span>📊</span>
             </button>
-            <button className='toolbar-btn' title='Home'>
-              <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
+            <button className="toolbar-btn" title="Home">
+              <Link
+                to="/"
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
                 <span>🏠</span>
               </Link>
             </button>
-            <button className='toolbar-btn' title='Settings'>
+            <button className="toolbar-btn" title="Settings">
               <span>⚙️</span>
             </button>
           </div>
         )}
 
-        {/* Board canvas with draggable concepts */}
-        <div className='board-canvas'>
-          {Object.values(instances).map((instance) => {
-            const position = positions[instance.instanceId];
-            if (!position) return null;
-
-            const concept = getConceptInfo(instance.conceptId, instance);
-
-            return (
-              <div
-                key={instance.instanceId}
-                className={`board-concept concept-bubble concept-${instance.conceptId} ${
-                  draggingId === instance.instanceId ? 'dragging' : ''
-                } ${hoverTargetId === instance.instanceId ? 'drop-target' : ''}`}
-                style={{
-                  left: `${position.x}px`,
-                  top: `${position.y}px`,
-                  zIndex: zIndexes[instance.instanceId] || 5,
-                  cursor:
-                    draggingId === instance.instanceId ? 'grabbing' : 'grab',
-                }}
-                onPointerDown={onPointerDownBubble(instance.instanceId)}
-              >
-                <span className='board-concept-emoji'>{concept.emoji}</span>
-                <span className='board-concept-name'>{concept.name}</span>
-              </div>
-            );
-          })}
-
-          {/* Board name + info */}
-          <div className='board-warning'>
+        {/* ── GameBoard replaces the old board-canvas div ── */}
+        <GameBoard
+          elements={elements}
+          draggingId={draggingId}
+          dropTargetId={hoverTargetId}
+          onElementPointerDown={handleElementPointerDown}
+          className="board-canvas"
+        >
+          {/* Board name + discovery count overlay */}
+          <div className="board-warning">
             <p>{boardData?.name || 'Board'}</p>
             <p>{discoveredConcepts.size} discoveries</p>
           </div>
-        </div>
+        </GameBoard>
       </div>
 
       {/* Right sidebar - Knowledge */}
-      <div className={`knowledge-sidebar ${isMobileOrTablet ? 'knowledge-sidebar--overlay' : ''} ${activePanel === 'knowledge' ? 'knowledge-sidebar--open' : ''}`}>
-        <div className='knowledge-header'>
-          <div className='knowledge-header-row'>
-            <h2 className='knowledge-title'>Knowledge</h2>
-            {/* ✅ NEW: Close button for mobile */}
+      <div
+        className={`knowledge-sidebar ${isMobileOrTablet ? 'knowledge-sidebar--overlay' : ''} ${activePanel === 'knowledge' ? 'knowledge-sidebar--open' : ''}`}
+      >
+        <div className="knowledge-header">
+          <div className="knowledge-header-row">
+            <h2 className="knowledge-title">Knowledge</h2>
             {isMobileOrTablet && (
-              <button className='panel-close-btn' onClick={() => setActivePanel('none')}>✕</button>
+              <button
+                className="panel-close-btn"
+                onClick={() => setActivePanel('none')}
+              >
+                ✕
+              </button>
             )}
           </div>
-          <p className='knowledge-count'>{discoveredConcepts.size} concepts</p>
+          <p className="knowledge-count">
+            {discoveredConcepts.size} concepts
+          </p>
         </div>
 
-        <div className='knowledge-search'>
+        <div className="knowledge-search">
           <input
-            type='text'
-            placeholder='Search everything...'
-            className='knowledge-search-input'
+            type="text"
+            placeholder="Search everything..."
+            className="knowledge-search-input"
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
           />
           <button
-            className='knowledge-filter-btn'
+            className="knowledge-filter-btn"
             onClick={() => setSearchFilter('')}
-            title='Clear filter'
+            title="Clear filter"
           >
             {searchFilter ? '✕' : '☰'}
           </button>
         </div>
 
-        <div className='knowledge-categories'>
+        <div className="knowledge-categories">
           {Object.entries(categories).map(
             ([categoryName, items]) =>
               items.length > 0 && (
-                <div key={categoryName} className='knowledge-category'>
-                  <div className='category-header'>
-                    <span className='category-name'>{categoryName}</span>
-                    <span className='category-count'>{items.length}</span>
+                <div key={categoryName} className="knowledge-category">
+                  <div className="category-header">
+                    <span className="category-name">{categoryName}</span>
+                    <span className="category-count">{items.length}</span>
                   </div>
-                  <div className='category-items'>
+                  <div className="category-items">
                     {items.map((item, idx) => (
                       <div
                         key={idx}
-                        className='category-item'
+                        className="category-item"
                         onClick={() => addConceptToBoard(item.conceptId)}
-                        title='Click to add to board'
+                        title="Click to add to board"
                       >
-                        <span className='category-item-emoji'>
+                        <span className="category-item-emoji">
                           {item.emoji}
                         </span>
-                        <span className='category-item-name'>{item.name}</span>
+                        <span className="category-item-name">
+                          {item.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -698,9 +726,12 @@ const Board = () => {
         </div>
       </div>
 
-      {/* ✅ NEW: Overlay backdrop */}
+      {/* Overlay backdrop */}
       {isMobileOrTablet && activePanel !== 'none' && (
-        <div className='board-overlay-backdrop' onClick={() => setActivePanel('none')} />
+        <div
+          className="board-overlay-backdrop"
+          onClick={() => setActivePanel('none')}
+        />
       )}
     </div>
   );

@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+// src/pages/MultiplayerRoom.jsx
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useSocket } from '../hooks/useSocket';
 import { useMultiplayerBoard } from '../hooks/useMultiplayerBoard';
+import GameBoard from '../components/GameBoard';
 import './MultiplayerRoom.css';
-import '../components/ConceptBubble.css';
 
 const COMBINE_DISTANCE = 80;
 
@@ -33,11 +34,9 @@ export default function MultiplayerRoom() {
 
   // ─── Palette drag state ───
   const [paletteDrag, setPaletteDrag] = useState(null);
-  // { concept, startX, startY, currentX, currentY, isDragging }
   const paletteDragRef = useRef(null);
   const [boardDragOver, setBoardDragOver] = useState(false);
   const [dropTargetId, setDropTargetId] = useState(null);
-
 
   // ─── Join room ───
   useEffect(() => {
@@ -116,15 +115,15 @@ export default function MultiplayerRoom() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const getPlayerColor = (socketId) => {
+  const getPlayerColor = useCallback((socketId) => {
     const player = players.find(p => p.socketId === socketId);
     return player?.color || '#888';
-  };
+  }, [players]);
 
-  const getPlayerName = (socketId) => {
+  const getPlayerName = useCallback((socketId) => {
     const player = players.find(p => p.socketId === socketId);
     return player?.username || 'Unknown';
-  };
+  }, [players]);
 
   // ═══════════════════════════════════════
   //  PALETTE DRAG TO BOARD
@@ -179,7 +178,6 @@ export default function MultiplayerRoom() {
       isDragging: ref.isDragging,
     });
 
-    // Check if over the board
     if (ref.isDragging && boardRef.current) {
       const boardRect = boardRef.current.getBoundingClientRect();
       const isOver =
@@ -240,10 +238,11 @@ export default function MultiplayerRoom() {
   }, [handlePalettePointerMove, handlePalettePointerUp]);
 
   // ═══════════════════════════════════════
-  //  BOARD ELEMENT DRAG (untouched logic)
+  //  BOARD ELEMENT DRAG
   // ═══════════════════════════════════════
 
-  const handlePointerDown = useCallback((e, instanceId) => {
+  // Signature matches GameBoard's onElementPointerDown(instanceId, event)
+  const handleElementPointerDown = useCallback((instanceId, e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -348,26 +347,74 @@ export default function MultiplayerRoom() {
     setDropTargetId(null);
   }, [elements, combineElements, releaseElement]);
 
-  useEffect(() => {
-    const board = boardRef.current;
-    if (!board) return;
+  // ─── Current dragging ID for GameBoard prop ───
+  const draggingId = draggingRef.current?.instanceId || null;
 
-    board.addEventListener('pointermove', handlePointerMove);
-    board.addEventListener('pointerup', handlePointerUp);
-    board.addEventListener('pointerleave', handlePointerUp);
-    board.addEventListener('touchmove', handlePointerMove, { passive: false });
-    board.addEventListener('touchend', handlePointerUp);
+  // ═══════════════════════════════════════
+  //  BUILD ELEMENTS ARRAY FOR GAMEBOARD
+  // ═══════════════════════════════════════
 
-    return () => {
-      board.removeEventListener('pointermove', handlePointerMove);
-      board.removeEventListener('pointerup', handlePointerUp);
-      board.removeEventListener('pointerleave', handlePointerUp);
-      board.removeEventListener('touchmove', handlePointerMove);
-      board.removeEventListener('touchend', handlePointerUp);
-    };
-  }, [handlePointerMove, handlePointerUp]);
+  const localSocketId = getLocalSocketId();
 
-  // ─── Filtered concepts ───
+  const gameBoardElements = useMemo(() => {
+    return Array.from(elements.values()).map((el) => {
+      const isLockedByMe = el.lockedBy === localSocketId;
+      const isLockedByOther = el.lockedBy && el.lockedBy !== localSocketId;
+      const lockerColor = el.lockedBy ? getPlayerColor(el.lockedBy) : null;
+      const isCombined = combinedElements.has(el.instanceId);
+      const conceptSlug = el.name?.toLowerCase().replace(/\s+/g, '');
+
+      // Build extra CSS classes for multiplayer-specific states
+      const extraClasses = [
+        isLockedByMe && 'is-dragging',
+        isLockedByOther && 'is-locked-other',
+        lockerColor && 'has-locker',
+        isCombined && 'is-combined',
+        dropTargetId === el.instanceId && 'is-drop-target',
+      ].filter(Boolean).join(' ');
+
+      return {
+        instanceId: el.instanceId,
+        conceptId: conceptSlug || el.instanceId,
+        x: el.x,
+        y: el.y,
+        emoji: el.emoji,
+        name: el.name,
+        zIndex: isLockedByMe ? 999999 : (dropTargetId === el.instanceId) ? 999 : el.lockedBy ? 998 : 1,
+        isLocked: isLockedByOther,
+        lockedBy: el.lockedBy,
+        extraClassName: extraClasses,
+        extraStyle: { '--locker-color': lockerColor || 'transparent' },
+        overlay: isLockedByOther ? (
+          <div
+            className="mp-lock-indicator"
+            style={{ background: lockerColor }}
+            title={`Dragged by ${getPlayerName(el.lockedBy)}`}
+          >
+            🔒
+          </div>
+        ) : null,
+      };
+    });
+  }, [elements, localSocketId, combinedElements, dropTargetId, getPlayerColor, getPlayerName]);
+
+  // ═══════════════════════════════════════
+  //  BUILD CURSORS ARRAY FOR GAMEBOARD
+  // ═══════════════════════════════════════
+
+  const gameBoardCursors = useMemo(() => {
+    return Array.from(cursors.entries())
+      .filter(([socketId]) => socketId !== localSocketId)
+      .map(([socketId, pos]) => ({
+        userId: socketId,
+        x: pos.x,
+        y: pos.y,
+        color: getPlayerColor(socketId),
+        name: pos.username || getPlayerName(socketId),
+      }));
+  }, [cursors, localSocketId, getPlayerColor, getPlayerName]);
+
+  // ─── Filtered concepts for palette ───
   const filteredConcepts = availableConcepts.filter(c =>
     c.name.toLowerCase().includes(paletteSearch.toLowerCase())
   );
@@ -375,6 +422,7 @@ export default function MultiplayerRoom() {
   // ═══════════════════════════════════════
   //  WAITING ROOM
   // ═══════════════════════════════════════
+
   if (status === 'waiting') {
     const maxPlayers = roomState?.maxPlayers || 4;
     const emptySlots = Math.max(0, maxPlayers - players.length);
@@ -474,9 +522,8 @@ export default function MultiplayerRoom() {
   // ═══════════════════════════════════════
   //  GAME BOARD
   // ═══════════════════════════════════════
+
   const elementsArray = Array.from(elements.values());
-  const cursorsArray = Array.from(cursors.entries());
-  const localSocketId = getLocalSocketId();
 
   return (
     <div className="mp-game">
@@ -521,87 +568,19 @@ export default function MultiplayerRoom() {
         ))}
       </div>
 
-      {/* ─── Board ─── */}
-      <div
-        ref={boardRef}
+      {/* ─── GameBoard replaces the old mp-board div ─── */}
+      <GameBoard
+        elements={gameBoardElements}
+        draggingId={draggingId}
+        dropTargetId={dropTargetId}
+        cursors={gameBoardCursors}
+        boardRef={boardRef}
         className={`mp-board ${boardDragOver ? 'drag-over' : ''}`}
-        onContextMenu={(e) => e.preventDefault()}
-      >
-        {elementsArray.map((el) => {
-          const isLockedByMe = el.lockedBy === localSocketId;
-          const isLockedByOther = el.lockedBy && el.lockedBy !== localSocketId;
-          const lockerColor = el.lockedBy ? getPlayerColor(el.lockedBy) : null;
-          const isCombined = combinedElements.has(el.instanceId);
-          const isDropTarget = dropTargetId === el.instanceId;
-
-          const conceptSlug = el.name?.toLowerCase().replace(/\s+/g, '');
-          const classNames = [
-            'mp-element',
-            'concept-bubble',
-            conceptSlug ? `concept-${conceptSlug}` : '',
-            isLockedByMe ? 'is-dragging dragging' : '',
-            isLockedByOther ? 'is-locked-other' : '',
-            lockerColor ? 'has-locker' : '',
-            isCombined ? 'is-combined' : '',
-            isDropTarget ? 'is-drop-target drop-target' : '',
-          ].filter(Boolean).join(' ');
-
-          return (
-            <div
-              key={el.instanceId}
-              className={classNames}
-              style={{
-                left: el.x,
-                top: el.y,
-                '--locker-color': lockerColor || 'transparent',
-                zIndex: isLockedByMe ? 999999 : isDropTarget ? 999 : el.lockedBy ? 998 : 1,
-              }}
-              onPointerDown={(e) => handlePointerDown(e, el.instanceId)}
-              onTouchStart={(e) => handlePointerDown(e, el.instanceId)}
-            >
-              <span className="mp-element-emoji concept-emoji">{el.emoji}</span>
-              <span className="mp-element-name concept-name">{el.name}</span>
-              {isLockedByOther && (
-                <div
-                  className="mp-lock-indicator"
-                  style={{ background: lockerColor }}
-                  title={`Dragged by ${getPlayerName(el.lockedBy)}`}
-                >
-          🔒
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Remote cursors */}
-        {cursorsArray.map(([socketId, pos]) => {
-          if (socketId === localSocketId) return null;
-          const color = getPlayerColor(socketId);
-          const name = pos.username || getPlayerName(socketId);
-
-          return (
-            <div
-              key={`cursor-${socketId}`}
-              className="mp-cursor"
-              style={{ left: pos.x, top: pos.y }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill={color}
-                style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-              >
-                <path d="M5.65 5.65l12.7 5.08-5.08 2.54-2.54 5.08z" />
-              </svg>
-              <span className="mp-cursor-label" style={{ background: color }}>
-                {name}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+        onElementPointerDown={handleElementPointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      />
 
       {/* ─── Sidebar ─── */}
       <div className="mp-sidebar">
