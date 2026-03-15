@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { CONCEPTS } from '../game/concepts';
 import { boardsApi } from '../api/boards';
+import { useGameSounds } from '../hooks/useGameSounds';
 import GameBoard from '../components/GameBoard';
 import Notification from '../components/Notification';
 import './Board.css';
@@ -60,31 +61,8 @@ const Board = () => {
   const soundBeforeCombiningAudioRef = useRef(null);
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
 
-  // ─── Initialize audio ────────────────────────────────
-  useEffect(() => {
-    const combineAudio = new Audio('/sounds/success.mp3');
-    combineAudio.volume = 0.6;
-    combineAudio.preload = 'auto';
-
-    const failAudio = new Audio('/sounds/fail.mp3');
-    failAudio.volume = 0.4;
-    failAudio.preload = 'auto';
-
-    const pressBubbleAudio = new Audio('/sounds/pressBubble.mp3');
-    pressBubbleAudio.volume = 0.5;
-    pressBubbleAudio.preload = 'auto';
-
-    const soundBeforeCombiningAudio = new Audio(
-      '/sounds/soundBeforeCombining.mp3',
-    );
-    soundBeforeCombiningAudio.volume = 0.4;
-    soundBeforeCombiningAudio.preload = 'auto';
-
-    combineAudioRef.current = combineAudio;
-    failAudioRef.current = failAudio;
-    pressBubbleAudioRef.current = pressBubbleAudio;
-    soundBeforeCombiningAudioRef.current = soundBeforeCombiningAudio;
-  }, []);
+  // AUDIO sounds
+  const { playGrab, playBeforeCombine, playCombineSuccess, playCombineFail} = useGameSounds();
 
   const play = (ref) => {
     const a = ref.current;
@@ -218,7 +196,7 @@ const Board = () => {
 
         if (!result.success) return false;
 
-        play(combineAudioRef);
+        playCombineSuccess();
 
         const newInstanceId = result.newInstance.id;
         const resultConcept = result.concept;
@@ -283,7 +261,7 @@ const Board = () => {
 
       e.preventDefault();
       e.stopPropagation();
-      play(pressBubbleAudioRef);
+      playGrab();
 
       const p = positions[instanceId];
       if (!p) return;
@@ -374,7 +352,7 @@ const Board = () => {
         const midY = (dragCenterY + targetCenterY) / 2;
         const notificationPosition = { x: midX, y: midY };
 
-        play(soundBeforeCombiningAudioRef);
+        playBeforeCombine();
         setIsCombining(true);
 
         setTimeout(async () => {
@@ -385,7 +363,7 @@ const Board = () => {
           );
 
           if (!combined) {
-            play(failAudioRef);
+            playCombineFail();
             displayNotification('No recipe found!', notificationPosition);
 
             setTimeout(() => {

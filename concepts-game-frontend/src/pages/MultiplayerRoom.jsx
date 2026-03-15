@@ -6,6 +6,7 @@ import { useSocket } from '../hooks/useSocket';
 import { useMultiplayerBoard } from '../hooks/useMultiplayerBoard';
 import GameBoard from '../components/GameBoard';
 import './MultiplayerRoom.css';
+import { useGameSounds } from '../hooks/useGameSounds';
 
 const COMBINE_DISTANCE = 80;
 
@@ -14,7 +15,7 @@ export default function MultiplayerRoom() {
   const { user } = useUser();
   const navigate = useNavigate();
   const { socket, connected, emit, on, off } = useSocket();
-
+  const { playGrab, playBeforeCombine, playCombineSuccess, playCombineFail} = useGameSounds();
   const {
     roomState, elements, players, cursors, status,
     availableConcepts,
@@ -64,6 +65,7 @@ export default function MultiplayerRoom() {
   // ─── Socket event listeners ───
   useEffect(() => {
     const handleCombined = ({ removedIds, newElement, combinedBy }) => {
+      playCombineSuccess();
       const player = players.find(p => p.socketId === combinedBy);
       const name = player?.username || 'Someone';
       showNotification(`✨ ${name} discovered ${newElement.emoji} ${newElement.name}!`, 'success');
@@ -81,6 +83,7 @@ export default function MultiplayerRoom() {
     };
 
     const handleFailed = () => {
+      playCombineFail();
       showNotification('❌ No recipe for that combination', 'error');
     };
 
@@ -250,6 +253,8 @@ export default function MultiplayerRoom() {
     if (!el) return;
     if (el.lockedBy && el.lockedBy !== getLocalSocketId()) return;
 
+    playGrab();
+
     const boardRect = boardRef.current.getBoundingClientRect();
     const clientX = e.clientX ?? e.touches?.[0]?.clientX;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY;
@@ -338,6 +343,7 @@ export default function MultiplayerRoom() {
     }
 
     if (combinedWith) {
+      playBeforeCombine();
       combineElements(instanceId, combinedWith);
     } else {
       releaseElement(instanceId, draggedEl.x, draggedEl.y);
