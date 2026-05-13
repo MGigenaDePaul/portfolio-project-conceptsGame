@@ -205,6 +205,20 @@ const Board = () => {
           setDiscoveredConcepts((prev) =>
             new Set([...prev, resultConcept.id]),
           );
+          setBoardData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              discoveries: [
+                ...(prev.discoveries || []),
+                {
+                  concept_id: resultConcept.id,
+                  name: resultConcept.name,
+                  emoji: resultConcept.emoji,
+                },
+              ],
+            };
+          });
         }
 
         if (result.complexityImproved) {
@@ -234,8 +248,8 @@ const Board = () => {
           delete next[aInstanceId];
           delete next[bInstanceId];
           next[newInstanceId] = {
-            x: result.newInstance.position_x ?? spawnPos.x,
-            y: result.newInstance.position_y ?? spawnPos.y,
+            x: spawnPos.x,
+            y: spawnPos.y,
           };
           return next;
         });
@@ -359,7 +373,7 @@ const Board = () => {
           const combined = await combineAndReplace(
             dragId,
             targetId,
-            dragPos,
+            { x: (dragPos.x + targetPos.x) / 2, y: (dragPos.y + targetPos.y) / 2 },
           );
 
           if (!combined) {
