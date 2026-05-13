@@ -205,6 +205,20 @@ const Board = () => {
           setDiscoveredConcepts((prev) =>
             new Set([...prev, resultConcept.id]),
           );
+          setBoardData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              discoveries: [
+                ...(prev.discoveries || []),
+                {
+                  concept_id: resultConcept.id,
+                  name: resultConcept.name,
+                  emoji: resultConcept.emoji,
+                },
+              ],
+            };
+          });
         }
 
         if (result.complexityImproved) {
