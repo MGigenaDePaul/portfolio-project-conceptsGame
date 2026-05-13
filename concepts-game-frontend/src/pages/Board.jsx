@@ -234,8 +234,8 @@ const Board = () => {
           delete next[aInstanceId];
           delete next[bInstanceId];
           next[newInstanceId] = {
-            x: result.newInstance.position_x ?? spawnPos.x,
-            y: result.newInstance.position_y ?? spawnPos.y,
+            x: spawnPos.x,
+            y: spawnPos.y,
           };
           return next;
         });
@@ -359,7 +359,7 @@ const Board = () => {
           const combined = await combineAndReplace(
             dragId,
             targetId,
-            dragPos,
+            { x: (dragPos.x + targetPos.x) / 2, y: (dragPos.y + targetPos.y) / 2 },
           );
 
           if (!combined) {
