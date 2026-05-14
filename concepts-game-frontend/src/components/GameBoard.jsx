@@ -50,6 +50,7 @@ const GameBoard = ({
               isDragging && 'dragging',
               isDropTarget && 'drop-target',
               el.isLocked && 'locked',
+              el.extraClassName,
             ]
               .filter(Boolean)
               .join(' ')}
@@ -62,6 +63,7 @@ const GameBoard = ({
                 : el.isLocked
                   ? 'not-allowed'
                   : 'grab',
+              ...el.extraStyle,
               '--c-bg': `hsl(${hue},65%,11%)`,
               '--c-border': `hsl(${hue},85%,52%)`,
             }}

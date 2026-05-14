@@ -80,20 +80,23 @@
 }
 
 .concept-bubble:hover {
-  background: none;
-  border-color: none;
+  background: var(--c-bg, rgba(255, 255, 255, 0.08));
+  border-color: var(--c-border, rgba(255, 255, 255, 0.3));
   transform: translate(-50%, -50%) scale(1.03);
 }
 
 /* Dragging state */
 .concept-bubble.dragging {
+  background: var(--c-bg, rgba(255, 255, 255, 0.08));
+  border-color: var(--c-border, rgba(255, 255, 255, 0.3));
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
   cursor: grabbing;
 }
 
 /* Drop target state */
 .concept-bubble.drop-target {
-  border-color: none;
+  background: var(--c-bg, rgba(255, 255, 255, 0.08));
+  border-color: var(--c-border, rgba(255, 255, 255, 0.3));
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
@@ -411,7 +414,7 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept-dust.sky.drop-target {
+.concept-bubble.concept-sky.drop-target {
   background: #00304e;
   border-color: #00d9ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
@@ -445,7 +448,7 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.sea.drop-target {
+.concept-bubble.concept-sea.drop-target {
   background: #002a56;
   border-color: #00c2ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
@@ -462,7 +465,7 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.vapor.drop-target {
+.concept-bubble.concept-vapor.drop-target {
   background: #002b56;
   border-color: #00c4ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
@@ -479,7 +482,7 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.clay.drop-target {
+.concept-bubble.concept-clay.drop-target {
   background: #4c1300;
   border-color: #ff6300;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
@@ -496,7 +499,7 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.lava.drop-target {
+.concept-bubble.concept-lava.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
@@ -513,13 +516,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.humidity.drop-target {
+.concept-bubble.concept-humidity.drop-target {
   background: #00304e;
   border-color: #00d9ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
-/* Sun ☀️*/
+/* Sun ☀️ */
 .concept-bubble.concept-sun:hover,
 .concept-bubble.concept-sun.dragging {
   background: #382600;
@@ -530,11 +533,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.sun.drop-target {
+.concept-bubble.concept-sun.drop-target {
   background: #382600;
   border-color: #fab200;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Wildfire 🔥🌲 */
 .concept-bubble.concept-wildfire:hover,
 .concept-bubble.concept-wildfire.dragging {
@@ -546,11 +550,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.wildfire.drop-target {
+.concept-bubble.concept-wildfire.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Ash Cloud ☁️🌫️ */
 .concept-bubble.concept-ashCloud:hover,
 .concept-bubble.concept-ashCloud.dragging {
@@ -562,11 +567,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.ashCloud.drop-target {
+.concept-bubble.concept-ashCloud.drop-target {
   background: #2e2e2e;
   border-color: #bebebe;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Magma 🌋 */
 .concept-bubble.concept-magma:hover,
 .concept-bubble.concept-magma.dragging {
@@ -578,12 +584,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.magma.drop-target {
+.concept-bubble.concept-magma.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Mist 🌫️*/
+
+/* Mist 🌫️ */
 .concept-bubble.concept-mist:hover,
 .concept-bubble.concept-mist.dragging {
   background: #002758;
@@ -594,12 +601,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.mist.drop-target {
+.concept-bubble.concept-mist.drop-target {
   background: #002758;
   border-color: #00b5ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Bioluminescense 💧✨ */
+
+/* Bioluminescence 💧✨ */
 .concept-bubble.concept-bioluminescense:hover,
 .concept-bubble.concept-bioluminescense.dragging {
   background: #00360c;
@@ -610,11 +618,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.bioluminescense.drop-target {
-  background: #00304e;
+.concept-bubble.concept-bioluminescense.drop-target {
+  background: #00360c;
   border-color: #00ef4b;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Dystopia 🔥 */
 .concept-bubble.concept-dystopia:hover,
 .concept-bubble.concept-dystopia.dragging {
@@ -626,11 +635,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.dystopia.drop-target {
+.concept-bubble.concept-dystopia.drop-target {
   background: #2e2e2e;
   border-color: #bebebe;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Lava Ocean 🌋🌊 */
 .concept-bubble.concept-lavaOcean:hover,
 .concept-bubble.concept-lavaOcean.dragging {
@@ -642,12 +652,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.lavaOcean.drop-target {
+.concept-bubble.concept-lavaOcean.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Cumulus ☁️*/
+
+/* Cumulus ☁️ */
 .concept-bubble.concept-cumulus:hover,
 .concept-bubble.concept-cumulus.dragging {
   background: #002c54;
@@ -658,12 +669,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.cumulus.drop-target {
+.concept-bubble.concept-cumulus.drop-target {
   background: #002c54;
   border-color: #00c9ff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Pollution ☣️*/
+
+/* Pollution ☣️ */
 .concept-bubble.concept-pollution:hover,
 .concept-bubble.concept-pollution.dragging {
   background: #00372a;
@@ -674,12 +686,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.pollution.drop-target {
+.concept-bubble.concept-pollution.drop-target {
   background: #00372a;
   border-color: #00f4c3;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Eruption 🌋*/
+
+/* Eruption 🌋 */
 .concept-bubble.concept-eruption:hover,
 .concept-bubble.concept-eruption.dragging {
   background: #4f0d00;
@@ -690,11 +703,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.eruption.drop-target {
+.concept-bubble.concept-eruption.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Water Vapor 💨 */
 .concept-bubble.concept-waterVapor:hover,
 .concept-bubble.concept-waterVapor.dragging {
@@ -706,11 +720,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.waterVapor.drop-target {
+.concept-bubble.concept-waterVapor.drop-target {
   background: #002957;
   border-color: #00bcff;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Terra Cotta 🏺 */
 .concept-bubble.concept-terraCotta:hover,
 .concept-bubble.concept-terraCotta.dragging {
@@ -722,12 +737,13 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.terraCotta.drop-target {
+.concept-bubble.concept-terraCotta.drop-target {
   background: #4f0c02;
   border-color: #ff4600;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
-/* Blaze 🔥*/
+
+/* Blaze 🔥 */
 .concept-bubble.concept-blaze:hover,
 .concept-bubble.concept-blaze.dragging {
   background: #4f0d00;
@@ -738,11 +754,12 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.blaze.drop-target {
+.concept-bubble.concept-blaze.drop-target {
   background: #4f0d00;
   border-color: #ff4900;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
+
 /* Geothermal 🔥 */
 .concept-bubble.concept-geothermal:hover,
 .concept-bubble.concept-geothermal.dragging {
@@ -754,14 +771,14 @@
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.03);
 }
 
-.concept-bubble.concept.geothermal.drop-target {
+.concept-bubble.concept-geothermal.drop-target {
   background: #4a1600;
   border-color: #ff7100;
   transform: translate(-50%, -50%) rotate(1deg) scale(1.06);
 }
 
 /* ============================================ */
-/* MEDIA QUERIES - MOBILE OPTIMIZATIONS */
+/* MEDIA QUERIES - MOBILE OPTIMIZATIONS        */
 /* ============================================ */
 
 /* Small mobile (hasta 480px) */
@@ -833,7 +850,6 @@
 /* Touch devices - aumentar área táctil */
 @media (hover: none) and (pointer: coarse) {
   .concept-bubble {
-    /* Área táctil mínima de 44x44px (recomendado por Apple) */
     min-width: 44px;
     min-height: 44px;
   }

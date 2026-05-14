@@ -368,7 +368,6 @@ export default function MultiplayerRoom() {
       const isLockedByOther = el.lockedBy && el.lockedBy !== localSocketId;
       const lockerColor = el.lockedBy ? getPlayerColor(el.lockedBy) : null;
       const isCombined = combinedElements.has(el.instanceId);
-      const conceptSlug = el.name?.toLowerCase().replace(/\s+/g, '');
 
       // Build extra CSS classes for multiplayer-specific states
       const extraClasses = [
@@ -381,7 +380,7 @@ export default function MultiplayerRoom() {
 
       return {
         instanceId: el.instanceId,
-        conceptId: conceptSlug || el.instanceId,
+        conceptId: el.conceptId || el.instanceId,
         x: el.x,
         y: el.y,
         emoji: el.emoji,
