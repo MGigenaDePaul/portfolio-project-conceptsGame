@@ -7,6 +7,14 @@
 import './GameBoard.css';
 import './ConceptBubble.css';
 
+const conceptHue = (conceptId = '') => {
+  let h = 0;
+  for (let i = 0; i < conceptId.length; i++) {
+    h = (Math.imul(31, h) + conceptId.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0) % 360;
+};
+
 const GameBoard = ({
   elements = [],
   draggingId = null,
@@ -30,6 +38,8 @@ const GameBoard = ({
         const isDragging = draggingId === el.instanceId;
         const isDropTarget = dropTargetId === el.instanceId;
 
+        const hue = conceptHue(el.conceptId);
+
         return (
           <div
             key={el.instanceId}
@@ -52,6 +62,8 @@ const GameBoard = ({
                 : el.isLocked
                   ? 'not-allowed'
                   : 'grab',
+              '--c-bg': `hsl(${hue},65%,11%)`,
+              '--c-border': `hsl(${hue},85%,52%)`,
             }}
             onPointerDown={(e) => onElementPointerDown?.(el.instanceId, e)}
           >
