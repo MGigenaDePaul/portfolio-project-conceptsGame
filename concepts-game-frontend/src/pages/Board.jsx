@@ -15,6 +15,63 @@ const getHitRadius = () => {
   return 100;
 };
 
+// Bubble dimensions used for overlap detection (conservative estimates, bubbles are centered on x/y)
+const BUBBLE_W = 180;
+const BUBBLE_H = 56;
+
+const resolveOverlaps = (positions) => {
+  const MIN_DX = BUBBLE_W + 20;
+  const MIN_DY = BUBBLE_H + 16;
+
+  const ids = Object.keys(positions);
+  if (ids.length <= 1) return positions;
+
+  const result = {};
+  for (const id of ids) result[id] = { ...positions[id] };
+
+  for (let iter = 0; iter < 300; iter++) {
+    let moved = false;
+
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const a = result[ids[i]];
+        const b = result[ids[j]];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const overlapX = MIN_DX - Math.abs(dx);
+        const overlapY = MIN_DY - Math.abs(dy);
+
+        if (overlapX > 0 && overlapY > 0) {
+          moved = true;
+          if (overlapX <= overlapY) {
+            const shift = overlapX / 2 + 1;
+            const dir = dx === 0 ? 1 : Math.sign(dx);
+            result[ids[i]] = { ...result[ids[i]], x: result[ids[i]].x - dir * shift };
+            result[ids[j]] = { ...result[ids[j]], x: result[ids[j]].x + dir * shift };
+          } else {
+            const shift = overlapY / 2 + 1;
+            const dir = dy === 0 ? 1 : Math.sign(dy);
+            result[ids[i]] = { ...result[ids[i]], y: result[ids[i]].y - dir * shift };
+            result[ids[j]] = { ...result[ids[j]], y: result[ids[j]].y + dir * shift };
+          }
+        }
+      }
+    }
+
+    if (!moved) break;
+  }
+
+  // Keep all bubbles in visible area (accounting for centered positioning)
+  for (const id of ids) {
+    result[id] = {
+      x: Math.max(BUBBLE_W / 2 + 8, result[id].x),
+      y: Math.max(BUBBLE_H / 2 + 8, result[id].y),
+    };
+  }
+
+  return result;
+};
+
 const Board = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
@@ -60,6 +117,7 @@ const Board = () => {
   const pressBubbleAudioRef = useRef(null);
   const soundBeforeCombiningAudioRef = useRef(null);
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
+  const gameBoardRef = useRef(null);
 
   // AUDIO sounds
   const { playGrab, playBeforeCombine, playCombineSuccess, playCombineFail} = useGameSounds();
@@ -103,6 +161,7 @@ const Board = () => {
         const newInstances = {};
         const newPositions = {};
 
+        let gridIndex = 0;
         data.instances.forEach((inst) => {
           newInstances[inst.id] = {
             instanceId: inst.id,
@@ -111,14 +170,22 @@ const Board = () => {
             emoji: inst.emoji,
             isNewlyCombined: false,
           };
-          newPositions[inst.id] = {
-            x: inst.position_x ?? 200 + Math.random() * 400,
-            y: inst.position_y ?? 200 + Math.random() * 300,
-          };
+
+          if (inst.position_x != null && inst.position_y != null) {
+            newPositions[inst.id] = { x: inst.position_x, y: inst.position_y };
+          } else {
+            const col = gridIndex % 4;
+            const row = Math.floor(gridIndex / 4);
+            newPositions[inst.id] = {
+              x: 260 + col * (BUBBLE_W + 24),
+              y: 200 + row * (BUBBLE_H + 20),
+            };
+            gridIndex++;
+          }
         });
 
         setInstances(newInstances);
-        setPositions(newPositions);
+        setPositions(resolveOverlaps(newPositions));
       } catch (err) {
         console.error('Failed to load board:', err);
         setLoadError(err.message);
@@ -181,7 +248,7 @@ const Board = () => {
 
   // ─── Combine via API ─────────────────────────────────
   const combineAndReplace = useCallback(
-    async (aInstanceId, bInstanceId, spawnPos) => {
+    async (aInstanceId, bInstanceId, spawnPos, notificationPos) => {
       const aInstance = instances[aInstanceId];
       const bInstance = instances[bInstanceId];
       if (!aInstance || !bInstance) return false;
@@ -224,7 +291,7 @@ const Board = () => {
         if (result.complexityImproved) {
           displayNotification(
             `⬆️ ${resultConcept.name} complexity improved!`,
-            spawnPos,
+            notificationPos ?? spawnPos,
           );
           setTimeout(() => clearNotification(), 2500);
         }
@@ -356,15 +423,12 @@ const Board = () => {
         const targetPos = prev[targetId];
         if (!dragPos || !targetPos) return prev;
 
-        const bubbleWidth = 150;
-        const bubbleHeight = 50;
-        const dragCenterX = dragPos.x + bubbleWidth / 2;
-        const dragCenterY = dragPos.y + bubbleHeight / 2;
-        const targetCenterX = targetPos.x + bubbleWidth / 2;
-        const targetCenterY = targetPos.y + bubbleHeight / 2;
-        const midX = (dragCenterX + targetCenterX) / 2;
-        const midY = (dragCenterY + targetCenterY) / 2;
-        const notificationPosition = { x: midX, y: midY };
+        // Positions are center-based (CSS translate(-50%,-50%)), so midpoint is just the average.
+        // Add the board's viewport offset to convert from board-relative to fixed coords.
+        const midX = (dragPos.x + targetPos.x) / 2;
+        const midY = (dragPos.y + targetPos.y) / 2;
+        const boardRect = gameBoardRef.current?.getBoundingClientRect() ?? { left: 0, top: 0 };
+        const notificationPosition = { x: midX + boardRect.left, y: midY + boardRect.top };
 
         playBeforeCombine();
         setIsCombining(true);
@@ -374,6 +438,7 @@ const Board = () => {
             dragId,
             targetId,
             { x: (dragPos.x + targetPos.x) / 2, y: (dragPos.y + targetPos.y) / 2 },
+            notificationPosition,
           );
 
           if (!combined) {
@@ -638,6 +703,7 @@ const Board = () => {
           draggingId={draggingId}
           dropTargetId={hoverTargetId}
           onElementPointerDown={handleElementPointerDown}
+          boardRef={gameBoardRef}
           className="board-canvas"
         >
           {/* Board name + discovery count overlay */}
