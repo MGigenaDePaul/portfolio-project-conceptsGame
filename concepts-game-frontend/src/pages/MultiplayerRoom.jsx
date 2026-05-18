@@ -32,6 +32,7 @@ export default function MultiplayerRoom() {
   const [paletteSearch, setPaletteSearch] = useState('');
   const [playersCollapsed, setPlayersCollapsed] = useState(false);
   const [combinedElements, setCombinedElements] = useState(new Set());
+  const [panelOpen, setPanelOpen] = useState(false);
 
   // ─── Palette drag state ───
   const [paletteDrag, setPaletteDrag] = useState(null);
@@ -557,6 +558,12 @@ export default function MultiplayerRoom() {
               <span className="mp-topbar-player-tooltip">{p.username}</span>
             </div>
           ))}
+          <button
+            className="mp-panel-toggle"
+            onClick={() => setPanelOpen(o => !o)}
+          >
+            📦 <span className="mp-panel-toggle-count">{availableConcepts.length}</span>
+          </button>
         </div>
       </div>
 
@@ -587,8 +594,16 @@ export default function MultiplayerRoom() {
         onPointerLeave={handlePointerUp}
       />
 
+      {/* ─── Sidebar overlay (mobile) ─── */}
+      {panelOpen && (
+        <div className="mp-sidebar-overlay" onClick={() => setPanelOpen(false)} />
+      )}
+
       {/* ─── Sidebar ─── */}
-      <div className="mp-sidebar">
+      <div className={`mp-sidebar ${panelOpen ? 'is-open' : ''}`}>
+        {/* Mobile close button */}
+        <button className="mp-sidebar-close" onClick={() => setPanelOpen(false)}>✕</button>
+
         {/* Players section */}
         <div className="mp-sidebar-section">
           <div

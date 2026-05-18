@@ -1207,20 +1207,104 @@
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+/* ─── Panel toggle button (mobile only by default) ─── */
+
+.mp-panel-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mp-panel-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mp-panel-toggle-count {
+  color: #4ECDC4;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ─── Sidebar close button (mobile only by default) ─── */
+
+.mp-sidebar-close {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.mp-sidebar-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ─── Sidebar overlay (mobile) ─── */
+
+.mp-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 49;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
 /* =============================================
    RESPONSIVE
    ============================================= */
 
 @media (max-width: 768px) {
+  /* Sidebar slides in from right as overlay — board fills full screen */
   .mp-sidebar {
-    width: 220px;
+    width: min(85vw, 300px);
+    transform: translateX(110%);
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
   }
 
-  .mp-code-text {
-    font-size: 2rem;
-    letter-spacing: 8px;
+  .mp-sidebar.is-open {
+    transform: translateX(0);
   }
 
+  /* Show toggle button and close button on mobile */
+  .mp-panel-toggle {
+    display: flex;
+  }
+
+  .mp-sidebar-close {
+    display: flex;
+  }
+
+  /* Hide player dot avatars in topbar to save space */
+  .mp-topbar-player {
+    display: none;
+  }
+
+  /* Palette list as column on mobile for easier tapping */
   .mp-palette-list {
     flex-direction: column;
     flex-wrap: nowrap;
@@ -1229,11 +1313,45 @@
   .mp-palette-item {
     width: 100%;
   }
+
+  /* Slightly larger palette items for easier touch */
+  .mp-palette-item {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+
+  .mp-palette-item-emoji {
+    font-size: 1.15rem;
+  }
+
+  .mp-code-text {
+    font-size: 2rem;
+    letter-spacing: 8px;
+  }
 }
 
 @media (max-width: 480px) {
+  .mp-topbar {
+    padding: 0 0.75rem;
+    height: 48px;
+  }
+
+  .mp-topbar-code {
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+  }
+
+  .mp-topbar-discoveries {
+    font-size: 0.75rem;
+  }
+
+  .mp-topbar-leave {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
   .mp-sidebar {
-    width: 200px;
+    top: 48px;
   }
 
   .mp-waiting-title {
