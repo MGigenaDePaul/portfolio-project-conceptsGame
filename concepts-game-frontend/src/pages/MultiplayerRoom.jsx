@@ -356,13 +356,16 @@ export default function MultiplayerRoom() {
         lastCombinePosRef.current = { x: midX, y: midY };
       }
       playBeforeCombine();
-      combineElements(instanceId, combinedWith);
+      draggingRef.current = null;
+      setDropTargetId(null);
+      setTimeout(() => {
+        combineElements(instanceId, combinedWith);
+      }, 700);
     } else {
       releaseElement(instanceId, draggedEl.x, draggedEl.y);
+      draggingRef.current = null;
+      setDropTargetId(null);
     }
-
-    draggingRef.current = null;
-    setDropTargetId(null);
   }, [elements, combineElements, releaseElement]);
 
   // ─── Current dragging ID for GameBoard prop ───
