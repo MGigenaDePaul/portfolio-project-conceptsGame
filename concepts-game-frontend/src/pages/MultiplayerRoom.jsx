@@ -5,6 +5,7 @@ import { useUser } from '../context/UserContext';
 import { useSocket } from '../hooks/useSocket';
 import { useMultiplayerBoard } from '../hooks/useMultiplayerBoard';
 import GameBoard from '../components/GameBoard';
+import Notification from '../components/Notification';
 import './MultiplayerRoom.css';
 import { useGameSounds } from '../hooks/useGameSounds';
 
@@ -27,7 +28,9 @@ export default function MultiplayerRoom() {
   const boardRef = useRef(null);
   const draggingRef = useRef(null);
   const lastCursorEmit = useRef(0);
+  const lastCombinePosRef = useRef({ x: 0, y: 0 });
   const [copied, setCopied] = useState(false);
+  const [failNotification, setFailNotification] = useState({ isVisible: false, message: '', position: { x: 0, y: 0 } });
   const [notifications, setNotifications] = useState([]);
   const [paletteSearch, setPaletteSearch] = useState('');
   const [playersCollapsed, setPlayersCollapsed] = useState(false);
@@ -85,7 +88,8 @@ export default function MultiplayerRoom() {
 
     const handleFailed = () => {
       playCombineFail();
-      showNotification('❌ No recipe for that combination', 'error');
+      setFailNotification({ isVisible: true, message: 'No recipe found!', position: lastCombinePosRef.current });
+      setTimeout(() => setFailNotification(n => ({ ...n, isVisible: false })), 2500);
     };
 
     const handlePlayerJoined = ({ username }) => {
@@ -344,14 +348,24 @@ export default function MultiplayerRoom() {
     }
 
     if (combinedWith) {
+      const otherEl = elements.get(combinedWith);
+      if (otherEl && boardRef.current) {
+        const boardRect = boardRef.current.getBoundingClientRect();
+        const midX = (draggedEl.x + otherEl.x) / 2 + boardRect.left;
+        const midY = (draggedEl.y + otherEl.y) / 2 + boardRect.top;
+        lastCombinePosRef.current = { x: midX, y: midY };
+      }
       playBeforeCombine();
-      combineElements(instanceId, combinedWith);
+      draggingRef.current = null;
+      setDropTargetId(null);
+      setTimeout(() => {
+        combineElements(instanceId, combinedWith);
+      }, 700);
     } else {
       releaseElement(instanceId, draggedEl.x, draggedEl.y);
+      draggingRef.current = null;
+      setDropTargetId(null);
     }
-
-    draggingRef.current = null;
-    setDropTargetId(null);
   }, [elements, combineElements, releaseElement]);
 
   // ─── Current dragging ID for GameBoard prop ───
@@ -579,6 +593,13 @@ export default function MultiplayerRoom() {
           </div>
         ))}
       </div>
+
+      {/* ─── Positioned fail notification (same as personal board) ─── */}
+      <Notification
+        isVisible={failNotification.isVisible}
+        message={failNotification.message}
+        position={failNotification.position}
+      />
 
       {/* ─── GameBoard replaces the old mp-board div ─── */}
       <GameBoard
