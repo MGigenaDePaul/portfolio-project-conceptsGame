@@ -135,6 +135,57 @@
   background: #1a1d21;
 }
 
+.board-canvas.drag-over {
+  box-shadow: inset 0 0 60px rgba(93, 173, 236, 0.08);
+}
+
+.board-canvas.drag-over::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(93, 173, 236, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.category-item.is-being-dragged {
+  opacity: 0.3;
+}
+
+.knowledge-drag-ghost {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #161a1d;
+  border: 1px solid rgba(93, 173, 236, 0.4);
+  border-radius: 10px;
+  color: #c7d1db;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.06);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(93, 173, 236, 0.15);
+}
+
+.knowledge-drag-ghost-emoji {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.knowledge-drag-ghost-name {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(200, 209, 219, 0.92);
+}
+
 .board-concept {
   position: absolute;
   display: flex;

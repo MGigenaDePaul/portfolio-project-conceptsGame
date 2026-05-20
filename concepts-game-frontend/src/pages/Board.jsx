@@ -118,6 +118,12 @@ const Board = () => {
   const soundBeforeCombiningAudioRef = useRef(null);
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
   const gameBoardRef = useRef(null);
+  const paletteDragRef = useRef(null);
+  const positionsRef = useRef(positions);
+  const instancesRef = useRef(instances);
+  const [paletteDrag, setPaletteDrag] = useState(null);
+  const [boardDragOver, setBoardDragOver] = useState(false);
+  const DRAG_THRESHOLD = 5;
 
   // AUDIO sounds
   const { playGrab, playBeforeCombine, playCombineSuccess, playCombineFail} = useGameSounds();
@@ -203,6 +209,9 @@ const Board = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => { positionsRef.current = positions; }, [positions]);
+  useEffect(() => { instancesRef.current = instances; }, [instances]);
 
   // ─── Helper: get concept info ────────────────────────
   const getConceptInfo = useCallback((conceptId, instance) => {
@@ -493,15 +502,21 @@ const Board = () => {
   }, [instances, positions, zIndexes, getConceptInfo]);
 
   // ─── Spawn instance from knowledge panel via API ─────
-  const addConceptToBoard = async (conceptId) => {
-    const sidebarOffset = isMobileOrTablet ? 0 : 220;
-    const knowledgeOffset = isMobileOrTablet ? 0 : 320;
-    const centerX =
-      (window.innerWidth - sidebarOffset - knowledgeOffset) / 2 +
-      sidebarOffset;
-    const centerY = window.innerHeight / 2;
-    const posX = centerX + (Math.random() - 0.5) * 100;
-    const posY = centerY + (Math.random() - 0.5) * 100;
+  const addConceptToBoard = useCallback(async (conceptId, explicitPosX, explicitPosY) => {
+    let posX, posY;
+    if (explicitPosX !== undefined && explicitPosY !== undefined) {
+      posX = explicitPosX;
+      posY = explicitPosY;
+    } else {
+      const sidebarOffset = isMobileOrTablet ? 0 : 220;
+      const knowledgeOffset = isMobileOrTablet ? 0 : 320;
+      const centerX =
+        (window.innerWidth - sidebarOffset - knowledgeOffset) / 2 +
+        sidebarOffset;
+      const centerY = window.innerHeight / 2;
+      posX = centerX + (Math.random() - 0.5) * 100;
+      posY = centerY + (Math.random() - 0.5) * 100;
+    }
 
     try {
       const result = await boardsApi.spawn(boardId, {
@@ -538,7 +553,271 @@ const Board = () => {
       });
       setTimeout(() => clearNotification(), 2000);
     }
-  };
+  }, [boardId, isMobileOrTablet]);
+
+  // ─── Spawn from panel then combine with a board element ─
+  const spawnAndCombine = useCallback(async (panelItem, boardX, boardY, targetInstanceId) => {
+    const targetInstance = instancesRef.current[targetInstanceId];
+    if (!targetInstance) return;
+
+    const targetPos = positionsRef.current[targetInstanceId];
+    const midPos = {
+      x: (boardX + (targetPos?.x ?? boardX)) / 2,
+      y: (boardY + (targetPos?.y ?? boardY)) / 2,
+    };
+
+    playBeforeCombine();
+    setIsCombining(true);
+
+    try {
+      const spawnResult = await boardsApi.spawn(boardId, {
+        conceptId: panelItem.conceptId,
+        positionX: boardX,
+        positionY: boardY,
+      });
+
+      const newInst = spawnResult.instance;
+      const newInstanceId = newInst.id;
+
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
+      const boardRect = gameBoardRef.current?.getBoundingClientRect() ?? { left: 0, top: 0 };
+      const notificationPos = {
+        x: midPos.x + boardRect.left,
+        y: midPos.y + boardRect.top,
+      };
+
+      let combineResult = null;
+      try {
+        combineResult = await boardsApi.combine(boardId, {
+          conceptAId: panelItem.conceptId,
+          conceptBId: targetInstance.conceptId,
+          instanceAId: newInstanceId,
+          instanceBId: targetInstanceId,
+        });
+      } catch (combineErr) {
+        console.error('Combine API error:', combineErr);
+      }
+
+      if (!combineResult?.success) {
+        playCombineFail();
+
+        setInstances((prev) => ({
+          ...prev,
+          [newInstanceId]: {
+            instanceId: newInstanceId,
+            conceptId: newInst.concept_id,
+            name: newInst.name,
+            emoji: newInst.emoji,
+            isNewlyCombined: false,
+          },
+        }));
+        setPositions((prev) => ({ ...prev, [newInstanceId]: { x: boardX, y: boardY } }));
+
+        displayNotification('No recipe found!', notificationPos);
+        setTimeout(() => clearNotification(), 2000);
+      } else {
+        playCombineSuccess();
+
+        const newCombinedId = combineResult.newInstance.id;
+        const resultConcept = combineResult.concept;
+
+        if (combineResult.isNewDiscovery) {
+          setDiscoveredConcepts((prev) => new Set([...prev, resultConcept.id]));
+          setBoardData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              discoveries: [
+                ...(prev.discoveries || []),
+                { concept_id: resultConcept.id, name: resultConcept.name, emoji: resultConcept.emoji },
+              ],
+            };
+          });
+        }
+
+        if (combineResult.complexityImproved) {
+          displayNotification(`⬆️ ${resultConcept.name} complexity improved!`, notificationPos);
+          setTimeout(() => clearNotification(), 2500);
+        }
+
+        setInstances((prev) => {
+          const next = { ...prev };
+          delete next[targetInstanceId];
+          next[newCombinedId] = {
+            instanceId: newCombinedId,
+            conceptId: resultConcept.id,
+            name: resultConcept.name,
+            emoji: resultConcept.emoji,
+            isNewlyCombined: true,
+          };
+          return next;
+        });
+
+        setPositions((prev) => {
+          const next = { ...prev };
+          delete next[targetInstanceId];
+          next[newCombinedId] = { x: midPos.x, y: midPos.y };
+          return next;
+        });
+
+        setZIndexes((prev) => {
+          const next = { ...prev };
+          delete next[targetInstanceId];
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to spawn and combine:', err);
+    }
+
+    setIsCombining(false);
+  }, [boardId, playBeforeCombine, playCombineSuccess, playCombineFail]);
+
+  // ─── Drag from knowledge panel to board ─────────────
+  const handleKnowledgePointerDown = useCallback((e, item) => {
+    if (isCombining) return;
+    e.preventDefault();
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+    paletteDragRef.current = {
+      item,
+      startX: clientX,
+      startY: clientY,
+      currentX: clientX,
+      currentY: clientY,
+      isDragging: false,
+    };
+
+    setPaletteDrag({
+      item,
+      currentX: clientX,
+      currentY: clientY,
+      isDragging: false,
+    });
+  }, [isCombining]);
+
+  const handleKnowledgePointerMove = useCallback((e) => {
+    if (!paletteDragRef.current) return;
+
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+    const ref = paletteDragRef.current;
+    const dx = clientX - ref.startX;
+    const dy = clientY - ref.startY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (!ref.isDragging && dist > DRAG_THRESHOLD) {
+      ref.isDragging = true;
+    }
+
+    ref.currentX = clientX;
+    ref.currentY = clientY;
+
+    setPaletteDrag({
+      item: ref.item,
+      currentX: clientX,
+      currentY: clientY,
+      isDragging: ref.isDragging,
+    });
+
+    if (ref.isDragging && gameBoardRef.current) {
+      const boardRect = gameBoardRef.current.getBoundingClientRect();
+      const isOver =
+        clientX >= boardRect.left &&
+        clientX <= boardRect.right &&
+        clientY >= boardRect.top &&
+        clientY <= boardRect.bottom;
+      setBoardDragOver(isOver);
+
+      if (isOver) {
+        const boardX = clientX - boardRect.left;
+        const boardY = clientY - boardRect.top;
+        const threshold = getHitRadius();
+        const currentPositions = positionsRef.current;
+        let closest = null;
+        let closestDist = Infinity;
+        for (const [id, pos] of Object.entries(currentPositions)) {
+          const d = Math.hypot(boardX - pos.x, boardY - pos.y);
+          if (d < threshold && d < closestDist) {
+            closest = id;
+            closestDist = d;
+          }
+        }
+        setHoverTargetId(closest);
+      } else {
+        setHoverTargetId(null);
+      }
+    }
+  }, []);
+
+  const handleKnowledgePointerUp = useCallback((e) => {
+    if (!paletteDragRef.current) return;
+
+    const ref = paletteDragRef.current;
+    const clientX = e.clientX ?? e.changedTouches?.[0]?.clientX ?? ref.currentX;
+    const clientY = e.clientY ?? e.changedTouches?.[0]?.clientY ?? ref.currentY;
+
+    if (ref.isDragging) {
+      if (gameBoardRef.current) {
+        const boardRect = gameBoardRef.current.getBoundingClientRect();
+        const isOver =
+          clientX >= boardRect.left &&
+          clientX <= boardRect.right &&
+          clientY >= boardRect.top &&
+          clientY <= boardRect.bottom;
+
+        if (isOver) {
+          const boardX = clientX - boardRect.left;
+          const boardY = clientY - boardRect.top;
+
+          const threshold = getHitRadius();
+          const currentPositions = positionsRef.current;
+          let targetId = null;
+          let closestDist = Infinity;
+          for (const [id, pos] of Object.entries(currentPositions)) {
+            const d = Math.hypot(boardX - pos.x, boardY - pos.y);
+            if (d < threshold && d < closestDist) {
+              targetId = id;
+              closestDist = d;
+            }
+          }
+
+          if (targetId) {
+            spawnAndCombine(ref.item, boardX, boardY, targetId);
+          } else {
+            addConceptToBoard(ref.item.conceptId, boardX, boardY);
+          }
+        }
+      }
+    } else {
+      addConceptToBoard(ref.item.conceptId);
+    }
+
+    paletteDragRef.current = null;
+    setPaletteDrag(null);
+    setBoardDragOver(false);
+    setHoverTargetId(null);
+  }, [addConceptToBoard, spawnAndCombine]);
+
+  useEffect(() => {
+    const onMove = (e) => handleKnowledgePointerMove(e);
+    const onUp = (e) => handleKnowledgePointerUp(e);
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+    };
+  }, [handleKnowledgePointerMove, handleKnowledgePointerUp]);
 
   // ─── Organize discoveries for knowledge panel ────────
   const organizeByCategory = () => {
@@ -704,7 +983,7 @@ const Board = () => {
           dropTargetId={hoverTargetId}
           onElementPointerDown={handleElementPointerDown}
           boardRef={gameBoardRef}
-          className="board-canvas"
+          className={`board-canvas${boardDragOver ? ' drag-over' : ''}`}
         >
           {/* Board name + discovery count overlay */}
           <div className="board-warning">
@@ -762,21 +1041,28 @@ const Board = () => {
                     <span className="category-count">{items.length}</span>
                   </div>
                   <div className="category-items">
-                    {items.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="category-item"
-                        onClick={() => addConceptToBoard(item.conceptId)}
-                        title="Click to add to board"
-                      >
-                        <span className="category-item-emoji">
-                          {item.emoji}
-                        </span>
-                        <span className="category-item-name">
-                          {item.name}
-                        </span>
-                      </div>
-                    ))}
+                    {items.map((item, idx) => {
+                      const isBeingDragged =
+                        paletteDrag?.isDragging &&
+                        paletteDrag?.item?.conceptId === item.conceptId;
+                      return (
+                        <div
+                          key={idx}
+                          className={`category-item${isBeingDragged ? ' is-being-dragged' : ''}`}
+                          onPointerDown={(e) => handleKnowledgePointerDown(e, item)}
+                          onTouchStart={(e) => handleKnowledgePointerDown(e, item)}
+                          title="Click or drag to add to board"
+                          style={{ touchAction: 'none' }}
+                        >
+                          <span className="category-item-emoji">
+                            {item.emoji}
+                          </span>
+                          <span className="category-item-name">
+                            {item.name}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ),
@@ -790,6 +1076,20 @@ const Board = () => {
           className="board-overlay-backdrop"
           onClick={() => setActivePanel('none')}
         />
+      )}
+
+      {/* Knowledge panel drag ghost */}
+      {paletteDrag?.isDragging && (
+        <div
+          className="knowledge-drag-ghost"
+          style={{
+            left: paletteDrag.currentX,
+            top: paletteDrag.currentY,
+          }}
+        >
+          <span className="knowledge-drag-ghost-emoji">{paletteDrag.item.emoji}</span>
+          <span className="knowledge-drag-ghost-name">{paletteDrag.item.name}</span>
+        </div>
       )}
     </div>
   );
