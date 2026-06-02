@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CONCEPTS, generateInstanceId } from '../game/concepts';
 import { combine } from '../game/combine';
-import '../components/ConceptBubble.css'; 
+import { useGameSounds } from '../hooks/useGameSounds';
+import '../components/ConceptBubble.css';
+import Notification from '../components/Notification';
 
 import './FullGuide.css';
 
@@ -10,11 +12,9 @@ const FullGuide = () => {
   const location = useLocation();
   const demoContainerRef = useRef(null);
   const draggingRef = useRef({ id: null, offsetX: 0, offsetY: 0 });
-  
-  // Audio refs for sound effects
-  const clickSoundRef = useRef(null);
-  const preCombineSoundRef = useRef(null);
-  const combineSoundRef = useRef(null);
+  const conceptElsRef = useRef(new Map());
+
+  const { playGrab, playBeforeCombine, playCombineSuccess, playCombineFail } = useGameSounds();
 
   // Only show these common elements in the demo
   const DEMO_CONCEPT_IDS = [
@@ -49,25 +49,8 @@ const FullGuide = () => {
   const [demoConcepts, setDemoConcepts] = useState(getRandomConcepts());
   const [draggingId, setDraggingId] = useState(null);
   const [hoverTargetId, setHoverTargetId] = useState(null);
-
-  // Initialize audio in useEffect like in App.jsx
-  useEffect(() => {
-    const clickAudio = new Audio('/sounds/pressBubble.mp3');
-    clickAudio.volume = 0.5;
-    clickAudio.preload = 'auto';
-
-    const preCombineAudio = new Audio('/sounds/soundBeforeCombining.mp3');
-    preCombineAudio.volume = 0.4;
-    preCombineAudio.preload = 'auto';
-
-    const combineAudio = new Audio('/sounds/success.mp3');
-    combineAudio.volume = 0.6;
-    combineAudio.preload = 'auto';
-
-    clickSoundRef.current = clickAudio;
-    preCombineSoundRef.current = preCombineAudio;
-    combineSoundRef.current = combineAudio;
-  }, []);
+  const [notification, setNotification] = useState({ isVisible: false, message: '', position: { x: 0, y: 0 } });
+  const notificationTimerRef = useRef(null);
 
   const getActiveTab = () => {
     const path = location.pathname;
@@ -79,15 +62,7 @@ const FullGuide = () => {
 
   const activeTab = getActiveTab();
 
-  // Play sound helper function like in App.jsx
-  const play = (ref) => {
-    const a = ref.current;
-    if (!a) return;
-    a.currentTime = 0;
-    a.play().catch(() => {});
-  };
-
-  // FIXED: onPointerDown with proper offset calculation
+  // onPointerDown with proper offset calculation
   const onPointerDownConcept = (conceptId) => (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -106,8 +81,7 @@ const FullGuide = () => {
 
     setDraggingId(conceptId);
 
-    // Play click sound
-    play(clickSoundRef);
+    playGrab();
 
     e.currentTarget.setPointerCapture?.(e.pointerId);
 
@@ -191,38 +165,41 @@ const FullGuide = () => {
 
         // Check if close enough to combine
         if (distance < 100) {
-          const newConceptId = combine(concept1.conceptId, concept2.conceptId);
+          // Use actual element rects for accurate viewport-space notification position
+          const el1 = conceptElsRef.current.get(concept1.id);
+          const el2 = conceptElsRef.current.get(concept2.id);
+          const r1 = el1?.getBoundingClientRect();
+          const r2 = el2?.getBoundingClientRect();
+          const notificationPos = r1 && r2
+            ? {
+                x: (r1.left + r1.right + r2.left + r2.right) / 4,
+                y: (r1.top + r1.bottom + r2.top + r2.bottom) / 4,
+              }
+            : { x: 0, y: 0 };
 
-          if (newConceptId) {
-            // Play pre-combine sound
-            play(preCombineSoundRef);
+          const midPos = {
+            x: (concept1.position.x + concept2.position.x) / 2,
+            y: (concept1.position.y + concept2.position.y) / 2,
+          };
 
-            // SUCCESS: Valid combination found
-            const midPos = {
-              x: (concept1.position.x + concept2.position.x) / 2,
-              y: (concept1.position.y + concept2.position.y) / 2,
-            };
+          playBeforeCombine();
 
-            // Wait a bit for pre-combine sound, then combine
-            setTimeout(() => {
-              // Replace the two concepts with the new one
-              setDemoConcepts([
-                {
-                  id: generateInstanceId(),
-                  conceptId: newConceptId,
-                  position: midPos,
-                },
-              ]);
+          setTimeout(() => {
+            const newConceptId = combine(concept1.conceptId, concept2.conceptId);
 
-              play(combineSoundRef);
-            }, 500); 
-          } else {
-            // FAIL: No recipe exists for this combination
-            console.log(
-              `No recipe for ${concept1.conceptId} + ${concept2.conceptId}`,
-            );
-            // Concepts stay on screen, just not combined
-          }
+            if (newConceptId) {
+              setDemoConcepts([{ id: generateInstanceId(), conceptId: newConceptId, position: midPos }]);
+              playCombineSuccess();
+            } else {
+              playCombineFail();
+              if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
+              setNotification({ isVisible: true, message: 'No recipe found!', position: notificationPos });
+              notificationTimerRef.current = setTimeout(
+                () => setNotification((n) => ({ ...n, isVisible: false })),
+                2000,
+              );
+            }
+          }, 700);
         }
       }
     };
@@ -310,6 +287,10 @@ const FullGuide = () => {
                 {demoConcepts.map((concept) => (
                   <div
                     key={concept.id}
+                    ref={(el) => {
+                      if (el) conceptElsRef.current.set(concept.id, el);
+                      else conceptElsRef.current.delete(concept.id);
+                    }}
                     className={`demo-concept concept-bubble concept-${concept.conceptId} ${
                       draggingId === concept.id ? 'dragging' : ''
                     } ${hoverTargetId === concept.id ? 'drop-target' : ''}`}
@@ -329,6 +310,12 @@ const FullGuide = () => {
                   </div>
                 ))}
               </div>
+
+            <Notification
+              message={notification.message}
+              isVisible={notification.isVisible}
+              position={notification.position}
+            />
 
               <p className='section-text'>
                 Once you create a new board, you start with the four{' '}
@@ -749,17 +736,39 @@ const FullGuide = () => {
               </p>
 
               <div className='multiplayer-box'>
-                <div className='mp-cursor cursor-steve'>
-                  <span className='cursor-arrow'>▶</span>
-                  <span className='cursor-name'>Steve</span>
-                </div>
-                <div className='mp-element'>
-                  <span className='mp-emoji'>💨</span>
-                  <span className='mp-name'>Steam</span>
-                </div>
-                <div className='mp-cursor cursor-alex'>
-                  <span className='cursor-arrow'>▶</span>
-                  <span className='cursor-name'>Alex</span>
+                <div className='fg-mp-arena'>
+                  {/* Steve's cursor */}
+                  <div className='fg-mp-cursor fg-mp-steve'>
+                    <span className='fg-mp-arrow'>▶</span>
+                    <span className='fg-mp-label'>Steve</span>
+                  </div>
+
+                  {/* Alex's cursor */}
+                  <div className='fg-mp-cursor fg-mp-alex'>
+                    <span className='fg-mp-arrow'>▶</span>
+                    <span className='fg-mp-label'>Alex</span>
+                  </div>
+
+                  {/* Fire — Steve drags this */}
+                  <div className='fg-mp-concept fg-mp-fire'>
+                    <span>🔥</span>
+                    <span>Fire</span>
+                  </div>
+
+                  {/* Water — Alex drags this */}
+                  <div className='fg-mp-concept fg-mp-water'>
+                    <span>💧</span>
+                    <span>Water</span>
+                  </div>
+
+                  {/* Steam result */}
+                  <div className='fg-mp-concept fg-mp-steam'>
+                    <span>💨</span>
+                    <span>Steam</span>
+                  </div>
+
+                  {/* Combination flash */}
+                  <div className='fg-mp-flash' />
                 </div>
               </div>
 

@@ -313,11 +313,31 @@
   border-radius: 12px;
 }
 
-.complexity-diagram {
+.guide-complexity-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.complexity-inputs {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.combo-plus {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+}
+
+.combo-arrow-down {
+  font-size: 26px;
+  color: #4ade80;
+  line-height: 1;
 }
 
 .concept-node {
@@ -335,12 +355,6 @@
 .concept-node.result {
   border-color: #ff6b35;
   box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
-}
-
-.arrow-down,
-.arrow-up {
-  font-size: 24px;
-  color: #4ade80;
 }
 
 .arrow-right {
@@ -379,6 +393,12 @@
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
 }
 
 .go-play-link:hover {
@@ -566,11 +586,11 @@
 }
 
 .discovered-column {
-  color: #4ade80 !important;
+  color: #4ade80;
 }
 
 .complexity-column {
-  color: #a78bfa !important;
+  color: #a78bfa;
 }
 
 .rank-badge {
@@ -637,53 +657,276 @@
 }
 
 /* ========================================= */
-/* MULTIPLAYER */
+/* MULTIPLAYER ANIMATED DEMO */
 /* ========================================= */
 
 .multiplayer-demo {
-  position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px solid #ff6b35;
-  border-radius: 12px;
-  padding: 60px;
   margin: 24px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
 }
 
-.multiplayer-cursor {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 14px;
+.mp-arena {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 160px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto;
 }
 
-.cursor-steve {
+/* Cursors */
+.mp-cursor {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+  user-select: none;
+  z-index: 3;
+}
+
+.mp-cursor-arrow {
+  font-size: 13px;
+}
+
+.mp-cursor-name {
+  font-size: 11px;
+}
+
+.mp-steve-cursor {
   color: #5dadec;
+  left: 12px;
+  top: 12px;
+  animation: mp-steve-cursor 6s ease-in-out infinite;
 }
 
-.cursor-alex {
+.mp-alex-cursor {
   color: #fb923c;
+  left: 268px;
+  top: 12px;
+  animation: mp-alex-cursor 6s ease-in-out infinite;
 }
 
-.cursor-icon {
-  font-size: 16px;
-}
-
-.multiplayer-concept {
+/* Concept bubbles in the demo */
+.mp-concept {
+  position: absolute;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  background: #2a2d32;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
+  gap: 5px;
+  padding: 6px 12px;
+  background: rgba(42, 45, 50, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
   font-weight: 600;
-  color: #ffffff;
-  font-size: 16px;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mp-fire {
+  left: 12px;
+  top: 65px;
+  animation: mp-fire 6s ease-in-out infinite;
+}
+
+.mp-water {
+  left: 248px;
+  top: 65px;
+  animation: mp-water 6s ease-in-out infinite;
+}
+
+.mp-steam {
+  left: 124px;
+  top: 65px;
+  opacity: 0;
+  transform: scale(0);
+  transform-origin: center center;
+  animation: mp-steam 6s ease-in-out infinite;
+}
+
+/* Combination flash burst */
+.mp-combo-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 220, 50, 0.85) 0%,
+    rgba(255, 120, 30, 0.35) 50%,
+    transparent 72%
+  );
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+  animation: mp-flash 6s ease-in-out infinite;
+}
+
+/* ======== KEYFRAMES ======== */
+
+/* Steve: moves down to Fire, then drags it right to meet Water in the center */
+@keyframes mp-steve-cursor {
+  0%,
+  15% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(0, 53px);
+  }
+  55% {
+    transform: translate(118px, 53px);
+  }
+  68% {
+    transform: translate(118px, 53px);
+  }
+  84% {
+    transform: translate(118px, 53px);
+  }
+  96% {
+    transform: translate(118px, 53px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Alex: moves down to Water, then drags it left to meet Fire in the center */
+@keyframes mp-alex-cursor {
+  0%,
+  15% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(-18px, 53px);
+  }
+  55% {
+    transform: translate(-138px, 53px);
+  }
+  65% {
+    transform: translate(-128px, 40px);
+  }
+  84% {
+    transform: translate(-138px, 53px);
+  }
+  96% {
+    transform: translate(-138px, 53px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Fire: stays still until Steve arrives, then gets dragged right to center */
+@keyframes mp-fire {
+  0%,
+  30% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(118px, 0);
+    opacity: 1;
+  }
+  62% {
+    transform: translate(118px, 0);
+    opacity: 0;
+  }
+  63% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  96% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+/* Water: stays still until Alex arrives, then gets dragged left to center */
+@keyframes mp-water {
+  0%,
+  30% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-120px, 0);
+    opacity: 1;
+  }
+  62% {
+    transform: translate(-120px, 0);
+    opacity: 0;
+  }
+  63% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  96% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+/* Steam: pops in at the combination point, stays visible, then fades before reset */
+@keyframes mp-steam {
+  0%,
+  58% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* Flash: bright burst at the moment of combination */
+@keyframes mp-flash {
+  0%,
+  55% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  61% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  67% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
 }
 
 .final-message {
@@ -720,8 +963,8 @@
     font-size: 22px !important;
   }
 
-  .complexity-diagram {
-    flex-direction: column;
+  .complexity-inputs {
+    gap: 10px;
   }
 
   .elements-row {
@@ -733,8 +976,7 @@
     font-size: 13px;
   }
 
-  .multiplayer-demo {
-    padding: 40px 20px;
-    gap: 20px;
+  .mp-arena {
+    max-width: 100%;
   }
 }

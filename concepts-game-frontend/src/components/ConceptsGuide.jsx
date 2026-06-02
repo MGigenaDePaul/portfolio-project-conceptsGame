@@ -127,9 +127,9 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
               introducing many new features: account syncing, multiplayer,
               collections, stats, leaderboards, concept complexity, and more!
               Keep reading to learn more or{' '}
-              <a href='#' className='go-play-link'>
+              <button onClick={onClose} className='go-play-link'>
                 go play now
-              </a>
+              </button>
               !
             </p>
           </section>
@@ -157,20 +157,22 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
             </p>
 
             <div className='complexity-example'>
-              <div className='complexity-diagram'>
-                <div className='concept-node'>
-                  <span className='element-emoji'>🌊</span> Sea{' '}
-                  <span className='complexity-number green'>6</span>
+              <div className='guide-complexity-diagram'>
+                <div className='complexity-inputs'>
+                  <div className='concept-node'>
+                    <span className='element-emoji'>🌊</span> Sea{' '}
+                    <span className='complexity-number green'>6</span>
+                  </div>
+                  <span className='combo-plus'>+</span>
+                  <div className='concept-node'>
+                    <span className='element-emoji'>☀️</span> Sun{' '}
+                    <span className='complexity-number yellow'>14</span>
+                  </div>
                 </div>
-                <div className='arrow-down'>↓</div>
+                <div className='combo-arrow-down'>↓</div>
                 <div className='concept-node result'>
                   <span className='element-emoji'>🏖️</span> Beach{' '}
                   <span className='complexity-number yellow'>15</span>
-                </div>
-                <div className='arrow-up'>↑</div>
-                <div className='concept-node'>
-                  <span className='element-emoji'>☀️</span> Sun{' '}
-                  <span className='complexity-number yellow'>14</span>
                 </div>
               </div>
             </div>
@@ -456,16 +458,39 @@ const ConceptsGuide = ({ isOpen, onClose }) => {
             </p>
 
             <div className='multiplayer-demo'>
-              <div className='multiplayer-cursor cursor-steve'>
-                <span className='cursor-icon'>▶</span>
-                <span className='cursor-name'>Steve</span>
-              </div>
-              <div className='multiplayer-concept'>
-                <span className='element-emoji'>💨</span> Steam
-              </div>
-              <div className='multiplayer-cursor cursor-alex'>
-                <span className='cursor-icon'>▶</span>
-                <span className='cursor-name'>Alex</span>
+              <div className='mp-arena'>
+                {/* Steve's cursor */}
+                <div className='mp-cursor mp-steve-cursor'>
+                  <span className='mp-cursor-arrow'>▶</span>
+                  <span className='mp-cursor-name'>Steve</span>
+                </div>
+
+                {/* Alex's cursor */}
+                <div className='mp-cursor mp-alex-cursor'>
+                  <span className='mp-cursor-arrow'>▶</span>
+                  <span className='mp-cursor-name'>Alex</span>
+                </div>
+
+                {/* Fire concept — Steve drags this */}
+                <div className='mp-concept mp-fire'>
+                  <span>🔥</span>
+                  <span>Fire</span>
+                </div>
+
+                {/* Water concept — Alex drags this */}
+                <div className='mp-concept mp-water'>
+                  <span>💧</span>
+                  <span>Water</span>
+                </div>
+
+                {/* Steam result */}
+                <div className='mp-concept mp-steam'>
+                  <span>💨</span>
+                  <span>Steam</span>
+                </div>
+
+                {/* Combination flash effect */}
+                <div className='mp-combo-flash' />
               </div>
             </div>
 
