@@ -151,10 +151,12 @@ const styles = {
   },
   joinForm: {
     display: 'flex',
+    flexDirection: 'column',
     gap: '0.75rem',
   },
   input: {
-    flex: 1,
+    width: '100%',
+    boxSizing: 'border-box',
     padding: '12px 16px',
     borderRadius: '12px',
     border: '1px solid #444',
@@ -174,6 +176,7 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     fontWeight: 'bold',
+    width: '100%',
   },
   backBtn: {
     marginTop: '2rem',
