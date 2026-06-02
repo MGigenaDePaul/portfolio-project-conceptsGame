@@ -9,6 +9,7 @@ import Board from './pages/Board';
 import ProtectedRoute from './components/ProtectedRoute';
 import MultiplayerLobby from './pages/MultiplayerLobby';
 import MultiplayerRoom from './pages/MultiplayerRoom';
+import Leaderboard from './pages/Leaderboard';
 import './App.css';
 
 const getHitRadius = () => {
@@ -436,6 +437,7 @@ const App = () => {
             />
           }
         />
+        <Route path='/leaderboard' element={<Leaderboard />} />
         <Route path='/guide' element={<FullGuide />} />
         <Route path='/faq' element={<FullGuide />} />
         <Route path='/privacy' element={<FullGuide />} />

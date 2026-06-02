@@ -1,0 +1,232 @@
+.lb-page {
+  min-height: 100vh;
+  background: #1a1d21;
+  color: #c8d1db;
+  padding: 40px 20px 100px;
+}
+
+/* ── Header ── */
+.lb-header {
+  max-width: 780px;
+  margin: 0 auto 40px;
+}
+
+.lb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5dadec;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+
+.lb-back:hover {
+  color: #7fc0f5;
+}
+
+.lb-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.lb-subtitle {
+  font-size: 14px;
+  color: rgba(200, 209, 219, 0.5);
+  margin: 0;
+}
+
+/* ── Content ── */
+.lb-content {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+/* Loading */
+.lb-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  padding: 60px 0;
+  color: rgba(200, 209, 219, 0.5);
+  font-size: 15px;
+}
+
+.lb-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(93, 173, 236, 0.2);
+  border-top-color: #5dadec;
+  border-radius: 50%;
+  animation: lb-spin 0.7s linear infinite;
+}
+
+@keyframes lb-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error / Empty */
+.lb-error,
+.lb-empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 15px;
+  color: rgba(200, 209, 219, 0.5);
+}
+
+.lb-error {
+  color: rgba(255, 100, 100, 0.8);
+}
+
+/* ── Table ── */
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lb-table thead tr {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lb-table th {
+  padding: 14px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: rgba(200, 209, 219, 0.45);
+  text-align: left;
+}
+
+.lb-table td {
+  padding: 14px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.lb-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.lb-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* YOU row */
+.lb-row-you td {
+  background: rgba(255, 214, 0, 0.05);
+}
+
+.lb-row-you:hover td {
+  background: rgba(255, 214, 0, 0.08) !important;
+}
+
+/* ── Columns ── */
+.col-rank {
+  width: 80px;
+  text-align: center !important;
+}
+
+.col-board {
+  min-width: 160px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.col-disc {
+  text-align: right !important;
+  width: 140px;
+}
+
+.col-cx {
+  text-align: right !important;
+  width: 140px;
+  color: rgba(200, 209, 219, 0.6);
+  font-size: 13px;
+}
+
+/* ── Rank badges ── */
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0 auto;
+}
+
+.rank-gold {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1.5px solid #ffd700;
+  color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.rank-silver {
+  background: rgba(192, 192, 192, 0.12);
+  border: 1.5px solid #c0c0c0;
+  color: #c0c0c0;
+}
+
+.rank-bronze {
+  background: rgba(205, 127, 50, 0.12);
+  border: 1.5px solid #cd7f32;
+  color: #cd7f32;
+}
+
+.rank-number {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(200, 209, 219, 0.4);
+  display: block;
+  text-align: center;
+}
+
+/* ── YOU badge ── */
+.you-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 7px;
+  background: rgba(255, 214, 0, 0.12);
+  border: 1px solid rgba(255, 214, 0, 0.4);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffd600;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+/* ── Discovery count ── */
+.disc-value {
+  font-weight: 700;
+  color: #9aff6b;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .lb-title {
+    font-size: 28px;
+  }
+
+  .lb-table th,
+  .lb-table td {
+    padding: 12px 14px;
+  }
+
+  .col-cx {
+    display: none;
+  }
+}

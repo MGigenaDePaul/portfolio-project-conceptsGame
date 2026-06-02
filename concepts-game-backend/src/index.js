@@ -10,6 +10,7 @@ import boardsRoutes from './routes/boardsRoutes.js'
 import usersRoutes from './routes/usersRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import roomRoutes from './routes/roomRoutes.js';
+import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import authenticate from './middleware/auth.js';
 import { setupSocket } from './socket/index.js';
 
@@ -45,6 +46,7 @@ app.use('/api/boards', authenticate, boardsRoutes);
 app.use('/api/users', authenticate, usersRoutes);
 app.use('/api/recipes', recipesRoutes);
 app.use('/api/rooms', authenticate, roomRoutes);
+app.use('/api/leaderboards', leaderboardRoutes);
 
 
 // Initialize database

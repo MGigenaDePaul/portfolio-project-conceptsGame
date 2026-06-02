@@ -86,6 +86,27 @@ const HomeScreen = ({
         🎮 Multiplayer
       </button>
 
+      <button
+        onClick={() => navigate('/leaderboard')}
+        style={{
+          position: 'fixed',
+          bottom: '60px',
+          left: '20px',
+          zIndex: 50,
+          background: 'linear-gradient(135deg, #f7971e, #ffd200)',
+          color: '#1a1d21',
+          border: 'none',
+          padding: '14px 28px',
+          borderRadius: '14px',
+          fontSize: '1.05rem',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          boxShadow: '0 4px 15px rgba(255, 210, 0, 0.3)',
+        }}
+      >
+        🏆 Leaderboard
+      </button>
+
       <footer className='app-footer'>
         <p>
           CONCEPTS IS STILL UNDER HEAVY DEVELOPMENT, DISCOVERED CONCEPTS WILL
